@@ -1,0 +1,12 @@
+{
+	"version": 1,
+	"dependencies":
+	[
+		{
+			"name": "hxsl",
+			"version": "master",
+			"source": "git@github.com:ncannasse/hxsl.git",
+			"sourceType": "git"
+		}
+	]
+}

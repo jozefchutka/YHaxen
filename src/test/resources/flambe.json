@@ -1,0 +1,14 @@
+{
+	"version": 1,
+	"dependencies":
+	[
+		{
+			"name": "flambe",
+			"version": "flambe-4.0.0",
+			"source": "git@github.com:aduros/flambe.git",
+			"sourceType": "git",
+			"classPath": "src",
+			"scope": ["build", "test"]
+		}
+	]
+}
