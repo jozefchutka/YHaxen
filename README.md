@@ -2,7 +2,7 @@
 
 ## build
 ```
-haxe -main sk.yoz.yhaxen.Main -neko bin/release/main.n -cp src/main/haxe
+haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
 ```
 
 ## TODO

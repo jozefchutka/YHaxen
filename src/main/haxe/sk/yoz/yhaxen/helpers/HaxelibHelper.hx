@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.helpers;
 
+import sk.yoz.yhaxen.valueObjects.ProjectDependency;
 import sys.io.File;
 import sys.FileSystem;
 import tools.haxelib.Data;
@@ -40,5 +41,22 @@ class HaxelibHelper extends tools.haxelib.Main
 		var haxelibJson = File.getContent(path);
 		var infos = Data.readData(haxelibJson, true);
 		new tools.haxelib.Main().doInstallDependencies(infos.dependencies);
+	}
+
+	public static function flattenDependencies(name:String, version:String, result:Array<ProjectDependency>):Void
+	{
+		var path:String = getProjectVersionDirectory(name, version) + "/haxelib.json";
+		if(!FileSystem.exists(path))
+			return null;
+
+		var haxelibJson = File.getContent(path);
+		var list = Data.readData(haxelibJson, false);
+		for(item in list.dependencies)
+		{
+			if(item.version == "")
+				item.version = "0.0.1";
+			result.push({parent:name, name:item.project, version:item.version});
+			flattenDependencies(item.project, item.version, result);
+		}
 	}
 }

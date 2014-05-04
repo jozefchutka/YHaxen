@@ -1,0 +1,28 @@
+{
+	"version": 1,
+	"dependencies":
+	[
+		{
+			"name": "flambe",
+			"version": "flambe-4.0.0",
+			"source": "git@github.com:aduros/flambe.git",
+			"sourceType": "git",
+			"classPath": "src",
+			"scope": ["build", "test"]
+		},
+		{
+			"name": "hxsl",
+			"version": "master",
+			"source": "git@github.com:ncannasse/hxsl.git",
+			"sourceType": "git"
+		},
+		{
+			"name": "minject",
+			"version": "1.2.0",
+			"source": "git@github.com:massiveinteractive/minject.git",
+			"sourceType": "git",
+			"classPath": "src",
+			"scope": ["build", "test"]
+		}
+	]
+}

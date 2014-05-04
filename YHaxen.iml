@@ -3,7 +3,7 @@
   <component name="HaxeModuleSettingsStorage">
     <option name="hxmlPath" value="$MODULE_DIR$/build/build.hxml" />
     <option name="mainClass" value="sk.yoz.yhaxen.Main" />
-    <option name="outputFileName" value="main.n" />
+    <option name="outputFileName" value="../../run.n" />
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/bin" />
