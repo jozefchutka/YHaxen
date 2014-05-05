@@ -1,6 +1,6 @@
 package sk.yoz.yhaxen.valueObjects.config;
 
-class YHaxen
+class Root
 {
 	public static inline var FILENAME:String = "yhaxen.json";
 
@@ -12,7 +12,7 @@ class YHaxen
 	/**
 	 * Optional
 	 **/
-	public var dependencies:Array<Dependency>;
+	public var dependencies:Array<DependencyDetail>;
 
 	public function new(){}
 }

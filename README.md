@@ -5,15 +5,20 @@
 haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
 ```
 
+## test
+```
+neko run.n dependency:install src/test/resources/yhaxen.json
+```
+
 ## TODO
 
 ### should
 - install specific version from git
 - install into haxelib folder under proper version
 - install subdependencies automatically
-- dependencies in yhaxen.json
 - provide list of necessary sub dependencies with versions
-- yhaxen.json on project level, haxelib.json on dependency level (libraries)
+- dependencies in yhaxen.json
+- yhaxen.json only at app/prject level not in dependencies (use haxelib.json)
 
 ### should not
 - not use .current .dev

@@ -2,18 +2,8 @@ package sk.yoz.yhaxen.valueObjects.config;
 
 import sk.yoz.yhaxen.enums.SourceType;
 
-class Dependency
+class DependencyDetail extends Dependency
 {
-	/**
-	 * Required
-	 **/
-	public var name:String;
-
-	/**
-	 * Required
-	 **/
-	public var version:String;
-
 	/**
 	 * Required
 	 **/
@@ -34,10 +24,9 @@ class Dependency
 	 **/
 	public var scope:Array<String>;
 
-	public function new(){}
-
-	public function toString():String
+	public function new(name:String, version:String, source:String)
 	{
-		return name + ":" + version;
+		super(name, version);
+		this.source = source;
 	}
 }

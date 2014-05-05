@@ -1,7 +1,7 @@
 package sk.yoz.yhaxen;
 
 import sk.yoz.yhaxen.helpers.SysHelper;
-import sk.yoz.yhaxen.valueObjects.config.YHaxen;
+import sk.yoz.yhaxen.valueObjects.config.Root;
 import sk.yoz.yhaxen.valueObjects.Command;
 import sk.yoz.yhaxen.resolvers.DependencyResolver;
 
@@ -70,7 +70,7 @@ class Main
 	
 	private function getFilenameFromArgs(args:Array<String>):String
 	{
-		return args.length > 1 ? args[1] : YHaxen.FILENAME;
+		return args.length > 1 ? args[1] : Root.FILENAME;
 	}
 	
 	private function printHelp():Void

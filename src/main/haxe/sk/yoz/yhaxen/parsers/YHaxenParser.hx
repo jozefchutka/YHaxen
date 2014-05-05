@@ -1,12 +1,12 @@
 package sk.yoz.yhaxen.parsers;
 
-import sk.yoz.yhaxen.valueObjects.config.YHaxen;
+import sk.yoz.yhaxen.valueObjects.config.Root;
 
-class YHaxenParser extends GenericParser<YHaxen>
+class YHaxenParser extends GenericParser<Root>
 {
-	override function parse(source:Dynamic):YHaxen
+	override function parse(source:Dynamic):Root
 	{
-		var result:YHaxen = new YHaxen();
+		var result:Root = new Root();
 		if(!Reflect.hasField(source, "version"))
 			throw "Missing version.";
 		result.version = Reflect.field(source, "version");

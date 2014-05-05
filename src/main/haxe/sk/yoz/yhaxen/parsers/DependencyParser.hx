@@ -2,28 +2,28 @@ package sk.yoz.yhaxen.parsers;
 
 import sk.yoz.yhaxen.enums.SourceType;
 import sk.yoz.yhaxen.parsers.GenericParser;
-import sk.yoz.yhaxen.valueObjects.config.Dependency;
+import sk.yoz.yhaxen.valueObjects.config.DependencyDetail;
 
-class DependencyParser extends GenericParser<Dependency>
+class DependencyParser extends GenericParser<DependencyDetail>
 {
-	override function parse(source:Dynamic):Dependency
+	override function parse(source:Dynamic):DependencyDetail
 	{
-		var result:Dependency = new Dependency();
-		
 		if(!Reflect.hasField(source, "name"))
 			throw "Missing dependency name!";
-		result.name = Reflect.field(source, "name");
 
 		if(!Reflect.hasField(source, "version"))
 			throw "Missing dependency version!";
-		result.version = Reflect.field(source, "version");
-		
-		result.scope = Reflect.field(source, "scope");
 
 		if(!Reflect.hasField(source, "source"))
 			throw "Missing dependency source!";
-		result.source = Reflect.field(source, "source");
-		
+
+		var result:DependencyDetail = new DependencyDetail(
+			Reflect.field(source, "name"),
+			Reflect.field(source, "version"),
+			Reflect.field(source, "source"));
+
+		result.scope = Reflect.field(source, "scope");
+
 		result.classPath = Reflect.field(source, "classPath");
 		if(result.classPath == "")
 			result.classPath = null;
