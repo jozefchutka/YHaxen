@@ -24,6 +24,11 @@ class DependencyDetail extends Dependency
 	 **/
 	public var scope:Array<String>;
 
+	/**
+	 * Optional
+	 **/
+	public var resolveDependencies:Bool = true;
+
 	public function new(name:String, version:String, source:String)
 	{
 		super(name, version);

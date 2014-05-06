@@ -1,12 +1,15 @@
 package sk.yoz.yhaxen.helpers;
 
-import sk.yoz.yhaxen.valueObjects.DependencyTreeItem;
 import sys.io.File;
 import sys.FileSystem;
+
 import tools.haxelib.Data;
 
 class HaxelibHelper extends tools.haxelib.Main
 {
+	inline public static var FILE_CURRENT:String = ".current";
+	inline public static var FILE_HAXELIB:String = "haxelib.json";
+
 	private static var haxelib(get, null):tools.haxelib.Main;
 
 	private static function get_haxelib():tools.haxelib.Main
@@ -67,7 +70,7 @@ class HaxelibHelper extends tools.haxelib.Main
 			return;
 
 		var haxelibJson = File.getContent(path);
-		var infos = Data.readData(haxelibJson, true);
+		var infos = Data.readData(haxelibJson, false);
 		haxelib.doInstallDependencies(infos.dependencies);
 	}
 }

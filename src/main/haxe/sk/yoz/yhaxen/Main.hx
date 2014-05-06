@@ -22,9 +22,9 @@ class Main
 	{
 		SysHelper.print("YHaxen by Yoz");
 	
-		commandDependencyInstall = new Command("dependency:install", "Install dependencies from file.");
-		commandDependencyReport = new Command("dependency:report", "Report dependencies from file.");
-		commandHelp = new Command("help", "Print this info.");
+		commandDependencyInstall = new Command("dependency:install", "Install dependencies from file.", "dependency:install [file]");
+		commandDependencyReport = new Command("dependency:report", "Report dependencies from file.", "dependency:report [file]");
+		commandHelp = new Command("help", "Print this legend.", "help");
 		commands = [commandDependencyInstall, commandDependencyReport, commandHelp];
 
 		try
@@ -77,7 +77,7 @@ class Main
 	{
 		SysHelper.print("  Available commands:");
 		for(item in commands)
-			SysHelper.printKeyVal("    " + item.key, 30, item.info);
+			SysHelper.printKeyVal("    " + item.usage, 40, item.info);
 	}
 
 	private function printUnknownCommand(command:String):Void

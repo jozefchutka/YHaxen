@@ -31,6 +31,10 @@ class DependencyParser extends GenericParser<DependencyDetail>
 		result.sourceType = Reflect.hasField(source, "sourceType")
 			? GenericParser.parseEnum(SourceType, Reflect.field(source, "sourceType"))
 			: SourceType.GIT;
+
+		if(Reflect.hasField(source, "resolveDependencies"))
+			result.resolveDependencies = Reflect.field(source, "resolveDependencies");
+
 		return result;
 	}
 }
