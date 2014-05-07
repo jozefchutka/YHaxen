@@ -11,6 +11,8 @@ neko run.n dependency:install src/test/resources/yhaxen.json
 ```
 
 ## TODO
+- hide haxelib "You already have msignal version ... Set msignal to version 1.2.2 [y/n/a]"
+- test osx, linux
 
 ### should
 - install specific version from git

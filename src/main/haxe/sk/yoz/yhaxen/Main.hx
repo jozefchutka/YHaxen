@@ -3,6 +3,7 @@ package sk.yoz.yhaxen;
 import sk.yoz.yhaxen.helpers.SysHelper;
 import sk.yoz.yhaxen.valueObjects.config.Root;
 import sk.yoz.yhaxen.valueObjects.Command;
+import sk.yoz.yhaxen.valueObjects.Error;
 import sk.yoz.yhaxen.resolvers.DependencyResolver;
 
 class Main
@@ -23,7 +24,7 @@ class Main
 		SysHelper.print("YHaxen by Yoz");
 	
 		commandDependencyInstall = new Command("dependency:install", "Install dependencies from file.", "dependency:install [file]");
-		commandDependencyReport = new Command("dependency:report", "Report dependencies from file.", "dependency:report [file]");
+		commandDependencyReport = new Command("dependency:report", "Report dependencies from file / scope.", "dependency:report [file [scope]]");
 		commandHelp = new Command("help", "Print this legend.", "help");
 		commands = [commandDependencyInstall, commandDependencyReport, commandHelp];
 
@@ -32,6 +33,13 @@ class Main
 			executeArgs(Sys.args());
 			SysHelper.print("");
 			SysHelper.print("Successfully completed.");
+		}
+		catch(error:Error)
+		{
+			SysHelper.print("");
+			SysHelper.print("Error: " + error.message);
+			SysHelper.print("  reason: " + error.reason);
+			SysHelper.print("  solution: " + error.solution);
 		}
 		catch(error:String)
 		{
@@ -47,14 +55,18 @@ class Main
 		if(command == commandDependencyInstall.key)
 		{
 			var file:String = getFilenameFromArgs(args);
-			SysHelper.printCommand(commandDependencyInstall.key + " (from " + file + ")");
-			new DependencyResolver().installFromFile(file);
+			var scope:String = getScopeFromArgs(args);
+			SysHelper.printCommand(commandDependencyInstall.key
+				+ " (from " + file + (scope == null ? "" : " for " + scope) + ")");
+			new DependencyResolver().installFromFile(file, scope);
 		}
 		else if(command == commandDependencyReport.key)
 		{
 			var file:String = getFilenameFromArgs(args);
-			SysHelper.printCommand(commandDependencyReport.key + " (from " + file + ")");
-			new DependencyResolver().reportFromFile(file);
+			var scope:String = getScopeFromArgs(args);
+			SysHelper.printCommand(commandDependencyReport.key
+				+ " (from " + file + (scope == null ? "" : " for " + scope) + ")");
+			new DependencyResolver().reportFromFile(file, scope);
 		}
 		else if(command == commandHelp.key)
 		{
@@ -72,7 +84,12 @@ class Main
 	{
 		return args.length > 1 ? args[1] : Root.FILENAME;
 	}
-	
+
+	private function getScopeFromArgs(args:Array<String>):String
+	{
+		return args.length > 2 ? args[2] : null;
+	}
+
 	private function printHelp():Void
 	{
 		SysHelper.print("  Available commands:");

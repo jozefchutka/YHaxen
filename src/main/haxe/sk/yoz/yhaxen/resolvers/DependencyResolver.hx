@@ -3,6 +3,7 @@ package sk.yoz.yhaxen.resolvers;
 import haxe.Json;
 
 import sk.yoz.yhaxen.enums.SourceType;
+import sk.yoz.yhaxen.helpers.GitHelper;
 import sk.yoz.yhaxen.helpers.HaxelibHelper;
 import sk.yoz.yhaxen.helpers.SysHelper;
 import sk.yoz.yhaxen.parsers.YHaxenParser;
@@ -26,9 +27,9 @@ class DependencyResolver
 
 	public function new(){}
 
-	public function installFromFile(file:String):Void
+	public function installFromFile(file:String, scope:String=null):Void
 	{
-		var list = getDependenciesFromFile(file);
+		var list = getDependenciesFromFile(file, scope);
 		for(item in list)
 			installDependency(item);
 
@@ -36,10 +37,10 @@ class DependencyResolver
 			installSubdependencies(item);
 	}
 
-	public function reportFromFile(file:String):Void
+	public function reportFromFile(file:String, scope:String=null):Void
 	{
 		var list:Array<Dependency> = [];
-		var tree = treeFromFile(file);
+		var tree = treeFromFile(file, scope);
 
 		SysHelper.print("");
 		SysHelper.print("Legend:");
@@ -63,9 +64,9 @@ class DependencyResolver
 		reportCompile(flatten);
 	}
 
-	function treeFromFile(file:String):Array<DependencyTreeItem>
+	function treeFromFile(file:String, scope:String=null):Array<DependencyTreeItem>
 	{
-		var details = getDependenciesFromFile(file);
+		var details = getDependenciesFromFile(file, scope);
 		var result:Array<DependencyTreeItem> = [];
 		for(detail in details)
 		{
@@ -185,7 +186,7 @@ class DependencyResolver
 			throw file + " is not a file!";
 	}
 	
-	function getDependenciesFromFile(file:String):Array<DependencyDetail>
+	function getDependenciesFromFile(file:String, scope:String=null):Array<DependencyDetail>
 	{
 		checkFile(file);
 		var data = File.getContent(file);
@@ -199,7 +200,11 @@ class DependencyResolver
 			throw "Unable to parse " + file + ". " + error;
 		}
 		var yhaxen = new YHaxenParser().parse(json);
-		return yhaxen.dependencies;
+		var result:Array<DependencyDetail> = [];
+		for(item in yhaxen.dependencies)
+			if(item.matchesScope(scope))
+				result.push(item);
+		return result;
 	}
 
 	function installDependency(dependency:DependencyDetail)
@@ -224,16 +229,21 @@ class DependencyResolver
 	function installDependencyFromGit(dependency:DependencyDetail):Void
 	{
 		var tmp:String = "tmp";
-		var projectDirectory:String = HaxelibHelper.getProjectDirectory(dependency.name);
+		if(FileSystem.exists(tmp))
+			HaxelibHelper.deleteDirectory(tmp);
 		FileSystem.createDirectory(tmp);
-		//SysHelper.command("git", ["clone", dependency.source, tmp, "-b", dependency.version, "SHA1", "--single-branch"]);
-		var cwd = Sys.getCwd();
-		SysHelper.command("git", ["clone", dependency.source, tmp]);
-		Sys.setCwd(tmp);
-		SysHelper.command("git", ["checkout", dependency.version]);
-		Sys.setCwd(cwd);
-
+		try
+		{
+			GitHelper.checkout(dependency.source, dependency.version, tmp);
+		}
+		catch(error:Dynamic)
+		{
+			HaxelibHelper.deleteDirectory(tmp);
+			throw error;
+		}
 		HaxelibHelper.deleteDirectory(tmp + "/.git");
+
+		var projectDirectory:String = HaxelibHelper.getProjectDirectory(dependency.name);
 		HaxelibHelper.ensureDirectoryExists(projectDirectory);
 
 		var target:String = dependecyDirectory(dependency);
@@ -257,7 +267,7 @@ class DependencyResolver
 	{
 		SysHelper.print("");
 
-		if(!dependency.resolveDependencies)
+		if(!dependency.installDependencies)
 		{
 			SysHelper.print("Skipped sub-dependecies for " + dependency.name);
 			return;
@@ -300,7 +310,7 @@ class DependencyResolver
 		for(info in list.dependencies)
 		{
 			var item = new DependencyTreeItem(info.project, info.version);
-			getDependencyTree(item.name, item.version);
+			item.dependencies = getDependencyTree(item.name, item.version);
 			result.push(item);
 		}
 		return result;

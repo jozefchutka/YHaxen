@@ -4,7 +4,12 @@ class SysHelper
 {
 	public static function printCommand(title:String):Void
 	{
-		print(StringTools.rpad("- " + title + " ", "-", 79));
+		printRow("-", "- " + title + " ");
+	}
+
+	static function printRow(fill:String, message:String=null):Void
+	{
+		print(StringTools.rpad(message == null ? "" : message, fill, 79));
 	}
 
 	public static function print(message:String):Void
@@ -19,7 +24,7 @@ class SysHelper
 
 	public static function command(cmd:String, args:Array<String>):Int
 	{
-		print("$ " + cmd + " " + args.join(" "));
+		print("  $ " + cmd + " " + args.join(" "));
 		return Sys.command(cmd, args);
 	}
 }

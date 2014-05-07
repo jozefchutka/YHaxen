@@ -8,7 +8,8 @@
 			"source": "git@github.com:massiveinteractive/mui-app.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false,
+			"scope": ["test"]
 		},
 		{
 			"name": "mui-epg",
@@ -37,7 +38,7 @@
 			"source": "git@github.com:massiveinteractive/mpartial.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false
 		},
 		
 		
@@ -48,7 +49,7 @@
 			"source": "git@github.com:massiveinteractive/mui.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false
 		},
 		{
 			"name": "mdata",
@@ -56,7 +57,7 @@
 			"source": "git@github.com:massiveinteractive/mdata.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false
 		},
 		{
 			"name": "mcore",
@@ -78,7 +79,7 @@
 			"source": "git@github.com:massiveinteractive/mtask.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false
 		},
 		{
 			"name": "msys",
@@ -86,7 +87,7 @@
 			"source": "git@github.com:massiveinteractive/msys.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"resolveDependencies": false
+			"installDependencies": false
 		}
 	]
 }
