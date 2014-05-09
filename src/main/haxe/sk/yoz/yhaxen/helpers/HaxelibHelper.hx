@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.helpers;
 
+import sk.yoz.yhaxen.valueObjects.Dependency;
 import sys.io.File;
 import sys.FileSystem;
 
@@ -10,67 +11,80 @@ class HaxelibHelper extends tools.haxelib.Main
 	inline public static var FILE_CURRENT:String = ".current";
 	inline public static var FILE_HAXELIB:String = "haxelib.json";
 
-	private static var haxelib(get, null):tools.haxelib.Main;
+	private var repositoryPath(get, never):String;
+	private var resolveHaxelibJsonPending:Bool = false;
 
-	private static function get_haxelib():tools.haxelib.Main
+	public function new()
 	{
-		if(haxelib == null)
-			haxelib = new tools.haxelib.Main();
-		return haxelib;
+		super();
 	}
 
-	public static function getProjectDirectory(name:String):String
+	private function get_repositoryPath():String
 	{
-		return haxelib.getRepository() + Data.safe(name);
+		return getRepository();
 	}
 
-	public static function getCurrentVersion(name:String):String
+	public function getProjectDirectory(name:String):String
 	{
-		try
-		{
-			return haxelib.getCurrent(haxelib.getRepository() + Data.safe(name));
-		}
-		catch(error:Dynamic)
-		{
-			return null;
-		}
+		return repositoryPath + Data.safe(name);
 	}
 
-	public static function getProjectVersionDirectory(name:String, version:String):String
+	public function getCurrentVersion(name:String):String
 	{
+		return StringTools.trim(File.getContent(getProjectDirectory(name) + "/.current"));
+	}
+
+	public function isDev(name:String):Bool
+	{
+		return FileSystem.exists(getProjectDirectory(name) + "/.dev");
+	}
+
+	public function getVersionDirectory(name:String, version:String, isDev:Bool, currentVersion:String):String
+	{
+		var projectDirectory = getProjectDirectory(name);
+		if(isDev)
+			return getDev(projectDirectory);
+
 		if(version == null)
-			version = getCurrentVersion(name);
-		if(version == null)
-			return null;
-		return getProjectDirectory(name) + "/" + Data.safe(version);
+			return projectDirectory + "/" + Data.safe(currentVersion);
+
+		return projectDirectory + "/" + Data.safe(version);
 	}
 
-	public static function projectExists(name:String, version:String):Bool
+	public function versionExists(name:String, version:String):Bool
 	{
-		var dir = getProjectVersionDirectory(name, version);
-		if(dir == null)
-			return false;
-
+		var dir = getVersionDirectory(name, version, false, null);
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir);
 	}
 
-	public static function ensureDirectoryExists(dir:String):Bool
+	public function ensureDirectoryExists(dir:String):Bool
 	{
-		return haxelib.safeDir(dir);
+		return safeDir(dir);
 	}
 
-	public static function deleteDirectory(dir:String):Void
+	public function deleteDirectory(dir:String):Void
 	{
-		return haxelib.deleteRec(dir);
+		return deleteRec(dir);
 	}
 
-	public static function resolveHaxelibJson(path:String):Void
+	public function resolveHaxelibJson(path:String):Void
 	{
 		if(!FileSystem.exists(path))
 			return;
 
+		resolveHaxelibJsonPending = true;
 		var haxelibJson = File.getContent(path);
 		var infos = Data.readData(haxelibJson, false);
-		haxelib.doInstallDependencies(infos.dependencies);
+		doInstallDependencies(infos.dependencies);
+		resolveHaxelibJsonPending = false;
+	}
+
+	/**
+	 * Lets ignore "set current" question while resolving subdependencies.
+	 **/
+	override function setCurrent(prj:String, version:String, doAsk:Bool)
+	{
+		if(!resolveHaxelibJsonPending)
+			setCurrent(prj, version, doAsk);
 	}
 }

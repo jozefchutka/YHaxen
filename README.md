@@ -11,8 +11,16 @@ neko run.n dependency:install src/test/resources/yhaxen.json
 ```
 
 ## TODO
-- hide haxelib "You already have msignal version ... Set msignal to version 1.2.2 [y/n/a]"
+- new flow:
+	1. get dependency tree
+	2. validate dependency tree
+	3. install dependencies based on tree
+- fail with current versions, force hardcoded versions
+- fail when dev dependencies used
+- build target
+- deploy target
 - test osx, linux
+- running yhaxen without privileges to haxelib/lib folder
 
 ### should
 - install specific version from git
@@ -26,3 +34,10 @@ neko run.n dependency:install src/test/resources/yhaxen.json
 - not use .current .dev
 - change lib/compiler state at all
 
+### known issues
+- on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like
+```
+c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-3.0.1\lib\
+```
+
+- if a haxelib lib contains .dev file, haxe compiler is not able to use specific lib version with -lib $lib:$version

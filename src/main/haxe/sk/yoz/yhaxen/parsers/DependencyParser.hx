@@ -35,6 +35,9 @@ class DependencyParser extends GenericParser<DependencyDetail>
 		if(Reflect.hasField(source, "installDependencies"))
 			result.installDependencies = Reflect.field(source, "installDependencies");
 
+		if(Reflect.hasField(source, "forceVersion"))
+			result.forceVersion = Reflect.field(source, "forceVersion");
+
 		return result;
 	}
 }

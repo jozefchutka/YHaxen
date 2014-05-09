@@ -57,7 +57,8 @@
 			"source": "git@github.com:massiveinteractive/mdata.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false
+			"installDependencies": false,
+			"forceVersion": true
 		},
 		{
 			"name": "mcore",

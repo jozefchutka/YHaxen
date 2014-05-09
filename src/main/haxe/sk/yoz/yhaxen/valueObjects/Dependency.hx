@@ -4,9 +4,6 @@ import StringTools;
 
 class Dependency
 {
-	inline public static var CURRENT_VERSION:String = null;
-	inline static var DECORATED_CURRENT_VERSION:String = "<CURRENT>";
-
 	/**
 	 * Required
 	 **/
@@ -17,41 +14,35 @@ class Dependency
 	 **/
 	public var version(default, null):String;
 
+	/**
+	 * Haxelib use dev version
+	 **/
+	public var isDev:Bool;
+	public var currentVersion:String;
+	public var versionExists:Bool;
+	public var currentVersionExists:Bool;
+
 	public var decoratedVersion(get, never):String;
 
 	public function new(name:String, version:String)
 	{
 		this.name = name;
-		if(version == null)
-			this.version = CURRENT_VERSION;
-		else
-			this.version = StringTools.trim(version) == "" ? CURRENT_VERSION : version;
+		this.version = version == "" ? null : version;
 	}
 
 	private function get_decoratedVersion():String
 	{
-		return decorateVersion(version);
-	}
+		if(isDev)
+			return "[DEV]";
 
-	public static function decorateVersion(version:String):String
-	{
-		return version == CURRENT_VERSION ? DECORATED_CURRENT_VERSION : version;
-	}
+		if(version == null)
+			return "[CURRENT " + currentVersion + "]";
 
-	public static function undecorateVersion(version:String):String
-	{
-		return version == DECORATED_CURRENT_VERSION ? CURRENT_VERSION : version;
-	}
-
-	public function versionIsCurrent():Bool
-	{
-		return version == CURRENT_VERSION;
+		return version;
 	}
 
 	public function toString():String
 	{
 		return name + ":" + decoratedVersion;
 	}
-
-
 }

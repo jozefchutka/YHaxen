@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.resolvers;
 
+import sk.yoz.yhaxen.valueObjects.Dependency;
 import haxe.Json;
 
 import sk.yoz.yhaxen.enums.SourceType;
@@ -11,6 +12,7 @@ import sk.yoz.yhaxen.valueObjects.config.Root;
 import sk.yoz.yhaxen.valueObjects.config.DependencyDetail;
 import sk.yoz.yhaxen.valueObjects.Dependency;
 import sk.yoz.yhaxen.valueObjects.DependencyTreeItem;
+import sk.yoz.yhaxen.valueObjects.Error;
 import sk.yoz.yhaxen.valueObjects.FlattenDependencies;
 
 import tools.haxelib.Data;
@@ -24,8 +26,14 @@ class DependencyResolver
 	inline static var WORD_MISSING:String = "MISSING";
 	inline static var WORD_CONFLICT:String = "CONFLICT";
 	inline static var WORD_ROOT:String = "<ROOT>";
+	inline static var WORD_INVALID:String = "INVALID";
 
-	public function new(){}
+	private var haxelib:HaxelibHelper;
+
+	public function new()
+	{
+		haxelib = new HaxelibHelper();
+	}
 
 	public function installFromFile(file:String, scope:String=null):Void
 	{
@@ -41,20 +49,36 @@ class DependencyResolver
 	{
 		var list:Array<Dependency> = [];
 		var tree = treeFromFile(file, scope);
-
+		var flatten = flattenTree(tree);
+/*
+		if(DependencyTreeItem.listHasCurrentDependencies(tree))
+		{
+			//reportDevDependencies(tree);
+			throw new Error(
+				Dependency.decorateVersion(Dependency.VERSION_CURRENT) + " dependencies found.",
+				Dependency.decorateVersion(Dependency.VERSION_CURRENT) + " dependencies are not recommended for projects.",
+				"Provide exact version number for necessary libraries.");
+		}
+*/
 		SysHelper.print("");
 		SysHelper.print("Legend:");
 		SysHelper.printKeyVal("  " + WORD_OK, 20, "Dependency exists.");
 		SysHelper.printKeyVal("  " + WORD_MISSING, 20, "Dependency needs to be installed.");
 		SysHelper.printKeyVal("  " + WORD_CONFLICT, 20, "Different versions of dependencies used across project.");
-		SysHelper.printKeyVal("  dep:" + Dependency.decorateVersion(Dependency.CURRENT_VERSION), 20, "Current version of dependency will be used.");
 		SysHelper.printKeyVal("  " + WORD_ROOT, 20, "Project level.");
 
 		SysHelper.print("");
 		SysHelper.print("Tree:");
 		reportTree(tree);
 
-		var flatten = flattenTree(tree);
+		if(DependencyTreeItem.listHasDevDependencies(tree))
+		{
+			throw new Error(
+				"Dev dependencies found.",
+				"Dev dependencies are not recommended for projects.",
+				"Turn off dev dependencies for libraries using \"haxelib dev <lib>\".");
+		}
+
 		SysHelper.print("");
 		SysHelper.print("Flatten:");
 		reportFlatten(flatten);
@@ -71,7 +95,8 @@ class DependencyResolver
 		for(detail in details)
 		{
 			var item = new DependencyTreeItem(detail.name, detail.version);
-			item.dependencies = getDependencyTree(item.name, item.version);
+			validateDependency(item);
+			item.dependencies = getDependencyTree(item, details);
 			result.push(item);
 		}
 		return result;
@@ -81,19 +106,15 @@ class DependencyResolver
 	{
 		for(item in list)
 		{
-			var pad:String = StringTools.lpad("", " ", level * 2 + 2);
-			var result:String = dependencyExists(item) ? WORD_OK : WORD_MISSING;
-			if(item.version == null)
-			{
-				var currentVersion = HaxelibHelper.getCurrentVersion(item.name);
-				if(currentVersion != null)
-					result += " (" + currentVersion + ")";
-			}
+			var result:String;
+			if(item.isDev)
+				result = WORD_INVALID;
+			else if(item.version == null)
+				result = (item.currentVersionExists ? WORD_OK : WORD_MISSING) + " (" + item.currentVersion + ")";
 			else
-			{
-				result += " (" + item.version + ")";
-			}
+				result = (item.versionExists ? WORD_OK : WORD_MISSING) + " (" + item.version + ")";
 
+			var pad:String = StringTools.lpad("", " ", level * 2 + 2);
 			SysHelper.printKeyVal(pad + item.toString(), 40, result);
 			if(item.dependencies != null)
 				reportTree(item.dependencies, level + 1);
@@ -114,11 +135,7 @@ class DependencyResolver
 			if(!target.exists(item.name))
 				target.set(item.name, new Map<String,Array<DependencyTreeItem>>());
 			var targetName = target.get(item.name);
-			var version = item.decoratedVersion;
-			if(!dependencyExists(item))
-				version = Dependency.decorateVersion(Dependency.CURRENT_VERSION);
-			else if(item.versionIsCurrent())
-				version = HaxelibHelper.getCurrentVersion(item.name);
+			var version = item.version == null ? item.currentVersion : item.version;
 			if(!targetName.exists(version))
 				targetName.set(version, []);
 			var targetNameVersion = targetName.get(version);
@@ -136,28 +153,22 @@ class DependencyResolver
 		{
 			var dataName = data.get(name);
 			var count:Int = 0;
-			var decoratedVersion:String;
+			var version:String;
 			for(versionKey in dataName.keys())
 			{
-				decoratedVersion = versionKey;
+				version = versionKey;
 				count++;
 			}
 
-			var version = Dependency.undecorateVersion(decoratedVersion);
-			var exists:Bool = dependencyNameVersionExists(name, version);
-			var status:String = exists ? WORD_OK : WORD_MISSING;
-			if(exists || version != Dependency.CURRENT_VERSION)
-				status += " (" + decoratedVersion + ")";
-
-			SysHelper.printKeyVal("  " + name, 40, count == 1 ? status : WORD_CONFLICT);
+			SysHelper.printKeyVal("  " + name, 40, count == 1 ? (WORD_OK + " (" + version + ")") : WORD_CONFLICT);
 			if(count == 1)
 				continue;
 
-			for(decoratedVersion in dataName.keys())
+			for(version in dataName.keys())
 			{
-				var version = Dependency.undecorateVersion(decoratedVersion);
 				var sources = dataName.get(version);
-				SysHelper.printKeyVal("    in " + DependencyTreeItem.joinList(sources, ", ", WORD_ROOT), 40, " ! (" + decoratedVersion + ")");
+				for(source in sources)
+					SysHelper.printKeyVal("    in " + (source == null ? WORD_ROOT : source.toString()), 40, " ! (" + version + ")");
 			}
 		}
 	}
@@ -166,14 +177,8 @@ class DependencyResolver
 	{
 		var items:Array<String> = [];
 		for(name in data.keys())
-		{
-			for(decoratedVersion in data.get(name).keys())
-			{
-				var version = Dependency.undecorateVersion(decoratedVersion);
-				if(dependencyNameVersionExists(name, version))
-					items.push("-lib " + name + ":" + version);
-			}
-		}
+			for(version in data.get(name).keys())
+				items.push("-lib " + name + ":" + version);
 		SysHelper.print(items.join(" "));
 	}
 
@@ -212,7 +217,7 @@ class DependencyResolver
 		SysHelper.print("");
 		SysHelper.print("Resolving " + dependency.toString());
 
-		if(dependencyExists(dependency))
+		if(haxelib.versionExists(dependency.name, dependency.version))
 		{
 			SysHelper.print("  Dependency already installed.");
 		}
@@ -228,9 +233,9 @@ class DependencyResolver
 
 	function installDependencyFromGit(dependency:DependencyDetail):Void
 	{
-		var tmp:String = "tmp";
+		var tmp:String = ".temp";
 		if(FileSystem.exists(tmp))
-			HaxelibHelper.deleteDirectory(tmp);
+			haxelib.deleteDirectory(tmp);
 		FileSystem.createDirectory(tmp);
 		try
 		{
@@ -238,20 +243,20 @@ class DependencyResolver
 		}
 		catch(error:Dynamic)
 		{
-			HaxelibHelper.deleteDirectory(tmp);
+			haxelib.deleteDirectory(tmp);
 			throw error;
 		}
-		HaxelibHelper.deleteDirectory(tmp + "/.git");
 
-		var projectDirectory:String = HaxelibHelper.getProjectDirectory(dependency.name);
-		HaxelibHelper.ensureDirectoryExists(projectDirectory);
+		haxelib.deleteDirectory(tmp + "/.git");
+		var projectDirectory:String = haxelib.getProjectDirectory(dependency.name);
+		haxelib.ensureDirectoryExists(projectDirectory);
 
-		var target:String = dependecyDirectory(dependency);
+		var target:String = haxelib.getVersionDirectory(dependency.name, dependency.version, false, null);
 		var source:String = tmp;
 		if(dependency.classPath != null)
 		{
 			FileSystem.rename(source + "/" + dependency.classPath, target);
-			HaxelibHelper.deleteDirectory(tmp);
+			haxelib.deleteDirectory(tmp);
 		}
 		else
 		{
@@ -274,29 +279,15 @@ class DependencyResolver
 		}
 
 		SysHelper.print("Resolving sub-dependencies for " + dependency.name);
-		var haxelib:String = dependecyDirectory(dependency) + "/" + HaxelibHelper.FILE_HAXELIB;
-		if(FileSystem.exists(haxelib))
-			return HaxelibHelper.resolveHaxelibJson(haxelib);
+		var haxelibJson:String = haxelib.getVersionDirectory(dependency.name, dependency.version, dependency.isDev, dependency.currentVersion) + "/" + HaxelibHelper.FILE_HAXELIB;
+		if(FileSystem.exists(haxelibJson))
+			return haxelib.resolveHaxelibJson(haxelibJson);
 	}
 
-	function dependecyDirectory(dependency:Dependency):String
+	function getDependencyTree(dependency:Dependency, details:Array<DependencyDetail>):Array<DependencyTreeItem>
 	{
-		return HaxelibHelper.getProjectVersionDirectory(dependency.name, dependency.version);
-	}
-	
-	function dependencyExists(dependency:Dependency):Bool
-	{
-		return dependencyNameVersionExists(dependency.name, dependency.version);
-	}
+		var directory:String = haxelib.getVersionDirectory(dependency.name, dependency.version, dependency.isDev, dependency.currentVersion);
 
-	function dependencyNameVersionExists(name:String, version:String):Bool
-	{
-		return HaxelibHelper.projectExists(name, version);
-	}
-
-	function getDependencyTree(name:String, version:String):Array<DependencyTreeItem>
-	{
-		var directory:String = HaxelibHelper.getProjectVersionDirectory(name, version);
 		if(directory == null)
 			return null;
 
@@ -309,10 +300,25 @@ class DependencyResolver
 		var result:Array<DependencyTreeItem> = [];
 		for(info in list.dependencies)
 		{
-			var item = new DependencyTreeItem(info.project, info.version);
-			item.dependencies = getDependencyTree(item.name, item.version);
+			var name = info.project;
+			var version = info.version;
+			var detail = DependencyDetail.getFromList(details, name);
+			if(detail != null && detail.forceVersion)
+				version = detail.version;
+
+			var item = new DependencyTreeItem(name, version);
+			validateDependency(item);
+			item.dependencies = getDependencyTree(item, details);
 			result.push(item);
 		}
 		return result;
+	}
+
+	function validateDependency(item:Dependency):Void
+	{
+		item.isDev = haxelib.isDev(item.name);
+		item.currentVersion = haxelib.getCurrentVersion(item.name);
+		item.versionExists = item.version == null ? false : haxelib.versionExists(item.name, item.version);
+		item.currentVersionExists = haxelib.versionExists(item.name, item.currentVersion);
 	}
 }

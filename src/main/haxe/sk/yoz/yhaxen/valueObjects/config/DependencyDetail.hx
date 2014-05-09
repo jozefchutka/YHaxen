@@ -29,6 +29,11 @@ class DependencyDetail extends Dependency
 	 **/
 	public var installDependencies:Bool = true;
 
+	/**
+	 * Optional
+	 **/
+	public var forceVersion:Bool = false;
+
 	public function new(name:String, version:String, source:String)
 	{
 		super(name, version);
@@ -42,5 +47,14 @@ class DependencyDetail extends Dependency
 		if(this.scope == null || this.scope.length == 0)
 			return false;
 		return Lambda.has(this.scope, scope);
+	}
+
+	public static function getFromList(list:Array<DependencyDetail>, name:String):DependencyDetail
+	{
+		if(list != null)
+			for(item in list)
+				if(item.name == name)
+					return item;
+		return null;
 	}
 }

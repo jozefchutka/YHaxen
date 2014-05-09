@@ -4,6 +4,9 @@ class DependencyTreeItem extends Dependency
 {
 	public var dependencies:Array<DependencyTreeItem>;
 
+	public var hasCurrentDependencies(get, never):Bool;
+	public var hasDevDependencies(get, never):Bool;
+
 	public function new(name:String, version:String)
 	{
 		super(name, version);
@@ -11,19 +14,33 @@ class DependencyTreeItem extends Dependency
 		dependencies = [];
 	}
 
-	public static function joinList(list:Array<DependencyTreeItem>, separator:String, nullReplacer:String):String
+	private function get_hasCurrentDependencies():Bool
 	{
-		if(list == null || list.length == 0)
-			return "";
+		return version == null
+			? true
+			: (dependencies != null && listHasCurrentDependencies(dependencies));
+	}
 
-		var result:String = "";
-		for(i in 0...list.length)
-		{
-			var item = list[i];
-			result += item == null ? nullReplacer : item.toString();
-			if(i < list.length - 1)
-				result += separator;
-		}
-		return result;
+	private function get_hasDevDependencies():Bool
+	{
+		return isDev
+			? true
+			: (dependencies != null && listHasDevDependencies(dependencies));
+	}
+
+	public static function listHasCurrentDependencies(list:Array<DependencyTreeItem>):Bool
+	{
+		for(item in list)
+			if(item.hasCurrentDependencies)
+				return true;
+		return false;
+	}
+
+	public static function listHasDevDependencies(list:Array<DependencyTreeItem>):Bool
+	{
+		for(item in list)
+			if(item.hasDevDependencies)
+				return true;
+		return false;
 	}
 }
