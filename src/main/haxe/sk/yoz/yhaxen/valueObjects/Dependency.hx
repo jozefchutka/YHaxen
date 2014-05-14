@@ -21,6 +21,11 @@ class Dependency
 	public var currentVersion:String;
 	public var versionExists:Bool;
 	public var currentVersionExists:Bool;
+	public var exists:Bool;
+	public var forcedVersion:String;
+	public var forcedVersionExists:Bool;
+	public var resolvedVersion:String;
+	public var resolvedVersionExists:Bool;
 
 	public var decoratedVersion(get, never):String;
 
@@ -33,10 +38,10 @@ class Dependency
 	private function get_decoratedVersion():String
 	{
 		if(isDev)
-			return "[DEV]";
+			return "DEV";
 
 		if(version == null)
-			return "[CURRENT " + currentVersion + "]";
+			return "UNDEFINED";
 
 		return version;
 	}

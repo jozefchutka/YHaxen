@@ -43,4 +43,15 @@ class DependencyTreeItem extends Dependency
 				return true;
 		return false;
 	}
+
+	public static function listContainsByNameAndVersion(list:Array<DependencyTreeItem>, item:DependencyTreeItem):Bool
+	{
+		if(item == null)
+			return Lambda.has(list, item);
+
+		for(i in list)
+			if(i != null && i.name == item.name && i.version == item.version)
+				return true;
+		return false;
+	}
 }

@@ -5,12 +5,12 @@ import sk.yoz.yhaxen.enums.SourceType;
 class DependencyDetail extends Dependency
 {
 	/**
-	 * Required
+	 * Required for GIT sourceType
 	 **/
 	public var source:String;
 
 	/**
-	 * Optional, defaults to GIT
+	 * Required
 	 **/
 	public var sourceType:SourceType;
 
@@ -27,16 +27,12 @@ class DependencyDetail extends Dependency
 	/**
 	 * Optional
 	 **/
-	public var installDependencies:Bool = true;
-
-	/**
-	 * Optional
-	 **/
 	public var forceVersion:Bool = false;
 
-	public function new(name:String, version:String, source:String)
+	public function new(name:String, version:String, sourceType:SourceType, source:String)
 	{
 		super(name, version);
+		this.sourceType = sourceType;
 		this.source = source;
 	}
 

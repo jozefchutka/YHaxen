@@ -1,6 +1,5 @@
 package sk.yoz.yhaxen.helpers;
 
-import sk.yoz.yhaxen.valueObjects.Dependency;
 import sys.io.File;
 import sys.FileSystem;
 
@@ -51,6 +50,12 @@ class HaxelibHelper extends tools.haxelib.Main
 		return projectDirectory + "/" + Data.safe(version);
 	}
 
+	public function dependencyExists(name:String):Bool
+	{
+		var dir = getProjectDirectory(name);
+		return FileSystem.exists(dir) && FileSystem.isDirectory(dir) && FileSystem.exists(dir + "/.current");
+	}
+
 	public function versionExists(name:String, version:String):Bool
 	{
 		var dir = getVersionDirectory(name, version, false, null);
@@ -66,7 +71,7 @@ class HaxelibHelper extends tools.haxelib.Main
 	{
 		return deleteRec(dir);
 	}
-
+/*
 	public function resolveHaxelibJson(path:String):Void
 	{
 		if(!FileSystem.exists(path))
@@ -78,13 +83,13 @@ class HaxelibHelper extends tools.haxelib.Main
 		doInstallDependencies(infos.dependencies);
 		resolveHaxelibJsonPending = false;
 	}
-
+*/
 	/**
 	 * Lets ignore "set current" question while resolving subdependencies.
 	 **/
 	override function setCurrent(prj:String, version:String, doAsk:Bool)
 	{
 		if(!resolveHaxelibJsonPending)
-			setCurrent(prj, version, doAsk);
+			super.setCurrent(prj, version, doAsk);
 	}
 }

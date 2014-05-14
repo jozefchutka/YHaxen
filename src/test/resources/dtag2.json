@@ -8,7 +8,6 @@
 			"source": "git@github.com:massiveinteractive/mui-app.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false,
 			"scope": ["test"]
 		},
 		{
@@ -38,18 +37,15 @@
 			"source": "git@github.com:massiveinteractive/mpartial.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false
+			"forceVersion": true
 		},
-		
-		
-		
 		{
 			"name": "mui",
 			"version": "3.4.0",
 			"source": "git@github.com:massiveinteractive/mui.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false
+			"forceVersion": true
 		},
 		{
 			"name": "mdata",
@@ -57,7 +53,6 @@
 			"source": "git@github.com:massiveinteractive/mdata.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false,
 			"forceVersion": true
 		},
 		{
@@ -65,14 +60,16 @@
 			"version": "1.3.9",
 			"source": "git@github.com:massiveinteractive/mcore.git",
 			"sourceType": "git",
-			"classPath": "src"
+			"classPath": "src",
+			"forceVersion": true
 		},
 		{
 			"name": "mloader",
 			"version": "2.2.1",
 			"source": "git@github.com:massiveinteractive/mloader.git",
 			"sourceType": "git",
-			"classPath": "src"
+			"classPath": "src",
+			"forceVersion": true
 		},
 		{
 			"name": "mtask",
@@ -80,7 +77,7 @@
 			"source": "git@github.com:massiveinteractive/mtask.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false
+			"forceVersion": true
 		},
 		{
 			"name": "msys",
@@ -88,7 +85,45 @@
 			"source": "git@github.com:massiveinteractive/msys.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"installDependencies": false
+			"forceVersion": true
+		},
+		{
+			"name": "mmvc",
+			"version": "1.4.0",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		{
+			"name": "minject",
+			"version": "1.3.0",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		{
+			"name": "msignal",
+			"version": "1.2.2",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		{
+			"name": "msignal",
+			"version": "1.2.2",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		{
+			"name": "mconsole",
+			"version": "1.6.0",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		{
+			"name": "tink_macro",
+			"version": "4c6234261d",
+			"source": "git@github.com:haxetink/tink_macro.git",
+			"sourceType": "git",
+			"classPath": "src",
+			"forceVersion": true
 		}
 	]
 }

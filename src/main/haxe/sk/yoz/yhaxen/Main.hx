@@ -23,9 +23,9 @@ class Main
 	{
 		SysHelper.print("YHaxen by Yoz");
 	
-		commandDependencyInstall = new Command("dependency:install", "Install dependencies from file.", "dependency:install [file]");
-		commandDependencyReport = new Command("dependency:report", "Report dependencies from file / scope.", "dependency:report [file [scope]]");
-		commandHelp = new Command("help", "Print this legend.", "help");
+		commandDependencyInstall = new Command(Command.KEY_DEPENDENCY_INSTALL, "Install dependencies from file.", Command.KEY_DEPENDENCY_INSTALL + " [file]");
+		commandDependencyReport = new Command(Command.KEY_DEPENDENCY_REPORT, "Report dependencies from file / scope.", Command.KEY_DEPENDENCY_REPORT + " [file [scope]]");
+		commandHelp = new Command(Command.KEY_HELP, "Print this legend.", Command.KEY_HELP);
 		commands = [commandDependencyInstall, commandDependencyReport, commandHelp];
 
 		try

@@ -10,6 +10,10 @@ haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
 neko run.n dependency:install src/test/resources/yhaxen.json
 ```
 
+```
+neko run.n dependency:report src/test/resources/yhaxen.json
+```
+
 ## TODO
 - new flow:
 	1. get dependency tree
@@ -21,6 +25,8 @@ neko run.n dependency:install src/test/resources/yhaxen.json
 - deploy target
 - test osx, linux
 - running yhaxen without privileges to haxelib/lib folder
+- order dependencies in report by name
+- exception when same dependency defined multiple times in yhaxen.json
 
 ### should
 - install specific version from git
@@ -33,6 +39,7 @@ neko run.n dependency:install src/test/resources/yhaxen.json
 ### should not
 - not use .current .dev
 - change lib/compiler state at all
+- do not install subdependencies but have them all defined in yhaxen.json
 
 ### known issues
 - on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like
