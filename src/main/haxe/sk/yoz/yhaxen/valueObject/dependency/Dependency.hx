@@ -5,6 +5,7 @@ class Dependency
 	public var name(default, null):String;
 	public var version(default, null):String;
 	public var metadata(default, null):Metadata;
+
 	public var decoratedVersion(get, never):String;
 
 	public function new(name:String, version:String)

@@ -1,7 +1,5 @@
 package sk.yoz.yhaxen.phase;
 
-import sk.yoz.yhaxen.valueObject.dependency.Version;
-import sk.yoz.yhaxen.valueObject.dependency.Version;
 import sk.yoz.yhaxen.enums.SourceType;
 import sk.yoz.yhaxen.helper.Git;
 import sk.yoz.yhaxen.helper.Haxelib;
@@ -12,6 +10,7 @@ import sk.yoz.yhaxen.valueObject.command.ValidateCommand;
 import sk.yoz.yhaxen.valueObject.dependency.Dependency;
 import sk.yoz.yhaxen.valueObject.dependency.DependencyTreeItem;
 import sk.yoz.yhaxen.valueObject.dependency.FlattenDependencies;
+import sk.yoz.yhaxen.valueObject.dependency.Version;
 import sk.yoz.yhaxen.valueObject.Command;
 import sk.yoz.yhaxen.valueObject.Error;
 
@@ -29,6 +28,8 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 	inline static var WORD_INVALID:String = "INVALID";
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
 
+	inline static var TEMP_DIRECTORY:String = ".temp";
+
 	private var haxelib:Haxelib;
 
 	public function new(command:ValidateCommand)
@@ -40,8 +41,8 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 
 	override function execute():Void
 	{
-		for(item in config.dependencies)
-			validateDependency(item);
+		for(dependency in config.dependencies)
+			validateDependency(dependency);
 
 		var list:Array<Dependency> = [];
 		var tree = getTree();
@@ -72,7 +73,7 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 		log("");
 		log("Resolving " + dependency.toString());
 
-		if(haxelib.versionExists(dependency.name, dependency.version))
+		if(haxelib.dependencyVersionExists(dependency.name, dependency.version))
 		{
 			log("  Dependency already installed.");
 		}
@@ -176,9 +177,9 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 	function getTree():Array<DependencyTreeItem>
 	{
 		var result:Array<DependencyTreeItem> = [];
-		for(detail in config.dependencies)
+		for(dependency in config.dependencies)
 		{
-			var item = new DependencyTreeItem(detail.name, detail.version);
+			var item = new DependencyTreeItem(dependency.name, dependency.version);
 			updateMetadata(item);
 			item.dependencies = getDependencyTree(item);
 			result.push(item);
@@ -207,7 +208,6 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 			if(!DependencyTreeItem.listContainsByNameAndVersion(targetNameVersion, parent))
 				targetNameVersion.push(parent);
 			flattenTree(item.dependencies, item, target);
-
 		}
 
 		return target;
@@ -215,37 +215,36 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 
 	function installDependencyGit(dependency:DependencyDetail):Void
 	{
-		var tmp:String = ".temp";
-		if(FileSystem.exists(tmp))
-			haxelib.deleteDirectory(tmp);
-		FileSystem.createDirectory(tmp);
+		if(FileSystem.exists(TEMP_DIRECTORY))
+			haxelib.deleteDirectory(TEMP_DIRECTORY);
+		FileSystem.createDirectory(TEMP_DIRECTORY);
+
 		try
 		{
-			Git.checkout(dependency.source, dependency.version, tmp);
+			Git.checkout(dependency.source, dependency.version, TEMP_DIRECTORY);
 		}
 		catch(error:Dynamic)
 		{
-			haxelib.deleteDirectory(tmp);
+			haxelib.deleteDirectory(TEMP_DIRECTORY);
 			throw error;
 		}
 
-		haxelib.deleteDirectory(tmp + "/.git");
-		var projectDirectory:String = haxelib.getProjectDirectory(dependency.name);
-		haxelib.ensureDirectoryExists(projectDirectory);
+		haxelib.deleteDirectory(TEMP_DIRECTORY + "/.git");
+		var depenencyDirectory:String = haxelib.getDependencyDirectory(dependency.name);
+		haxelib.makeDirectory(depenencyDirectory);
 
-		var target:String = haxelib.getVersionDirectory(dependency.name, dependency.version, false, null);
-		var source:String = tmp;
+		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false, null);
 		if(dependency.classPath != null)
 		{
-			FileSystem.rename(source + "/" + dependency.classPath, target);
-			haxelib.deleteDirectory(tmp);
+			FileSystem.rename(TEMP_DIRECTORY + "/" + dependency.classPath, target);
+			haxelib.deleteDirectory(TEMP_DIRECTORY);
 		}
 		else
 		{
-			FileSystem.rename(source, target);
+			FileSystem.rename(TEMP_DIRECTORY, target);
 		}
 
-		var currentFile:String = projectDirectory + "/" + Haxelib.FILE_CURRENT;
+		var currentFile:String = depenencyDirectory + "/" + Haxelib.FILE_CURRENT;
 		if(!FileSystem.exists(currentFile))
 			File.saveContent(currentFile, dependency.version);
 	}
@@ -257,24 +256,21 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 
 	function getDependencyTree(dependency:Dependency):Array<DependencyTreeItem>
 	{
-		var directory:String = haxelib.getVersionDirectory(dependency.name, dependency.version,
+		var directory:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version,
 			dependency.metadata.isDev, dependency.metadata.versionCurrent.key);
 
 		if(directory == null)
 			return null;
 
-		var path:String = directory + "/" + Haxelib.FILE_HAXELIB;
-		if(!FileSystem.exists(path))
+		var haxelibFile:String = directory + "/" + Haxelib.FILE_HAXELIB;
+		if(!FileSystem.exists(haxelibFile))
 			return null;
 
-		var haxelibJson = File.getContent(path);
-		var list = Data.readData(haxelibJson, false);
+		var list = Data.readData(File.getContent(haxelibFile), false);
 		var result:Array<DependencyTreeItem> = [];
 		for(info in list.dependencies)
 		{
-			var name = info.project;
-			var version = info.version;
-			var item = new DependencyTreeItem(name, version);
+			var item = new DependencyTreeItem(info.project, info.version);
 			updateMetadata(item);
 			item.dependencies = item.metadata.exists ? getDependencyTree(item) : null;
 			result.push(item);
@@ -282,28 +278,28 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 		return result;
 	}
 
-	function updateMetadata(item:Dependency):Void
+	function updateMetadata(dependency:Dependency):Void
 	{
-		var detail = DependencyDetail.getFromList(config.dependencies, item.name);
-		var metadata = item.metadata;
-		metadata.exists = haxelib.dependencyExists(item.name);
-		metadata.isDev = metadata.exists && haxelib.isDev(item.name);
+		var detail = DependencyDetail.getFromList(config.dependencies, dependency.name);
+		var metadata = dependency.metadata;
+		metadata.exists = haxelib.dependencyExists(dependency.name);
+		metadata.isDev = metadata.exists && haxelib.getDependencyIsDev(dependency.name);
 
-		metadata.versionExists = item.version == null
+		metadata.versionExists = dependency.version == null
 			? false
-			: metadata.exists && haxelib.versionExists(item.name, item.version);
+			: metadata.exists && haxelib.dependencyVersionExists(dependency.name, dependency.version);
 
 		metadata.versionForced = (detail != null && detail.forceVersion)
-			? new Version(detail.version, metadata.exists && haxelib.versionExists(item.name, detail.version))
+			? new Version(detail.version, metadata.exists && haxelib.dependencyVersionExists(dependency.name, detail.version))
 			: null;
 
 		metadata.versionResolved = metadata.versionForced != null
 			? metadata.versionForced.clone()
-			: new Version(item.version, metadata.versionExists);
+			: new Version(dependency.version, metadata.versionExists);
 
-		var currentVersion:String = haxelib.getCurrentVersion(item.name);
+		var currentVersion:String = haxelib.getDependencyCurrentVersion(dependency.name);
 		metadata.versionCurrent = metadata.exists
-			? new Version(currentVersion, metadata.exists && haxelib.versionExists(item.name, currentVersion))
+			? new Version(currentVersion, metadata.exists && haxelib.dependencyVersionExists(dependency.name, currentVersion))
 			: null;
 	}
 }

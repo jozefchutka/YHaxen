@@ -11,7 +11,6 @@ class Haxelib extends tools.haxelib.Main
 	inline public static var FILE_HAXELIB:String = "haxelib.json";
 
 	private var repositoryPath(get, never):String;
-	private var resolveHaxelibJsonPending:Bool = false;
 
 	public function new()
 	{
@@ -23,46 +22,46 @@ class Haxelib extends tools.haxelib.Main
 		return getRepository();
 	}
 
-	public function getProjectDirectory(name:String):String
+	public function getDependencyDirectory(name:String):String
 	{
 		return repositoryPath + Data.safe(name);
 	}
 
-	public function getCurrentVersion(name:String):String
+	public function getDependencyCurrentVersion(name:String):String
 	{
-		return StringTools.trim(File.getContent(getProjectDirectory(name) + "/.current"));
+		return StringTools.trim(File.getContent(getDependencyDirectory(name) + "/.current"));
 	}
 
-	public function isDev(name:String):Bool
+	public function getDependencyIsDev(name:String):Bool
 	{
-		return FileSystem.exists(getProjectDirectory(name) + "/.dev");
+		return FileSystem.exists(getDependencyDirectory(name) + "/.dev");
 	}
 
-	public function getVersionDirectory(name:String, version:String, isDev:Bool, currentVersion:String):String
+	public function getDependencyVersionDirectory(name:String, version:String, isDev:Bool, currentVersion:String):String
 	{
-		var projectDirectory = getProjectDirectory(name);
+		var directory = getDependencyDirectory(name);
 		if(isDev)
-			return getDev(projectDirectory);
+			return getDev(directory);
 
 		if(version == null)
-			return projectDirectory + "/" + Data.safe(currentVersion);
+			return directory + "/" + Data.safe(currentVersion);
 
-		return projectDirectory + "/" + Data.safe(version);
+		return directory + "/" + Data.safe(version);
 	}
 
 	public function dependencyExists(name:String):Bool
 	{
-		var dir = getProjectDirectory(name);
+		var dir = getDependencyDirectory(name);
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir) && FileSystem.exists(dir + "/.current");
 	}
 
-	public function versionExists(name:String, version:String):Bool
+	public function dependencyVersionExists(name:String, version:String):Bool
 	{
-		var dir = getVersionDirectory(name, version, false, null);
+		var dir = getDependencyVersionDirectory(name, version, false, null);
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir);
 	}
 
-	public function ensureDirectoryExists(dir:String):Bool
+	public function makeDirectory(dir:String):Bool
 	{
 		return safeDir(dir);
 	}
@@ -70,26 +69,5 @@ class Haxelib extends tools.haxelib.Main
 	public function deleteDirectory(dir:String):Void
 	{
 		return deleteRec(dir);
-	}
-/*
-	public function resolveHaxelibJson(path:String):Void
-	{
-		if(!FileSystem.exists(path))
-			return;
-
-		resolveHaxelibJsonPending = true;
-		var haxelibJson = File.getContent(path);
-		var infos = Data.readData(haxelibJson, false);
-		doInstallDependencies(infos.dependencies);
-		resolveHaxelibJsonPending = false;
-	}
-*/
-	/**
-	 * Lets ignore "set current" question while resolving subdependencies.
-	 **/
-	override function setCurrent(prj:String, version:String, doAsk:Bool)
-	{
-		if(!resolveHaxelibJsonPending)
-			super.setCurrent(prj, version, doAsk);
 	}
 }
