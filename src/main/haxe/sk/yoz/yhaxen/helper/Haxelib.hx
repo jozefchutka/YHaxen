@@ -1,11 +1,11 @@
-package sk.yoz.yhaxen.helpers;
+package sk.yoz.yhaxen.helper;
 
 import sys.io.File;
 import sys.FileSystem;
 
 import tools.haxelib.Data;
 
-class HaxelibHelper extends tools.haxelib.Main
+class Haxelib extends tools.haxelib.Main
 {
 	inline public static var FILE_CURRENT:String = ".current";
 	inline public static var FILE_HAXELIB:String = "haxelib.json";

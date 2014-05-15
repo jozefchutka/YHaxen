@@ -1,4 +1,4 @@
-package sk.yoz.yhaxen.valueObjects;
+package sk.yoz.yhaxen.valueObject.dependency;
 
 class DependencyTreeItem extends Dependency
 {
@@ -23,7 +23,7 @@ class DependencyTreeItem extends Dependency
 
 	private function get_hasDevDependencies():Bool
 	{
-		return isDev
+		return metadata.isDev
 			? true
 			: (dependencies != null && listHasDevDependencies(dependencies));
 	}

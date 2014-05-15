@@ -1,4 +1,4 @@
-package sk.yoz.yhaxen.valueObjects;
+package sk.yoz.yhaxen.valueObject;
 
 class Error
 {

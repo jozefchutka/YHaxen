@@ -1,43 +1,23 @@
-package sk.yoz.yhaxen.valueObjects;
-
-import StringTools;
+package sk.yoz.yhaxen.valueObject.dependency;
 
 class Dependency
 {
-	/**
-	 * Required
-	 **/
 	public var name(default, null):String;
-
-	/**
-	 * Required
-	 **/
 	public var version(default, null):String;
-
-	/**
-	 * Haxelib use dev version
-	 **/
-	public var isDev:Bool;
-	public var currentVersion:String;
-	public var versionExists:Bool;
-	public var currentVersionExists:Bool;
-	public var exists:Bool;
-	public var forcedVersion:String;
-	public var forcedVersionExists:Bool;
-	public var resolvedVersion:String;
-	public var resolvedVersionExists:Bool;
-
+	public var metadata(default, null):Metadata;
 	public var decoratedVersion(get, never):String;
 
 	public function new(name:String, version:String)
 	{
+		metadata = new Metadata();
+
 		this.name = name;
 		this.version = version == "" ? null : version;
 	}
 
 	private function get_decoratedVersion():String
 	{
-		if(isDev)
+		if(metadata.isDev)
 			return "DEV";
 
 		if(version == null)

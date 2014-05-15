@@ -1,17 +1,19 @@
 package sk.yoz.yhaxen;
 
-import sk.yoz.yhaxen.helpers.SysHelper;
-import sk.yoz.yhaxen.valueObjects.config.Root;
-import sk.yoz.yhaxen.valueObjects.Command;
-import sk.yoz.yhaxen.valueObjects.Error;
-import sk.yoz.yhaxen.resolvers.DependencyResolver;
+import sk.yoz.yhaxen.phase.ValidatePhase;
+import sk.yoz.yhaxen.valueObject.command.ValidateCommand;
+import sk.yoz.yhaxen.valueObject.command.HelpCommand;
+import sk.yoz.yhaxen.valueObject.command.AbstractCommand;
+import sk.yoz.yhaxen.parser.CommandParser;
+import sk.yoz.yhaxen.helper.System;
+import sk.yoz.yhaxen.valueObject.Command;
+import sk.yoz.yhaxen.valueObject.Error;
 
 class Main
 {
 	private var commands:Array<Command>;
 
-	private var commandDependencyInstall:Command;
-	private var commandDependencyReport:Command;
+	private var commandValidate:Command;
 	private var commandHelp:Command;
 
 	public static function main()
@@ -21,86 +23,56 @@ class Main
 
 	private function new()
 	{
-		SysHelper.print("YHaxen by Yoz");
+		System.print("YHaxen");
 	
-		commandDependencyInstall = new Command(Command.KEY_DEPENDENCY_INSTALL, "Install dependencies from file.", Command.KEY_DEPENDENCY_INSTALL + " [file]");
-		commandDependencyReport = new Command(Command.KEY_DEPENDENCY_REPORT, "Report dependencies from file / scope.", Command.KEY_DEPENDENCY_REPORT + " [file [scope]]");
-		commandHelp = new Command(Command.KEY_HELP, "Print this legend.", Command.KEY_HELP);
-		commands = [commandDependencyInstall, commandDependencyReport, commandHelp];
+		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
+		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
+		commands = [commandValidate, commandHelp];
 
 		try
 		{
-			executeArgs(Sys.args());
-			SysHelper.print("");
-			SysHelper.print("Successfully completed.");
+			var parser = new CommandParser();
+			var args = Sys.args();
+			var command = parser.parse(args);
+			execute(command);
+			System.print("");
+			System.print("Successfully completed.");
 		}
 		catch(error:Error)
 		{
-			SysHelper.print("");
-			SysHelper.print("Error: " + error.message);
-			SysHelper.print("  reason: " + error.reason);
-			SysHelper.print("  solution: " + error.solution);
+			System.print("");
+			System.print("Error: " + error.message);
+			System.print("  reason: " + error.reason);
+			System.print("  solution: " + error.solution);
 		}
 		catch(error:String)
 		{
-			SysHelper.print("");
-			SysHelper.print("Error: " + error);
+			System.print("");
+			System.print("Error: " + error);
 		}
 	}
 
-	private function executeArgs(args:Array<String>):Void
+	private function execute(command:AbstractCommand):Void
 	{
-		var command = args[0];
-		
-		if(command == commandDependencyInstall.key)
+		if(Std.is(command, ValidateCommand))
 		{
-			var file:String = getFilenameFromArgs(args);
-			var scope:String = getScopeFromArgs(args);
-			SysHelper.printCommand(commandDependencyInstall.key
-				+ " (from " + file + (scope == null ? "" : " for " + scope) + ")");
-			new DependencyResolver().installFromFile(file, scope);
-		}
-		else if(command == commandDependencyReport.key)
-		{
-			var file:String = getFilenameFromArgs(args);
-			var scope:String = getScopeFromArgs(args);
-			SysHelper.printCommand(commandDependencyReport.key
-				+ " (from " + file + (scope == null ? "" : " for " + scope) + ")");
-			new DependencyResolver().reportFromFile(file, scope);
-		}
-		else if(command == commandHelp.key)
-		{
-			SysHelper.printCommand(commandHelp.key);
-			printHelp();
-		}
-		else
-		{
-			printUnknownCommand(command);
+			var phase = new ValidatePhase(cast command);
+			phase.execute();
 			return;
 		}
-	}
-	
-	private function getFilenameFromArgs(args:Array<String>):String
-	{
-		return args.length > 1 ? args[1] : Root.FILENAME;
-	}
 
-	private function getScopeFromArgs(args:Array<String>):String
-	{
-		return args.length > 2 ? args[2] : null;
+		if(Std.is(command, HelpCommand))
+		{
+			System.printCommand(commandHelp.key);
+			printHelp();
+			return;
+		}
 	}
 
 	private function printHelp():Void
 	{
-		SysHelper.print("  Available commands:");
+		System.print("  Available commands:");
 		for(item in commands)
-			SysHelper.printKeyVal("    " + item.usage, 40, item.info);
-	}
-
-	private function printUnknownCommand(command:String):Void
-	{
-		SysHelper.print("Unknown command " + command);
-		SysHelper.print("  Usage: haxelib run yhaxen [command] [options]");
-		printHelp();
+			System.printKeyVal("    " + item.key, 40, item.info);
 	}
 }

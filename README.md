@@ -7,26 +7,27 @@ haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
 
 ## test
 ```
-neko run.n dependency:install src/test/resources/yhaxen.json
-```
-
-```
-neko run.n dependency:report src/test/resources/yhaxen.json
+neko run.n validate -config src/test/resources/yhaxen.json
 ```
 
 ## TODO
-- new flow:
-	1. get dependency tree
-	2. validate dependency tree
-	3. install dependencies based on tree
+- unit tests
 - fail with current versions, force hardcoded versions
-- fail when dev dependencies used
 - build target
 - deploy target
 - test osx, linux
 - running yhaxen without privileges to haxelib/lib folder
 - order dependencies in report by name
 - exception when same dependency defined multiple times in yhaxen.json
+
+### Phases
+- validate
+	- resolve dependencies
+	- install dependencies
+- compile
+- test
+- deploy
+- release
 
 ### should
 - install specific version from git

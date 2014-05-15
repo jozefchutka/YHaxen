@@ -1,6 +1,6 @@
-package sk.yoz.yhaxen.helpers;
+package sk.yoz.yhaxen.helper;
 
-class SysHelper
+class System
 {
 	public static function printCommand(title:String):Void
 	{

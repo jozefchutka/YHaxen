@@ -1,6 +1,7 @@
-package sk.yoz.yhaxen.valueObjects.config;
+package sk.yoz.yhaxen.valueObject.config;
 
 import sk.yoz.yhaxen.enums.SourceType;
+import sk.yoz.yhaxen.valueObject.dependency.Dependency;
 
 class DependencyDetail extends Dependency
 {

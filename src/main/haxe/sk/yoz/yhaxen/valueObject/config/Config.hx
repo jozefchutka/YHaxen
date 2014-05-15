@@ -1,8 +1,8 @@
-package sk.yoz.yhaxen.valueObjects.config;
+package sk.yoz.yhaxen.valueObject.config;
 
-class Root
+class Config
 {
-	public static inline var FILENAME:String = "yhaxen.json";
+	public static inline var DEFAULT_FILENAME:String = "yhaxen.json";
 
 	/**
 	 * Required

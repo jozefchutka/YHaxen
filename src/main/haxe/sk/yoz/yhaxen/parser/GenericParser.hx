@@ -1,4 +1,4 @@
-package sk.yoz.yhaxen.parsers;
+package sk.yoz.yhaxen.parser;
 
 class GenericParser<T> 
 {
