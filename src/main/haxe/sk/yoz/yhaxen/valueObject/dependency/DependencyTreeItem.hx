@@ -1,5 +1,7 @@
 package sk.yoz.yhaxen.valueObject.dependency;
 
+import sk.yoz.yhaxen.enums.DependencyVersionType;
+import sk.yoz.yhaxen.util.ArrayUtil;
 class DependencyTreeItem extends Dependency
 {
 	public var dependencies:Array<DependencyTreeItem>;
@@ -23,7 +25,7 @@ class DependencyTreeItem extends Dependency
 
 	private function get_hasDevDependencies():Bool
 	{
-		return metadata.isDev
+		return versionType == DependencyVersionType.DEV
 			? true
 			: (dependencies != null && listHasDevDependencies(dependencies));
 	}
@@ -53,5 +55,10 @@ class DependencyTreeItem extends Dependency
 			if(i != null && i.name == item.name && i.version == item.version)
 				return true;
 		return false;
+	}
+
+	public static function sort(x:DependencyTreeItem, y:DependencyTreeItem):Int
+	{
+		return ArrayUtil.sortNames(x.name, y.name);
 	}
 }

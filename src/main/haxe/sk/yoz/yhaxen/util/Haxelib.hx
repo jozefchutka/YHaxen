@@ -1,4 +1,4 @@
-package sk.yoz.yhaxen.helper;
+package sk.yoz.yhaxen.util;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -37,15 +37,13 @@ class Haxelib extends tools.haxelib.Main
 		return FileSystem.exists(getDependencyDirectory(name) + "/.dev");
 	}
 
-	public function getDependencyVersionDirectory(name:String, version:String, isDev:Bool, currentVersion:String):String
+	public function getDependencyVersionDirectory(name:String, version:String, isDev:Bool):String
 	{
 		var directory = getDependencyDirectory(name);
 		if(isDev)
 			return getDev(directory);
-
 		if(version == null)
-			return directory + "/" + Data.safe(currentVersion);
-
+			return null;
 		return directory + "/" + Data.safe(version);
 	}
 
@@ -57,7 +55,7 @@ class Haxelib extends tools.haxelib.Main
 
 	public function dependencyVersionExists(name:String, version:String):Bool
 	{
-		var dir = getDependencyVersionDirectory(name, version, false, null);
+		var dir = getDependencyVersionDirectory(name, version, false);
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir);
 	}
 

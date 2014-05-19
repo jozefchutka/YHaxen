@@ -11,14 +11,14 @@ neko run.n validate -config src/test/resources/yhaxen.json
 ```
 
 ## TODO
+- rename dependency.scope to build.name
+- use verbose
+- snapshot dependencies - via "reinstall"
 - unit tests
-- fail with current versions, force hardcoded versions
 - build target
 - deploy target
 - test osx, linux
 - running yhaxen without privileges to haxelib/lib folder
-- order dependencies in report by name
-- exception when same dependency defined multiple times in yhaxen.json
 
 ### Phases
 - validate
@@ -26,8 +26,10 @@ neko run.n validate -config src/test/resources/yhaxen.json
 	- install dependencies
 - compile
 - test
-- deploy
 - release
+	- make tags
+	- upload to haxelib
+- deploy
 
 ### should
 - install specific version from git
@@ -49,3 +51,4 @@ c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-
 ```
 
 - if a haxelib lib contains .dev file, haxe compiler is not able to use specific lib version with -lib $lib:$version
+- if a lib A contains dependency B defined in haxelib.json with version C a haxe compiler cannot override it using `haxe -lib A -lib B:D`

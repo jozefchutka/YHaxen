@@ -14,5 +14,13 @@ class Config
 	 **/
 	public var dependencies:Array<DependencyDetail>;
 
-	public function new(){}
+	/**
+	 * Optional
+	 **/
+	public var builds:Array<Build>;
+
+	public function new(version:Int)
+	{
+		this.version = version;
+	}
 }

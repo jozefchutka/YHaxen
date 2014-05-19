@@ -1,4 +1,4 @@
-package sk.yoz.yhaxen.helper;
+package sk.yoz.yhaxen.util;
 
 import sk.yoz.yhaxen.valueObject.Error;
 

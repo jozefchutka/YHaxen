@@ -1,11 +1,13 @@
 package sk.yoz.yhaxen;
 
-import sk.yoz.yhaxen.phase.ValidatePhase;
-import sk.yoz.yhaxen.valueObject.command.ValidateCommand;
-import sk.yoz.yhaxen.valueObject.command.HelpCommand;
-import sk.yoz.yhaxen.valueObject.command.AbstractCommand;
 import sk.yoz.yhaxen.parser.CommandParser;
-import sk.yoz.yhaxen.helper.System;
+import sk.yoz.yhaxen.phase.CompilePhase;
+import sk.yoz.yhaxen.phase.ValidatePhase;
+import sk.yoz.yhaxen.util.System;
+import sk.yoz.yhaxen.valueObject.command.AbstractCommand;
+import sk.yoz.yhaxen.valueObject.command.CompileCommand;
+import sk.yoz.yhaxen.valueObject.command.HelpCommand;
+import sk.yoz.yhaxen.valueObject.command.ValidateCommand;
 import sk.yoz.yhaxen.valueObject.Command;
 import sk.yoz.yhaxen.valueObject.Error;
 
@@ -14,6 +16,7 @@ class Main
 	private var commands:Array<Command>;
 
 	private var commandValidate:Command;
+	private var commandCompile:Command;
 	private var commandHelp:Command;
 
 	public static function main()
@@ -26,6 +29,7 @@ class Main
 		System.print("YHaxen");
 	
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
+		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
 		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
 		commands = [commandValidate, commandHelp];
 
@@ -55,15 +59,14 @@ class Main
 	private function execute(command:AbstractCommand):Void
 	{
 		if(Std.is(command, ValidateCommand))
-		{
-			var phase = new ValidatePhase(cast command);
-			phase.execute();
-			return;
-		}
+			return ValidatePhase.fromCommand(cast command).execute();
+
+		if(Std.is(command, CompileCommand))
+			return CompilePhase.fromCommand(cast command).execute();
 
 		if(Std.is(command, HelpCommand))
 		{
-			System.printCommand(commandHelp.key);
+			System.print(commandHelp.key);
 			printHelp();
 			return;
 		}

@@ -1,13 +1,8 @@
-package sk.yoz.yhaxen.helper;
+package sk.yoz.yhaxen.util;
 
 class System
 {
-	public static function printCommand(title:String):Void
-	{
-		printRow("-", "- " + title + " ");
-	}
-
-	static function printRow(fill:String, message:String=null):Void
+	public static function printRow(fill:String, message:String=null):Void
 	{
 		print(StringTools.rpad(message == null ? "" : message, fill, 79));
 	}

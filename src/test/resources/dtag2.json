@@ -22,7 +22,8 @@
 			"version": "3.0.1",
 			"source": "git@github.com:massiveinteractive/tinkerbell.git",
 			"sourceType": "git",
-			"classPath": "src"
+			"classPath": "src",
+			"scope": ["test"]
 		},
 		{
 			"name": "mui-video",
@@ -95,13 +96,7 @@
 		},
 		{
 			"name": "minject",
-			"version": "1.3.0",
-			"sourceType": "haxelib",
-			"forceVersion": true
-		},
-		{
-			"name": "msignal",
-			"version": "1.2.2",
+			"version": "1.2.3",
 			"sourceType": "haxelib",
 			"forceVersion": true
 		},
@@ -124,6 +119,15 @@
 			"sourceType": "git",
 			"classPath": "src",
 			"forceVersion": true
+		}
+	],
+
+	"builds":
+	[
+		{
+			"name": "main",
+			"artifact": "main.js",
+			"command": "haxe -main Main -js tmp/{$artifact} -cp tmp/app {$dependencies}"
 		}
 	]
 }
