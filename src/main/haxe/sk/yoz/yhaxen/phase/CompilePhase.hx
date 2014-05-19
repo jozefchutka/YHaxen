@@ -64,33 +64,34 @@ class CompilePhase extends AbstractPhase
 		var chunks:Array<String> = build.command.split(" ");
 		var args = chunks.splice(1, chunks.length - 1);
 
-		for(i in 0...args.length)
-		{
-			var arg = args[i];
-			arg = StringTools.replace(arg, "{$artifact}", build.artifact);
-			args[i] = arg;
-		}
-
-		var index = Lambda.indexOf(args, "{$dependencies}");
-		if(index != -1)
-		{
-			args.splice(index, 1);
-			for(i in 0...validatePhase.dependencyPaths.length)
-			{
-				args.insert(index + i * 2, "-cp");
-				var path = validatePhase.dependencyPaths[i];
-				path = StringTools.replace(path, "\\", "/");
-				args.insert(index + i * 2 + 1, path);
-			}
-		}
-
-		for(arg in args)
-			log(arg);
+		replaceArtifact(args, build.artifact);
+		replaceDependencies(args, validatePhase.dependencyPaths);
 
 		if(System.command(chunks[0], args) != 0)
 			throw new Error(
 				"Build " + build.name + " failed!",
 				"System command failed to execute.",
 				"Make sure system command can be executed.");
+	}
+
+	static function replaceArtifact(args:Array<String>, artifact:String):Void
+	{
+		for(i in 0...args.length)
+			if(args[i].indexOf("{$artifact}") != -1)
+				args[i] = StringTools.replace(args[i], "{$artifact}", artifact);
+	}
+
+	static function replaceDependencies(args:Array<String>, dependencies:Array<String>):Void
+	{
+		var index = Lambda.indexOf(args, "{$dependencies}");
+		if(index == -1)
+			return;
+
+		args.splice(index, 1);
+		for(i in 0...dependencies.length)
+		{
+			args.insert(index + i * 2, "-cp");
+			args.insert(index + i * 2 + 1, dependencies[i]);
+		}
 	}
 }
