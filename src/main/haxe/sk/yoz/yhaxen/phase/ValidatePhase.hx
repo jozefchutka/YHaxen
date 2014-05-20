@@ -30,28 +30,26 @@ class ValidatePhase extends AbstractPhase
 
 	inline static var TEMP_DIRECTORY:String = ".temp";
 
-	public var scope(default, null):String;
 	public var dependencyPaths(default, null):Array<String>;
 
 	private var haxelib:Haxelib;
 
-	public function new(config:Config, configFile:String, verbose:Bool, scope:String)
+	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
 	{
-		super(config, configFile, verbose);
+		super(config, configFile, scope, verbose);
 
-		this.scope = scope;
 		haxelib = new Haxelib();
 	}
 
 	public static function fromCommand(command:ValidateCommand):ValidatePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new ValidatePhase(config, command.configFile, command.verbose, command.scope);
+		return new ValidatePhase(config, command.configFile, command.scope, command.verbose);
 	}
 
 	override function execute():Void
 	{
-		logPhase("validate");
+		logPhase("validate", scope, "Found " + config.dependencies.length + " dependencies.");
 
 		validateConfig();
 
@@ -122,7 +120,8 @@ class ValidatePhase extends AbstractPhase
 			if(detail == null)
 				throw new Error(
 					"Undefined dependency " + item.name + "!",
-					"Dependency " + item.name + " is not defined in " + configFile + ".",
+					"Dependency " + item.name + " is not defined in " + configFile
+						+ (scope != null ? " for scope " + scope : "") + ".",
 					"Provide dependency details in " + configFile + ".");
 
 			if(item.versionResolved == null)

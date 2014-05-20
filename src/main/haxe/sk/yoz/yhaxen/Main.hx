@@ -2,11 +2,13 @@ package sk.yoz.yhaxen;
 
 import sk.yoz.yhaxen.parser.CommandParser;
 import sk.yoz.yhaxen.phase.CompilePhase;
+import sk.yoz.yhaxen.phase.ReleasePhase;
 import sk.yoz.yhaxen.phase.ValidatePhase;
 import sk.yoz.yhaxen.util.System;
 import sk.yoz.yhaxen.valueObject.command.AbstractCommand;
 import sk.yoz.yhaxen.valueObject.command.CompileCommand;
 import sk.yoz.yhaxen.valueObject.command.HelpCommand;
+import sk.yoz.yhaxen.valueObject.command.ReleaseCommand;
 import sk.yoz.yhaxen.valueObject.command.ValidateCommand;
 import sk.yoz.yhaxen.valueObject.Command;
 import sk.yoz.yhaxen.valueObject.Error;
@@ -17,6 +19,7 @@ class Main
 
 	private var commandValidate:Command;
 	private var commandCompile:Command;
+	private var commandRelease:Command;
 	private var commandHelp:Command;
 
 	public static function main()
@@ -30,8 +33,9 @@ class Main
 	
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
 		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
+		commandRelease = new Command(Command.KEY_RELEASE, "Release versioned project.");
 		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
-		commands = [commandValidate, commandHelp];
+		commands = [commandValidate, commandCompile, commandRelease, commandHelp];
 
 		try
 		{
@@ -63,6 +67,9 @@ class Main
 
 		if(Std.is(command, CompileCommand))
 			return CompilePhase.fromCommand(cast command).execute();
+
+		if(Std.is(command, ReleaseCommand))
+			return ReleasePhase.fromCommand(cast command).execute();
 
 		if(Std.is(command, HelpCommand))
 		{

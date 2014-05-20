@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.parser;
 
+import sk.yoz.yhaxen.valueObject.command.ReleaseCommand;
 import sk.yoz.yhaxen.valueObject.command.AbstractCommand;
 import sk.yoz.yhaxen.valueObject.command.CompileCommand;
 import sk.yoz.yhaxen.valueObject.command.HelpCommand;
@@ -19,14 +20,23 @@ class CommandParser extends GenericParser<AbstractCommand>
 			configFile = Config.DEFAULT_FILENAME;
 
 		var verbose:Bool = getBool("verbose", args);
+		var scope:String = getString("scope", args);
 
 		var phase = args[0];
 		switch(phase)
 		{
 			case Command.KEY_VALIDATE:
-				return new ValidateCommand(configFile, verbose, getString("scope", args));
+				return new ValidateCommand(configFile, scope, verbose);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile, verbose, getString("build", args));
+				return new CompileCommand(configFile, scope, verbose);
+			case Command.KEY_RELEASE:
+				var version = getString("version", args);
+				if(version == null || version == "")
+					throw new Error(
+						"Missing release version.",
+						"Command " + Command.KEY_RELEASE + " is missing required version argument.",
+						"Provide version in " + Command.KEY_RELEASE + " command e.g. \"-version 1.2.3\".");
+				return new ReleaseCommand(configFile, scope, verbose, version);
 			case Command.KEY_HELP:
 				return new HelpCommand();
 			default:

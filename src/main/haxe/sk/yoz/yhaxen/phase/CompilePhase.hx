@@ -9,28 +9,24 @@ import sk.yoz.yhaxen.valueObject.Error;
 
 class CompilePhase extends AbstractPhase
 {
-	public var build(default, null):String;
-
 	var validatePhase:ValidatePhase;
 
-	public function new(config:Config, configFile:String, verbose:Bool, build:String)
+	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
 	{
-		super(config, configFile, verbose);
-
-		this.build = build;
+		super(config, configFile, scope, verbose);
 	}
 
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
-		var config = ConfigParser.fromFile(command.configFile, command.build);
-		return new CompilePhase(config, command.configFile, command.verbose, command.build);
+		var config = ConfigParser.fromFile(command.configFile, command.scope);
+		return new CompilePhase(config, command.configFile, command.scope, command.verbose);
 	}
 
 	override function execute():Void
 	{
 		executeValidatePhase();
 
-		logPhase("compile");
+		logPhase("compile", scope, "Found " + config.builds.length + " builds.");
 
 		validateConfig();
 
@@ -40,7 +36,7 @@ class CompilePhase extends AbstractPhase
 
 	function executeValidatePhase():Void
 	{
-		validatePhase = new ValidatePhase(config, configFile, verbose, build);
+		validatePhase = new ValidatePhase(config, configFile, scope, verbose);
 		validatePhase.execute();
 	}
 
@@ -61,13 +57,15 @@ class CompilePhase extends AbstractPhase
 
 	function compileBuild(build:Build):Void
 	{
-		var chunks:Array<String> = build.command.split(" ");
-		var args = chunks.splice(1, chunks.length - 1);
+		var arguments = null;
+		if(build.arguments != null && build.arguments.length > 0)
+		{
+			arguments = build.arguments.copy();
+			replaceArtifact(arguments, build.artifact);
+			replaceDependencies(arguments, validatePhase.dependencyPaths);
+		}
 
-		replaceArtifact(args, build.artifact);
-		replaceDependencies(args, validatePhase.dependencyPaths);
-
-		if(System.command(chunks[0], args) != 0)
+		if(System.command(build.command, arguments) != 0)
 			throw new Error(
 				"Build " + build.name + " failed!",
 				"System command failed to execute.",
@@ -77,13 +75,13 @@ class CompilePhase extends AbstractPhase
 	static function replaceArtifact(args:Array<String>, artifact:String):Void
 	{
 		for(i in 0...args.length)
-			if(args[i].indexOf("{$artifact}") != -1)
-				args[i] = StringTools.replace(args[i], "{$artifact}", artifact);
+			if(args[i].indexOf(Build.ARGUMENT_ARTIFACT) != -1)
+				args[i] = StringTools.replace(args[i], Build.ARGUMENT_ARTIFACT, artifact);
 	}
 
 	static function replaceDependencies(args:Array<String>, dependencies:Array<String>):Void
 	{
-		var index = Lambda.indexOf(args, "{$dependencies}");
+		var index = Lambda.indexOf(args, Build.ARGUMENT_DEPENDENCIES);
 		if(index == -1)
 			return;
 

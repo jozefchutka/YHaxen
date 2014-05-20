@@ -11,7 +11,6 @@ neko run.n validate -config src/test/resources/yhaxen.json
 ```
 
 ## TODO
-- rename dependency.scope to build.name
 - use verbose
 - snapshot dependencies - via "reinstall"
 - unit tests

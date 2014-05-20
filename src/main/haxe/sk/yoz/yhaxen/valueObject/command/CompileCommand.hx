@@ -2,12 +2,8 @@ package sk.yoz.yhaxen.valueObject.command;
 
 class CompileCommand extends AbstractLifecycleCommand
 {
-	public var build(default, null):String;
-
-	public function new(configFile:String, verbose:Bool, build:String)
+	public function new(configFile:String, scope:String, verbose:Bool)
 	{
-		super(configFile, verbose);
-
-		this.build = build;
+		super(configFile, scope, verbose);
 	}
 }

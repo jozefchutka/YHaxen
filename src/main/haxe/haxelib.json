@@ -1,0 +1,10 @@
+{
+	"name": "yhaxen",
+	"license": "MIT",
+	"tags": ["management"],
+	"description": "Project management tool for Haxe.",
+	"contributors": ["default.user"],
+	"version": "snapshot",
+	"url": "https://github.com/jozefchutka/YHaxen",
+	"dependencies": {}
+}

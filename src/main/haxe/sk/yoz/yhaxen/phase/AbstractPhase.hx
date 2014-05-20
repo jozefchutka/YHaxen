@@ -7,12 +7,14 @@ class AbstractPhase
 {
 	public var config(default, null):Config;
 	public var configFile(default, null):String;
+	public var scope(default, null):String;
 	public var verbose(default, null):Bool;
 
-	private function new(config:Config, configFile:String, verbose:Bool)
+	private function new(config:Config, configFile:String, scope:String, verbose:Bool)
 	{
 		this.config = config;
 		this.configFile = configFile;
+		this.scope = scope;
 		this.verbose = verbose;
 	}
 
@@ -21,10 +23,12 @@ class AbstractPhase
 		throw "Not implemented!";
 	}
 
-	function logPhase(name:String):Void
+	function logPhase(name:String, scope:String, details:String):Void
 	{
+		log("");
 		System.printRow("-");
-		log("PHASE:" + name);
+		log("PHASE: " + name + (scope != null ? " " + scope : ""));
+		log(details);
 		System.printRow("-");
 	}
 

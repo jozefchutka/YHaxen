@@ -8,7 +8,7 @@
 			"source": "git@github.com:massiveinteractive/mui-app.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"scope": ["test"]
+			"scopes": ["test"]
 		},
 		{
 			"name": "mui-epg",
@@ -23,7 +23,7 @@
 			"source": "git@github.com:massiveinteractive/tinkerbell.git",
 			"sourceType": "git",
 			"classPath": "src",
-			"scope": ["test"]
+			"scopes": ["test"]
 		},
 		{
 			"name": "mui-video",
@@ -126,8 +126,22 @@
 	[
 		{
 			"name": "main",
-			"artifact": "main.js",
-			"command": "haxe -main Main -js tmp/{$artifact} -cp tmp/app {$dependencies}"
+			"artifact": "tmp/main.js",
+			"command": "haxe",
+			"arguments": ["-main", "Main", "-js", "${artifact}", "-cp", "tmp/app", "${dependencies}"],
+			"scopes": ["web"]
+		}
+	],
+
+	"releases":
+	[
+		{
+			"type": "git",
+			"haxelib": "src/main/haxe/haxelib.json"
+		},
+		{
+			"type": "haxelib",
+			"haxelib": "src/main/haxe/haxelib.json"
 		}
 	]
 }

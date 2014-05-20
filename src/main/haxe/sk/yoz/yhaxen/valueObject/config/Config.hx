@@ -2,7 +2,7 @@ package sk.yoz.yhaxen.valueObject.config;
 
 class Config
 {
-	public static inline var DEFAULT_FILENAME:String = "yhaxen.json";
+	inline public static var DEFAULT_FILENAME:String = "yhaxen.json";
 
 	/**
 	 * Required
@@ -18,6 +18,11 @@ class Config
 	 * Optional
 	 **/
 	public var builds:Array<Build>;
+
+	/**
+	 * Optional
+	 **/
+	public var releases:Array<Release>;
 
 	public function new(version:Int)
 	{

@@ -2,8 +2,10 @@ package sk.yoz.yhaxen.parser;
 
 import haxe.Json;
 
+import sk.yoz.yhaxen.valueObject.config.Build;
 import sk.yoz.yhaxen.valueObject.config.Config;
 import sk.yoz.yhaxen.valueObject.config.DependencyDetail;
+import sk.yoz.yhaxen.valueObject.config.Release;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -33,6 +35,13 @@ class ConfigParser extends GenericParser<Config>
 			result.builds = buildParser.parseList(Reflect.field(source, "builds"));
 		}
 
+		if(Reflect.hasField(source, "releases"))
+		{
+			var releaseParser = new ReleaseParser();
+			releaseParser.configFile = configFile;
+			result.releases = releaseParser.parseList(Reflect.field(source, "releases"));
+		}
+
 		return result;
 	}
 
@@ -53,16 +62,32 @@ class ConfigParser extends GenericParser<Config>
 		var parser = new ConfigParser();
 		parser.configFile = configFile;
 		var result = parser.parse(json);
-
-		if(scope != null)
-		{
-			var dependencies:Array<DependencyDetail> = [];
-			for(dependency in result.dependencies)
-				if(dependency.scope == null || Lambda.has(dependency.scope, scope))
-					dependencies.push(dependency);
-			result.dependencies = dependencies;
-		}
+		filterScope(result, scope);
 		return result;
+	}
+
+	static function filterScope(config:Config, scope:String):Void
+	{
+		if(scope == null)
+			return;
+
+		var dependencies:Array<DependencyDetail> = [];
+		for(dependency in config.dependencies)
+			if(dependency.matchesScope(scope))
+				dependencies.push(dependency);
+		config.dependencies = dependencies;
+
+		var builds:Array<Build> = [];
+		for(build in config.builds)
+			if(build.matchesScope(scope))
+				builds.push(build);
+		config.builds = builds;
+
+		var releases:Array<Release> = [];
+		for(release in config.releases)
+			if(release.matchesScope(scope))
+				releases.push(release);
+		config.releases = releases;
 	}
 
 	static function checkFile(file:String):Void

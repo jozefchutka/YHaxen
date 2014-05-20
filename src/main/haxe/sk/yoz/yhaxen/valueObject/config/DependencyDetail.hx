@@ -23,7 +23,7 @@ class DependencyDetail extends Dependency
 	/**
 	 * Optional
 	 **/
-	public var scope:Array<String>;
+	public var scopes:Array<String>;
 
 	/**
 	 * Optional
@@ -39,11 +39,7 @@ class DependencyDetail extends Dependency
 
 	public function matchesScope(scope:String):Bool
 	{
-		if(scope == null)
-			return true;
-		if(this.scope == null || this.scope.length == 0)
-			return false;
-		return Lambda.has(this.scope, scope);
+		return (scope == null || scopes == null) ? true : Lambda.has(scopes, scope);
 	}
 
 	public static function getFromList(list:Array<DependencyDetail>, name:String):DependencyDetail
