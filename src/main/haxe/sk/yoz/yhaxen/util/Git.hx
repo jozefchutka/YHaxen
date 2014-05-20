@@ -28,15 +28,16 @@ class Git
 	public static function release(version:String):Void
 	{
 		/*
-		git add $filename
+		git rev-parse HEAD
+				1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6
+
+		git add src/main/haxe/haxelib.json
 		git commit -m "YHaxen prepares release $version"
 		git tag -a $version -m "YHaxen release $version"
-
-		// revert file manualy (not via git)
-		git add $filename
-		git commit
+		git checkout 1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6 src/main/haxe/haxelib.json
+		git add src/main/haxe/haxelib.json
+		git commit -m "YHaxen reverting files $version"
 		git push origin --tags
-
 
 		if(System.command("git", ["tag", "-a", version, "-m", "YHaxen release " + version]) != 0)
 			throw new Error(
