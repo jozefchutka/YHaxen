@@ -29,9 +29,11 @@ class Git
 	{
 		/*
 		git add $filename
-		git commit -m $message
-		git tag ...
+		git commit -m "YHaxen prepares release $version"
+		git tag -a $version -m "YHaxen release $version"
 
+		// revert file manualy (not via git)
+		git add $filename
 		git commit
 		git push origin --tags
 
