@@ -74,7 +74,7 @@ class ReleasePhase extends AbstractPhase
 		Git.commit("YHaxen prepare release " + version + ".");
 		Git.tag(version, "YHaxen release " + version + ".");
 		//Git.checkoutFile("HEAD^", release.haxelib);
-		Git.checkoutFile(commmit, release.haxelib);
+		Git.checkoutFile(commit, release.haxelib);
 		Git.add(release.haxelib);
 		Git.commit("YHaxen revert release " + version + " files.");
 		Git.pushToOrigin();
