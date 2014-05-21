@@ -78,7 +78,7 @@ class Git
 
 	public static function pushWithTags():Void
 	{
-		if(System.command("git", ["push", "origin"]) != 0)
+		if(System.command("git", ["push", "origin", "--all"]) != 0)
 			throw new Error(
 				"Git push failed.",
 				"Git was not able to push to origin.",
