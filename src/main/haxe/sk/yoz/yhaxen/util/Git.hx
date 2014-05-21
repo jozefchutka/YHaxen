@@ -76,8 +76,14 @@ class Git
 				"Make sure project is under git control.");
 	}
 
-	public static function pushToOrigin():Void
+	public static function pushWithTags():Void
 	{
+		if(System.command("git", ["push", "origin"]) != 0)
+			throw new Error(
+				"Git push failed.",
+				"Git was not able to push to origin.",
+				"Make sure project is under git control.");
+
 		if(System.command("git", ["push", "origin", "--tags"]) != 0)
 			throw new Error(
 				"Git push failed.",

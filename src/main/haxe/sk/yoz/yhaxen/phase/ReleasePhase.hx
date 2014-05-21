@@ -89,7 +89,7 @@ class ReleasePhase extends AbstractPhase
 		}
 
 		Git.commit("YHaxen release " + version + " revert.");
-		Git.pushToOrigin();
+		Git.pushWithTags();
 	}
 
 	function releaseHaxelib(release:Release):Void
