@@ -75,4 +75,13 @@ class Git
 				"Git was not able to checkot " + file + " from " + commit + ".",
 				"Make sure project is under git control.");
 	}
+
+	public static function pushToOrigin():Void
+	{
+		if(System.command("git", ["push", "origin", "--tags"]) != 0)
+			throw new Error(
+				"Git push failed.",
+				"Git was not able to push to origin.",
+				"Make sure project is under git control.");
+	}
 }
