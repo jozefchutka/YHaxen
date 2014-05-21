@@ -50,7 +50,7 @@ class Git
 
 	public static function commit(message:String):Void
 	{
-		if(System.command("git", ["commit", "-m", "\"" + message + "\""]) != 0)
+		if(System.command("git", ["commit", "-m", message]) != 0)
 			throw new Error(
 				"Git commit failed.",
 				"Git was not able to commit.",
@@ -60,7 +60,7 @@ class Git
 
 	public static function tag(version:String, message:String):Void
 	{
-		if(System.command("git", ["tag", "-a", version, "-m", "\"" + message + "\""]) != 0)
+		if(System.command("git", ["tag", "-a", version, "-m", message]) != 0)
 			throw new Error(
 				"Git tag failed.",
 				"Git was not able to tag.",

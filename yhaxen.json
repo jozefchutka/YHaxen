@@ -1,0 +1,20 @@
+{
+	"version": 1,
+	"builds":
+	[
+		{
+			"name": "main",
+			"artifact": "run.n",
+			"command": "haxe",
+			"arguments": ["-main", "sk.yoz.yhaxen.Main", "-neko", "${artifact}", "-cp", "src/main/haxe", "${dependencies}"]
+		}
+	],
+
+	"releases":
+	[
+		{
+			"type": "git",
+			"files": ["src/main/haxe/haxelib.json", "run.n"]
+		}
+	]
+}

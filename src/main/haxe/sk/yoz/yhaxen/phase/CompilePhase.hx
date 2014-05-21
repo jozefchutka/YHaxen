@@ -86,6 +86,9 @@ class CompilePhase extends AbstractPhase
 			return;
 
 		args.splice(index, 1);
+		if(dependencies == null)
+			return;
+
 		for(i in 0...dependencies.length)
 		{
 			args.insert(index + i * 2, "-cp");

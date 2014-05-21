@@ -68,4 +68,21 @@ class Haxelib extends tools.haxelib.Main
 	{
 		return deleteRec(dir);
 	}
+
+	public function updateVersionInFile(file:String, version:String):Bool
+	{
+		if(!FileSystem.exists(file) || FileSystem.isDirectory(file))
+			return false;
+
+		var content = File.getContent(file);
+		var result = updateVersionInString(content, version);
+		File.saveContent(file, result);
+		return true;
+	}
+
+	public function updateVersionInString(content:String, version:String):String
+	{
+		var reg:EReg = ~/([\\"\\']version[\\"\\']\s*:\s*[\\"\\'])[^\\"\\']*?([\\"\\'])/;
+		return reg.replace(content, "$1" + version + "$2");
+	}
 }

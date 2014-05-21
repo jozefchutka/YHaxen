@@ -49,8 +49,10 @@ class ValidatePhase extends AbstractPhase
 
 	override function execute():Void
 	{
-		logPhase("validate", scope, "Found " + config.dependencies.length + " dependencies.");
+		if(config.dependencies == null)
+			return logPhase("validate", scope, "No dependencies found.");
 
+		logPhase("validate", scope, "Found " + config.dependencies.length + " dependencies.");
 		validateConfig();
 
 		for(dependency in config.dependencies)

@@ -137,11 +137,11 @@
 	[
 		{
 			"type": "git",
-			"haxelib": "src/main/haxe/haxelib.json"
+			"files": ["src/main/haxe/haxelib.json", "run.n"]
 		},
 		{
 			"type": "haxelib",
-			"haxelib": "src/main/haxe/haxelib.json"
+			"files": ["src/main/haxe/haxelib.json", "run.n"]
 		}
 	]
 }

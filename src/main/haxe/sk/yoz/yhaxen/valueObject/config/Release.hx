@@ -12,7 +12,7 @@ class Release
 	/**
 	 * Optional
 	 **/
-	public var haxelib:String;
+	public var files:Array<String>;
 
 	/**
 	 * Optional

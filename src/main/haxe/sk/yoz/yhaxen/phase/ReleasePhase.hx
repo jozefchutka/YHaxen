@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.phase;
 
+import StringTools;
 import sk.yoz.yhaxen.util.Git;
 import sk.yoz.yhaxen.util.Haxelib;
 import sk.yoz.yhaxen.valueObject.Error;
@@ -16,6 +17,7 @@ class ReleasePhase extends AbstractPhase
 {
 	public var version(default, null):String;
 
+	var haxelib:Haxelib;
 	var compilePhase:CompilePhase;
 
 	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String)
@@ -23,6 +25,7 @@ class ReleasePhase extends AbstractPhase
 		super(config, configFile, scope, verbose);
 
 		this.version = version;
+		haxelib = new Haxelib();
 	}
 
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
@@ -67,53 +70,39 @@ class ReleasePhase extends AbstractPhase
 
 	function releaseGit(release:Release):Void
 	{
-		updateHaxelib(release.haxelib);
+		for(file in release.files)
+			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
+				updateHaxelibJson(file);
 
 		var commit = Git.getCurrentCommit();
-		Git.add(release.haxelib);
-		Git.commit("YHaxen prepare release " + version + ".");
+
+		for(file in release.files)
+			Git.add(file);
+
+		Git.commit("YHaxen release " + version + ".");
 		Git.tag(version, "YHaxen release " + version + ".");
-		//Git.checkoutFile("HEAD^", release.haxelib);
-		Git.checkoutFile(commit, release.haxelib);
-		Git.add(release.haxelib);
-		Git.commit("YHaxen revert release " + version + " files.");
+
+		for(file in release.files)
+		{
+			Git.checkoutFile(commit, file);
+			Git.add(file);
+		}
+
+		Git.commit("YHaxen release " + version + " revert.");
 		Git.pushToOrigin();
-/*
-		git rev-parse HEAD
-		git add src/main/haxe/haxelib.json
-		git commit -m "YHaxen prepares release $version"
-		git tag -a $version -m "YHaxen release $version"
-		git checkout 1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6 src/main/haxe/haxelib.json
-		git add src/main/haxe/haxelib.json
-		git commit -m "YHaxen reverting files $version"
-		git push origin --tags
-		*/
 	}
 
 	function releaseHaxelib(release:Release):Void
 	{
-		updateHaxelib(release.haxelib);
+
 	}
 
-	function updateHaxelib(file:String):Void
+	function updateHaxelibJson(file:String):Void
 	{
-		if(file == null)
-			return;
-
-		if(!FileSystem.exists(file) || FileSystem.isDirectory(file))
+		if(!haxelib.updateVersionInFile(file, version))
 			throw new Error(
 				"Invalid " + Haxelib.FILE_HAXELIB + " file!",
 				"Release related file " + file + " does not exist or is invalid.",
 				"Provide correct path to " + Haxelib.FILE_HAXELIB + " file in " + configFile + ".");
-
-		var content = File.getContent(file);
-		var result = updateVersionInHaxelib(content, version);
-		File.saveContent(file, result);
-	}
-
-	function updateVersionInHaxelib(content:String, version:String):String
-	{
-		var reg:EReg = ~/([\\"\\']version[\\"\\']\s*:\s*[\\"\\'])[^\\"\\']*?([\\"\\'])/;
-		return reg.replace(content, "$1" + version + "$2");
 	}
 }

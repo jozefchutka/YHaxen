@@ -71,23 +71,32 @@ class ConfigParser extends GenericParser<Config>
 		if(scope == null)
 			return;
 
-		var dependencies:Array<DependencyDetail> = [];
-		for(dependency in config.dependencies)
-			if(dependency.matchesScope(scope))
-				dependencies.push(dependency);
-		config.dependencies = dependencies;
+		if(config.dependencies != null)
+		{
+			var dependencies:Array<DependencyDetail> = [];
+			for(dependency in config.dependencies)
+				if(dependency.matchesScope(scope))
+					dependencies.push(dependency);
+			config.dependencies = dependencies;
+		}
 
-		var builds:Array<Build> = [];
-		for(build in config.builds)
-			if(build.matchesScope(scope))
-				builds.push(build);
-		config.builds = builds;
+		if(config.builds != null)
+		{
+			var builds:Array<Build> = [];
+			for(build in config.builds)
+				if(build.matchesScope(scope))
+					builds.push(build);
+			config.builds = builds;
+		}
 
-		var releases:Array<Release> = [];
-		for(release in config.releases)
-			if(release.matchesScope(scope))
-				releases.push(release);
-		config.releases = releases;
+		if(config.releases != null)
+		{
+			var releases:Array<Release> = [];
+			for(release in config.releases)
+				if(release.matchesScope(scope))
+					releases.push(release);
+			config.releases = releases;
+		}
 	}
 
 	static function checkFile(file:String):Void
