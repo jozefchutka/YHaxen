@@ -1,5 +1,6 @@
 package sk.yoz.yhaxen.phase;
 
+import sk.yoz.yhaxen.util.Git;
 import sk.yoz.yhaxen.util.Haxelib;
 import sk.yoz.yhaxen.valueObject.Error;
 import sys.FileSystem;
@@ -67,6 +68,34 @@ class ReleasePhase extends AbstractPhase
 	function releaseGit(release:Release):Void
 	{
 		updateHaxelib(release.haxelib);
+
+		var commit = Git.getCurrentCommit();
+		Git.add(release.haxelib);
+		Git.commit("YHaxen prepare release " + version + ".");
+		Git.tag(version, "YHaxen release " + version + ".");
+		Git.checkoutFile("HEAD^", release.haxelib);
+		Git.add(release.haxelib);
+		Git.commit("YHaxen revert release " + version + " files.");
+/*
+		git rev-parse HEAD
+				1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6
+
+		git add src/main/haxe/haxelib.json
+		git commit -m "YHaxen prepares release $version"
+		git tag -a $version -m "YHaxen release $version"
+		git checkout 1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6 src/main/haxe/haxelib.json
+		git add src/main/haxe/haxelib.json
+		git commit -m "YHaxen reverting files $version"
+		git push origin --tags
+
+		if(System.command("git", ["tag", "-a", version, "-m", "YHaxen release " + version]) != 0)
+			throw new Error(
+				"Git tag failed.",
+				"Git was not able to create tag " + version + ".",
+				"Make sure project is under git control and current user has suffucient rights.");
+
+		git push origin --tags
+		*/
 	}
 
 	function releaseHaxelib(release:Release):Void

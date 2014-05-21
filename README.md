@@ -7,7 +7,7 @@ haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
 
 ## test
 ```
-neko run.n validate -config src/test/resources/yhaxen.json
+neko run.n compile -config src/test/resources/yhaxen.json
 ```
 
 ## TODO

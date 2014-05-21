@@ -1,5 +1,8 @@
 package sk.yoz.yhaxen.util;
 
+import StringTools;
+import sys.io.Process;
+import Sys;
 import sk.yoz.yhaxen.valueObject.Error;
 
 class Git
@@ -25,27 +28,51 @@ class Git
 		Sys.setCwd(cwd);
 	}
 
-	public static function release(version:String):Void
+	public static function getCurrentCommit():String
 	{
-		/*
-		git rev-parse HEAD
-				1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6
+		var process:Process = System.process("git", ["rev-parse", "HEAD"]);
+		if(process.exitCode() != 0)
+			throw new Error(
+				"Git rev-parse failed.",
+				"Git was not able to get current commit.",
+				"Make sure project is under git control and current user has suffucient rights.");
+		return StringTools.trim(process.stdout.readAll().toString());
+	}
 
-		git add src/main/haxe/haxelib.json
-		git commit -m "YHaxen prepares release $version"
-		git tag -a $version -m "YHaxen release $version"
-		git checkout 1fefe60dff297a8aaa8357d0cc87df6cf8ff70d6 src/main/haxe/haxelib.json
-		git add src/main/haxe/haxelib.json
-		git commit -m "YHaxen reverting files $version"
-		git push origin --tags
+	public static function add(file:String):Void
+	{
+		if(System.command("git", ["add", file]) != 0)
+			throw new Error(
+				"Git add failed.",
+				"Git was not able to add file " + file + ".",
+				"Make sure project is under git control and file " + file + " exists.");
+	}
 
-		if(System.command("git", ["tag", "-a", version, "-m", "YHaxen release " + version]) != 0)
+	public static function commit(message:String):Void
+	{
+		if(System.command("git", ["commit", "-m", "\"" + message + "\""]) != 0)
+			throw new Error(
+				"Git commit failed.",
+				"Git was not able to commit.",
+				"Make sure project is under git control.");
+	}
+
+
+	public static function tag(version:String, message:String):Void
+	{
+		if(System.command("git", ["tag", "-a", version, "-m", "\"" + message + "\""]) != 0)
 			throw new Error(
 				"Git tag failed.",
-				"Git was not able to create tag " + version + ".",
-				"Make sure project is under git control and current user has suffucient rights.");
+				"Git was not able to tag.",
+				"Make sure project is under git control.");
+	}
 
-		git push origin --tags
-		*/
+	public static function checkoutFile(commit:String, file:String):Void
+	{
+		if(System.command("git", ["checkout", commit, "--", file]) != 0)
+			throw new Error(
+				"Git checkout failed.",
+				"Git was not able to checkot " + file + " from " + commit + ".",
+				"Make sure project is under git control.");
 	}
 }

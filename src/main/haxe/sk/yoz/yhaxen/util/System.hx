@@ -1,5 +1,7 @@
 package sk.yoz.yhaxen.util;
 
+import sys.io.Process;
+
 class System
 {
 	public static function printRow(fill:String, message:String=null):Void
@@ -21,5 +23,11 @@ class System
 	{
 		print("  $ " + cmd + " " + args.join(" "));
 		return Sys.command(cmd, args);
+	}
+
+	public static function process(cmd:String, args:Array<String>):Process
+	{
+		print("  $ " + cmd + " " + args.join(" "));
+		return new Process(cmd, args);
 	}
 }
