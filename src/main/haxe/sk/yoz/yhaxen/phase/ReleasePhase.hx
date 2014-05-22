@@ -1,17 +1,14 @@
 package sk.yoz.yhaxen.phase;
 
-import StringTools;
-import sk.yoz.yhaxen.util.Git;
-import sk.yoz.yhaxen.util.Haxelib;
-import sk.yoz.yhaxen.valueObject.Error;
-import sys.FileSystem;
-import sys.io.File;
 import sk.yoz.yhaxen.enums.ReleaseType;
 import sk.yoz.yhaxen.parser.ConfigParser;
 import sk.yoz.yhaxen.phase.CompilePhase;
+import sk.yoz.yhaxen.util.Git;
+import sk.yoz.yhaxen.util.Haxelib;
+import sk.yoz.yhaxen.valueObject.command.ReleaseCommand;
 import sk.yoz.yhaxen.valueObject.config.Config;
 import sk.yoz.yhaxen.valueObject.config.Release;
-import sk.yoz.yhaxen.valueObject.command.ReleaseCommand;
+import sk.yoz.yhaxen.valueObject.Error;
 
 class ReleasePhase extends AbstractPhase
 {
@@ -84,8 +81,15 @@ class ReleasePhase extends AbstractPhase
 
 		for(file in release.files)
 		{
-			Git.checkoutFile(commit, file, false);
-			Git.add(file);
+			try
+			{
+				Git.checkoutFile(commit, file);
+				Git.add(file);
+			}
+			catch(error:Error)
+			{
+				Git.rm(file);
+			}
 		}
 
 		Git.commit("YHaxen release " + version + " revert.");

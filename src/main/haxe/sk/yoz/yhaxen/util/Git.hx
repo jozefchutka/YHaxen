@@ -67,12 +67,21 @@ class Git
 				"Make sure project is under git control.");
 	}
 
-	public static function checkoutFile(commit:String, file:String, throwError:Bool=true):Void
+	public static function checkoutFile(commit:String, file:String):Void
 	{
-		if(System.command("git", ["checkout", commit, "--", file]) != 0 && throwError)
+		if(System.command("git", ["checkout", commit, "--", file]) != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkot " + file + " from " + commit + ".",
+				"Make sure project is under git control.");
+	}
+
+	public static function rm(file:String):Void
+	{
+		if(System.command("git", ["rm", file]) != 0)
+			throw new Error(
+				"Git rm failed.",
+				"Git was not able to remove " + file + ".",
 				"Make sure project is under git control.");
 	}
 
