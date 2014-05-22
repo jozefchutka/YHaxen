@@ -67,9 +67,9 @@ class Git
 				"Make sure project is under git control.");
 	}
 
-	public static function checkoutFile(commit:String, file:String):Void
+	public static function checkoutFile(commit:String, file:String, throwError:Bool=true):Void
 	{
-		if(System.command("git", ["checkout", commit, "--", file]) != 0)
+		if(System.command("git", ["checkout", commit, "--", file]) != 0 && throwError)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkot " + file + " from " + commit + ".",

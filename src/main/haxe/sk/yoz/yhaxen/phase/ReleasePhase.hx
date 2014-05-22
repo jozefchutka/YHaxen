@@ -84,7 +84,7 @@ class ReleasePhase extends AbstractPhase
 
 		for(file in release.files)
 		{
-			Git.checkoutFile(commit, file);
+			Git.checkoutFile(commit, file, false);
 			Git.add(file);
 		}
 
