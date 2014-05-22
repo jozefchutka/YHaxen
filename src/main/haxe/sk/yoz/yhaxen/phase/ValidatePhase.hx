@@ -28,17 +28,11 @@ class ValidatePhase extends AbstractPhase
 	inline static var WORD_INVALID:String = "INVALID";
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
 
-	inline static var TEMP_DIRECTORY:String = ".temp";
-
 	public var dependencyPaths(default, null):Array<String>;
-
-	private var haxelib:Haxelib;
 
 	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
 	{
 		super(config, configFile, scope, verbose);
-
-		haxelib = new Haxelib();
 	}
 
 	public static function fromCommand(command:ValidateCommand):ValidatePhase
@@ -49,7 +43,7 @@ class ValidatePhase extends AbstractPhase
 
 	override function execute():Void
 	{
-		if(config.dependencies == null)
+		if(config.dependencies == null || config.dependencies.length == 0)
 			return logPhase("validate", scope, "No dependencies found.");
 
 		logPhase("validate", scope, "Found " + config.dependencies.length + " dependencies.");
@@ -82,7 +76,7 @@ class ValidatePhase extends AbstractPhase
 		}
 
 		log("Resolving " + dependency.toString());
-		switch(dependency.sourceType)
+		switch(dependency.type)
 		{
 			case SourceType.GIT:
 				installDependencyGit(dependency);
@@ -234,33 +228,31 @@ class ValidatePhase extends AbstractPhase
 
 	function installDependencyGit(dependency:DependencyDetail):Void
 	{
-		if(FileSystem.exists(TEMP_DIRECTORY))
-			haxelib.deleteDirectory(TEMP_DIRECTORY);
-		FileSystem.createDirectory(TEMP_DIRECTORY);
+		createTempDirectory();
 
 		try
 		{
-			Git.checkout(dependency.source, dependency.version, TEMP_DIRECTORY);
+			Git.checkout(dependency.source, dependency.version, AbstractPhase.TEMP_DIRECTORY);
 		}
 		catch(error:Dynamic)
 		{
-			haxelib.deleteDirectory(TEMP_DIRECTORY);
+			deleteTempDirectory();
 			throw error;
 		}
 
-		haxelib.deleteDirectory(TEMP_DIRECTORY + "/.git");
+		haxelib.deleteDirectory(AbstractPhase.TEMP_DIRECTORY + "/.git");
 		var depenencyDirectory:String = haxelib.getDependencyDirectory(dependency.name);
 		haxelib.makeDirectory(depenencyDirectory);
 
 		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
 		if(dependency.classPath != null)
 		{
-			FileSystem.rename(TEMP_DIRECTORY + "/" + dependency.classPath, target);
-			haxelib.deleteDirectory(TEMP_DIRECTORY);
+			FileSystem.rename(AbstractPhase.TEMP_DIRECTORY + "/" + dependency.classPath, target);
+			deleteTempDirectory();
 		}
 		else
 		{
-			FileSystem.rename(TEMP_DIRECTORY, target);
+			FileSystem.rename(AbstractPhase.TEMP_DIRECTORY, target);
 		}
 
 		var currentFile:String = depenencyDirectory + "/" + Haxelib.FILE_CURRENT;

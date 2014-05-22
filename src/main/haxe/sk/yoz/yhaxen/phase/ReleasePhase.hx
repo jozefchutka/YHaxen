@@ -1,10 +1,13 @@
 package sk.yoz.yhaxen.phase;
 
+import haxe.io.Path;
+
 import sk.yoz.yhaxen.enums.ReleaseType;
 import sk.yoz.yhaxen.parser.ConfigParser;
 import sk.yoz.yhaxen.phase.CompilePhase;
 import sk.yoz.yhaxen.util.Git;
 import sk.yoz.yhaxen.util.Haxelib;
+import sk.yoz.yhaxen.util.Zip;
 import sk.yoz.yhaxen.valueObject.command.ReleaseCommand;
 import sk.yoz.yhaxen.valueObject.config.Config;
 import sk.yoz.yhaxen.valueObject.config.Release;
@@ -14,7 +17,6 @@ class ReleasePhase extends AbstractPhase
 {
 	public var version(default, null):String;
 
-	var haxelib:Haxelib;
 	var compilePhase:CompilePhase;
 
 	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String)
@@ -22,7 +24,6 @@ class ReleasePhase extends AbstractPhase
 		super(config, configFile, scope, verbose);
 
 		this.version = version;
-		haxelib = new Haxelib();
 	}
 
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
@@ -46,6 +47,7 @@ class ReleasePhase extends AbstractPhase
 	function executeCompilePhase():Void
 	{
 		compilePhase = new CompilePhase(config, configFile, scope, verbose);
+		compilePhase.haxelib = haxelib;
 		compilePhase.execute();
 	}
 
@@ -98,7 +100,18 @@ class ReleasePhase extends AbstractPhase
 
 	function releaseHaxelib(release:Release):Void
 	{
+		var zip:Zip = new Zip();
+		for(file in release.files)
+		{
+			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
+				updateHaxelibJson(file);
 
+			zip.add(file, Path.withoutDirectory(file));
+		}
+
+		createTempDirectory();
+		zip.save(AbstractPhase.TEMP_DIRECTORY + "/release.zip");
+		deleteTempDirectory();
 	}
 
 	function updateHaxelibJson(file:String):Void

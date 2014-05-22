@@ -1,5 +1,10 @@
 {
 	"version": 1,
+
+	"dependencies":
+	[
+	],
+
 	"builds":
 	[
 		{
@@ -15,6 +20,10 @@
 		{
 			"type": "git",
 			"files": ["src/main/haxe/haxelib.json", "run.n"]
+		},
+		{
+			"type": "haxelib",
+			"files": ["src/main/haxe/haxelib.json", "run.n", "src/main/haxe/sk"]
 		}
 	]
 }

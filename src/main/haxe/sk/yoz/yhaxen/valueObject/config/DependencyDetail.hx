@@ -13,7 +13,7 @@ class DependencyDetail extends Dependency
 	/**
 	 * Required
 	 **/
-	public var sourceType:SourceType;
+	public var type:SourceType;
 
 	/**
 	 * Optional
@@ -30,10 +30,10 @@ class DependencyDetail extends Dependency
 	 **/
 	public var forceVersion:Bool = false;
 
-	public function new(name:String, version:String, sourceType:SourceType, source:String)
+	public function new(name:String, version:String, type:SourceType, source:String)
 	{
 		super(name, version);
-		this.sourceType = sourceType;
+		this.type = type;
 		this.source = source;
 	}
 

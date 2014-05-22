@@ -37,6 +37,7 @@ class CompilePhase extends AbstractPhase
 	function executeValidatePhase():Void
 	{
 		validatePhase = new ValidatePhase(config, configFile, scope, verbose);
+		validatePhase.haxelib = haxelib;
 		validatePhase.execute();
 	}
 

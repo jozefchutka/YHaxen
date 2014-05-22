@@ -23,27 +23,27 @@ class DependencyParser extends GenericParser<DependencyDetail>
 				"Dependency " + name + " is missing required version field.",
 				"Provide dependency version in " + configFile + ".");
 
-		if(!Reflect.hasField(source, "sourceType"))
+		if(!Reflect.hasField(source, "type"))
 			throw new Error(
-				"Missing dependency sourceType!",
-				"Dependency " + name + " is missing sourceType field.",
-				"Provide dependency sourceType in " + configFile + ".");
+				"Missing dependency type!",
+				"Dependency " + name + " is missing type field.",
+				"Provide dependency type in " + configFile + ".");
 
-		var sourceTypeRaw:String = Reflect.field(source, "sourceType");
-		var sourceType:SourceType;
+		var typeRaw:String = Reflect.field(source, "type");
+		var type:SourceType;
 		try
 		{
-			sourceType = GenericParser.parseEnum(SourceType, sourceTypeRaw);
+			type = GenericParser.parseEnum(SourceType, typeRaw);
 		}
 		catch(error:Dynamic)
 		{
 			throw new Error(
-				"Invalid dependency sourceType!",
-				"Dependency " + name + " has invalid sourceType value " + sourceTypeRaw + ".",
-				"Provide valid dependency sourceType in " + configFile + ".");
+				"Invalid dependency type!",
+				"Dependency " + name + " has invalid type value " + typeRaw + ".",
+				"Provide valid dependency type in " + configFile + ".");
 		}
 
-		if(sourceType == SourceType.GIT && !Reflect.hasField(source, "source"))
+		if(type == SourceType.GIT && !Reflect.hasField(source, "source"))
 			throw new Error(
 				"Missing dependency source!",
 				"Dependency " + name + " is missing source field.",
@@ -52,7 +52,7 @@ class DependencyParser extends GenericParser<DependencyDetail>
 		var result:DependencyDetail = new DependencyDetail(
 			name,
 			Reflect.field(source, "version"),
-			sourceType,
+			type,
 			Reflect.field(source, "source"));
 
 		result.scopes = Reflect.field(source, "scopes");
@@ -60,10 +60,6 @@ class DependencyParser extends GenericParser<DependencyDetail>
 		result.classPath = Reflect.field(source, "classPath");
 		if(result.classPath == "")
 			result.classPath = null;
-
-		result.sourceType = Reflect.hasField(source, "sourceType")
-			? GenericParser.parseEnum(SourceType, Reflect.field(source, "sourceType"))
-			: SourceType.GIT;
 
 		if(Reflect.hasField(source, "forceVersion"))
 			result.forceVersion = Reflect.field(source, "forceVersion");

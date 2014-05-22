@@ -1,9 +1,8 @@
 package sk.yoz.yhaxen.util;
 
-import StringTools;
-import sys.io.Process;
-import Sys;
 import sk.yoz.yhaxen.valueObject.Error;
+
+import sys.io.Process;
 
 class Git
 {
