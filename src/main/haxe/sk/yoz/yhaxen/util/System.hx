@@ -1,5 +1,8 @@
 package sk.yoz.yhaxen.util;
 
+import sys.FileSystem;
+import haxe.io.Path;
+
 import sys.io.Process;
 
 class System
@@ -29,5 +32,28 @@ class System
 	{
 		print("  $ " + cmd + " " + args.join(" "));
 		return new Process(cmd, args);
+	}
+
+	/**
+	 * Check if the last argument is a current working directory passed in by haxeLib.
+	 * If so update cwd and pass back args without that argument.
+	 **/
+	public static function fixCwd():Array<String>
+	{
+		var args = Sys.args();
+		if(args.length == 0)
+			return args;
+
+		var last:String = (new Path(args[args.length - 1])).toString();
+		var slash = last.substr(-1);
+		if(slash == "/" || slash == "\\")
+			last = last.substr(0, last.length-1);
+
+		if(!FileSystem.exists(last) || !FileSystem.isDirectory(last))
+			return args;
+
+		Sys.setCwd(last);
+		args.pop();
+		return args;
 	}
 }

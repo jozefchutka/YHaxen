@@ -29,8 +29,9 @@ class Main
 
 	private function new()
 	{
+		var args = System.fixCwd();
 		System.print("YHaxen");
-	
+
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
 		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
 		commandRelease = new Command(Command.KEY_RELEASE, "Release versioned project.");
@@ -40,7 +41,6 @@ class Main
 		try
 		{
 			var parser = new CommandParser();
-			var args = Sys.args();
 			var command = parser.parse(args);
 			execute(command);
 			System.print("");
