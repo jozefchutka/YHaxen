@@ -14,10 +14,23 @@ haxelib run yhaxen compile
 neko run.n compile -config src/test/resources/yhaxen.json
 ```
 
+### install
+
+from git:
+```
+haxelib git yhaxen git@github.com:jozefchutka/YHaxen.git 0.0.16 src/main/haxe
+```
+
+from haxelib:
+```
+haxelib install yhaxen 0.0.16
+```
+
 ## TODO
 - use verbose
 - validate all dependencies even when used scope, provide cp paths filtered by scope
 - snapshot dependencies - via "reinstall"
+- provide dependencies in haxelib.json
 - unit tests
 - deploy target
 - test osx, linux

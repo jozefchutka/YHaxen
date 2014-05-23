@@ -7,6 +7,7 @@ import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.util.Git;
 import yhaxen.util.Haxelib;
+import yhaxen.util.System;
 import yhaxen.util.Zip;
 import yhaxen.valueObject.command.ReleaseCommand;
 import yhaxen.valueObject.config.Config;
@@ -15,21 +16,25 @@ import yhaxen.valueObject.Error;
 
 class ReleasePhase extends AbstractPhase
 {
+	inline static var DEFAULT_MESSAGE:String = "Regular release by YHaxen.";
+
 	public var version(default, null):String;
+	public var message(default, null):String;
 
 	var compilePhase:CompilePhase;
 
-	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String)
+	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String, message:String)
 	{
 		super(config, configFile, scope, verbose);
 
 		this.version = version;
+		this.message = message;
 	}
 
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new ReleasePhase(config, command.configFile, command.scope, command.verbose, command.version);
+		return new ReleasePhase(config, command.configFile, command.scope, command.verbose, command.version, command.message);
 	}
 
 	override function execute():Void
@@ -110,13 +115,16 @@ class ReleasePhase extends AbstractPhase
 		}
 
 		createTempDirectory();
-		zip.save(AbstractPhase.TEMP_DIRECTORY + "/release.zip");
+		var file = AbstractPhase.TEMP_DIRECTORY + "/release.zip";
+		zip.save(file);
+		System.command("haxelib", ["submit", file]);
 		deleteTempDirectory();
 	}
 
 	function updateHaxelibJson(file:String):Void
 	{
-		if(!haxelib.updateVersionInFile(file, version))
+		var message:String = this.message == null || this.message == "" ? DEFAULT_MESSAGE : this.message;
+		if(!haxelib.updateHaxelibFile(file, version, message))
 			throw new Error(
 				"Invalid " + Haxelib.FILE_HAXELIB + " file!",
 				"Release related file " + file + " does not exist or is invalid.",

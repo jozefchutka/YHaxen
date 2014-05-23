@@ -36,7 +36,8 @@ class CommandParser extends GenericParser<AbstractCommand>
 						"Missing release version.",
 						"Command " + Command.KEY_RELEASE + " is missing required version argument.",
 						"Provide version in " + Command.KEY_RELEASE + " command e.g. \"-version 1.2.3\".");
-				return new ReleaseCommand(configFile, scope, verbose, version);
+				var message = getString("message", args);
+				return new ReleaseCommand(configFile, scope, verbose, version, message);
 			case Command.KEY_HELP:
 				return new HelpCommand();
 			default:
