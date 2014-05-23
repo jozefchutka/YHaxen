@@ -9,7 +9,7 @@
 		"jozefchutka"
 	],
 	"releasenote": "Fixed git release.",
-	"version": "0.0.20",
+	"version": "0.0.19",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
