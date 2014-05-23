@@ -16,9 +16,9 @@ neko run.n compile -config src/test/resources/yhaxen.json
 
 ## TODO
 - use verbose
+- validate all dependencies even when used scope, provide cp paths filtered by scope
 - snapshot dependencies - via "reinstall"
 - unit tests
-- build target
 - deploy target
 - test osx, linux
 - running yhaxen without privileges to haxelib/lib folder
@@ -29,10 +29,10 @@ neko run.n compile -config src/test/resources/yhaxen.json
 	- install dependencies
 - compile
 - test
-- release
-	- make tags
-	- upload to haxelib
 - deploy
+- release
+	- make git tags
+	- upload to haxelib
 
 ### should
 - install specific version from git

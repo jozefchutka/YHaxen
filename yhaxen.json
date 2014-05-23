@@ -9,9 +9,9 @@
 	[
 		{
 			"name": "main",
-			"artifact": "run.n",
+			"artifact": "src/main/haxe/run.n",
 			"command": "haxe",
-			"arguments": ["-main", "sk.yoz.yhaxen.Main", "-neko", "${artifact}", "-cp", "src/main/haxe", "${dependencies}"]
+			"arguments": ["-main", "yhaxen.Main", "-neko", "${artifact}", "-cp", "src/main/haxe", "${dependencies}"]
 		}
 	],
 
@@ -19,11 +19,11 @@
 	[
 		{
 			"type": "git",
-			"files": ["src/main/haxe/haxelib.json", "run.n"]
+			"files": ["src/main/haxe/haxelib.json", "src/main/haxe/run.n"]
 		},
 		{
 			"type": "haxelib",
-			"files": ["src/main/haxe/haxelib.json", "run.n", "src/main/haxe/sk"]
+			"files": ["src/main/haxe/haxelib.json", "src/main/haxe/run.n", "src/main/haxe/yhaxen"]
 		}
 	]
 }
