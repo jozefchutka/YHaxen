@@ -1,29 +1,42 @@
 # YHaxen
 
-## build
+YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's validation, build, deployment and releasement.
+
+## Install
+
+Recommended installation from from haxelib:
 ```
-haxe -main sk.yoz.yhaxen.Main -neko run.n -cp src/main/haxe
+haxelib install yhaxen
 ```
 
+Optionally can be also installed from git:
+```
+haxelib git yhaxen git@github.com:jozefchutka/YHaxen.git 0.0.20 src/main/haxe
+```
+
+## Build
+
+Recommended build from sources using yhaxen:
 ```
 haxelib run yhaxen compile
 ```
 
-## test
+Optionally can be built from sources using haxe:
 ```
-neko run.n compile -config src/test/resources/yhaxen.json
-```
-
-### install
-
-from git:
-```
-haxelib git yhaxen git@github.com:jozefchutka/YHaxen.git 0.0.16 src/main/haxe
+haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe
 ```
 
-from haxelib:
+## Usage
 ```
-haxelib install yhaxen 0.0.16
+yhaxen validate
+yhaxen validate -config src/test/resources/yhaxen.json
+yhaxen validate -scope web
+yhaxen compile
+yhaxen compile -config src/test/resources/yhaxen.json
+yhaxen compile -scope web
+yhaxen release -version 0.0.1
+yhaxen release -version 0.0.1 -message "Initial release."
+yhaxen release -version 0.0.1 -scope web
 ```
 
 ## TODO
@@ -31,6 +44,7 @@ haxelib install yhaxen 0.0.16
 - validate all dependencies even when used scope, provide cp paths filtered by scope
 - snapshot dependencies - via "reinstall"
 - provide dependencies in haxelib.json
+- provide commit message with release when available (via -message)
 - unit tests
 - deploy target
 - test osx, linux

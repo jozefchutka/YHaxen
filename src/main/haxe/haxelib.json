@@ -4,12 +4,12 @@
 	"tags": [
 		"management"
 	],
-	"description": "Project management tool for Haxe.",
+	"description": "YHaxen is a Haxe project management tool written in Haxe. YHaxen can manage a project's validation, build, deployment and releasement.",
 	"contributors": [
 		"jozefchutka"
 	],
 	"releasenote": "Fixed git release.",
-	"version": "0.0.19",
+	"version": "snapshot",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
