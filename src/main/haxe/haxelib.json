@@ -1,15 +1,10 @@
 {
 	"name": "yhaxen",
 	"license": "MIT",
-	"tags": [
-		"management"
-	],
+	"tags": ["management"],
 	"description": "Project management tool for Haxe.",
-	"contributors": [
-		"jozefchutka"
-	],
-	"releasenote": "Fixed git release.",
-	"version": "0.0.19",
+	"contributors": ["default.user"],
+	"version": "0.0.14",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
