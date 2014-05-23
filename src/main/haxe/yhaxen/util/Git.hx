@@ -75,9 +75,9 @@ class Git
 				"Make sure project is under git control.");
 	}
 
-	public static function rm(file:String):Void
+	public static function rmKeepLocal(file:String):Void
 	{
-		if(System.command("git", ["rm", file]) != 0)
+		if(System.command("git", ["rm", "--cached", file]) != 0)
 			throw new Error(
 				"Git rm failed.",
 				"Git was not able to remove " + file + ".",

@@ -90,7 +90,7 @@ class ReleasePhase extends AbstractPhase
 			}
 			catch(error:Error)
 			{
-				Git.rm(file);
+				Git.rmKeepLocal(file);
 			}
 		}
 
