@@ -39,6 +39,66 @@ yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -scope web
 ```
 
+## Config
+
+Default config filename is **yhaxen.json**. Each phase has a related section in config file. If a phase related section is not defined in config file, phase would be skipped.   
+
+```json
+{
+	"version": 1,
+	"dependencies": [...],
+	"builds": [...],
+	"releases": [...],
+}
+```
+
+## Phases
+
+1. validate
+2. compile
+3. test
+4. deploy
+5. release
+
+When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen deploy` would run validate, compile and test phase before the actual deployment).
+
+### Validate
+
+Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git**). Config dependencies relates to validate phase.
+ 
+```json
+"dependencies":
+	[
+		{
+			"name": "msignal",
+			"version": "1.2.2",
+			"sourceType": "haxelib",
+			"forceVersion": true
+		},
+		...
+	]
+```
+
+If multiple versions of a lib is used phase fails with error describing the conflicting dependencies. Conflicting dependencies can be resolved using `forceVersion` in config. 
+
+### Compile
+
+Executes compilation command.
+
+Todo: example json, how dependencies variable is used
+
+### Test
+
+Not yet implemented.
+
+### Deploy
+
+Not yet implemented.
+
+### Release
+
+Todo: example json, describe git tags, submit to haxelib
+
 ## TODO
 - use verbose
 - validate all dependencies even when used scope, provide cp paths filtered by scope
@@ -49,17 +109,6 @@ yhaxen release -version 0.0.1 -scope web
 - deploy target
 - test osx, linux
 - running yhaxen without privileges to haxelib/lib folder
-
-### Phases
-- validate
-	- resolve dependencies
-	- install dependencies
-- compile
-- test
-- deploy
-- release
-	- make git tags
-	- upload to haxelib
 
 ### should
 - install specific version from git
