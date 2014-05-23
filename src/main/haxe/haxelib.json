@@ -4,7 +4,7 @@
 	"tags": ["management"],
 	"description": "Project management tool for Haxe.",
 	"contributors": ["default.user"],
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
