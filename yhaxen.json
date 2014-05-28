@@ -15,6 +15,17 @@
 		}
 	],
 
+	"tests":
+	[
+		{
+			"command": "haxelib",
+			"arguments": ["run", "munit", "test", "null", "version=munit", "src=src/test/haxe", "bin=bin/test",
+				"report=bin/test-report", "classPaths=src/main/haxe", "coverageIgnoredClasses=module", "-neko",
+				"target:main=TestMain", "target:lib=munit", "target:cp=src/main/haxe", "target:cp=src/test/haxe",
+				"target:neko=bin/test/neko_test.n"]
+		}
+	]
+
 	"releases":
 	[
 		{
