@@ -2,8 +2,11 @@ package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
+import yhaxen.util.System;
 import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.config.Config;
+import yhaxen.valueObject.config.Test;
+import yhaxen.valueObject.Error;
 
 class TestPhase extends AbstractPhase
 {
@@ -28,6 +31,9 @@ class TestPhase extends AbstractPhase
 			return logPhase("tests", scope, "No tests found.");
 
 		logPhase("test", scope, "Found " + config.tests.length + " tests.");
+
+		for(test in config.tests)
+			resolveTest(test);
 	}
 
 	override function executePreviousPhase():Void
@@ -35,5 +41,18 @@ class TestPhase extends AbstractPhase
 		compilePhase = new CompilePhase(config, configFile, scope, verbose);
 		compilePhase.haxelib = haxelib;
 		compilePhase.execute();
+	}
+
+	function resolveTest(test:Test):Void
+	{
+		var arguments = null;
+		if(test.arguments != null && test.arguments.length > 0)
+			arguments = resolveVariablesInArray(test.arguments);
+
+		if(System.command(test.command, arguments) != 0)
+			throw new Error(
+				"Test failed!",
+				"System command failed to execute or tests failed.",
+				"Make sure system command can be executed and fix tests.");
 	}
 }

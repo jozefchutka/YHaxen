@@ -4,9 +4,6 @@ import yhaxen.util.ScopeUtil;
 
 class Build
 {
-	inline public static var ARGUMENT_ARTIFACT:String = "${artifact}";
-	inline public static var ARGUMENT_DEPENDENCIES:String = "${dependencies}";
-
 	/**
 	 * Required
 	 **/

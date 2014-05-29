@@ -28,8 +28,6 @@ class ValidatePhase extends AbstractPhase
 	inline static var WORD_INVALID:String = "INVALID";
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
 
-	public var dependencyPaths(default, null):Array<String>;
-
 	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
 	{
 		super(config, configFile, scope, verbose);
@@ -65,8 +63,6 @@ class ValidatePhase extends AbstractPhase
 		log("");
 		log("Flatten:");
 		validateFlatten(flatten);
-
-		validatePaths(flatten);
 	}
 
 	function resolveDependency(dependency:DependencyDetail)
@@ -190,15 +186,6 @@ class ValidatePhase extends AbstractPhase
 					"Dependency " + name + " has multiple versions used.",
 					"Provide forceVersion in " + configFile + ".");
 		}
-	}
-
-	function validatePaths(data:FlattenDependencies):Void
-	{
-		dependencyPaths = [];
-		for(name in data.keys())
-			for(version in data.get(name).keys())
-				if(version != WORD_UNDEFINED)
-					dependencyPaths.push(haxelib.getDependencyVersionDirectory(name, version, false));
 	}
 
 	function getTree():Array<DependencyTreeItem>

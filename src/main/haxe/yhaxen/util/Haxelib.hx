@@ -20,7 +20,7 @@ class Haxelib extends tools.haxelib.Main
 
 	private function get_repositoryPath():String
 	{
-		return getRepository();
+		return StringTools.replace(getRepository(), "\\", "/");
 	}
 
 	public function getDependencyDirectory(name:String):String

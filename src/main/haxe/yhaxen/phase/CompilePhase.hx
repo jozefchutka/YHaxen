@@ -63,11 +63,7 @@ class CompilePhase extends AbstractPhase
 	{
 		var arguments = null;
 		if(build.arguments != null && build.arguments.length > 0)
-		{
-			arguments = build.arguments.copy();
-			replaceArtifact(arguments, build.artifact);
-			replaceDependencies(arguments, validatePhase.dependencyPaths);
-		}
+			arguments = resolveVariablesInArray(build.arguments, build);
 
 		if(System.command(build.command, arguments) != 0)
 			throw new Error(
@@ -76,27 +72,11 @@ class CompilePhase extends AbstractPhase
 				"Make sure system command can be executed.");
 	}
 
-	static function replaceArtifact(args:Array<String>, artifact:String):Void
+	override function resolveVariable(input:String, ?env:Dynamic):Array<String>
 	{
-		for(i in 0...args.length)
-			if(args[i].indexOf(Build.ARGUMENT_ARTIFACT) != -1)
-				args[i] = StringTools.replace(args[i], Build.ARGUMENT_ARTIFACT, artifact);
-	}
+		if(input == "artifact")
+			return [cast(env, Build).artifact];
 
-	static function replaceDependencies(args:Array<String>, dependencies:Array<String>):Void
-	{
-		var index = Lambda.indexOf(args, Build.ARGUMENT_DEPENDENCIES);
-		if(index == -1)
-			return;
-
-		args.splice(index, 1);
-		if(dependencies == null)
-			return;
-
-		for(i in 0...dependencies.length)
-		{
-			args.insert(index + i * 2, "-cp");
-			args.insert(index + i * 2 + 1, dependencies[i]);
-		}
+		return super.resolveVariable(input);
 	}
 }

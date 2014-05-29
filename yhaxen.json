@@ -5,7 +5,7 @@
 	[
 		{
 			"name":"munit",
-			"version":"23afd32187",
+			"version":"32716de617",
 			"source": "git@github.com:massiveinteractive/MassiveUnit.git",
 			"type": "git",
 			"classPath": "src",
@@ -40,7 +40,8 @@
 			"name": "main",
 			"artifact": "src/main/haxe/run.n",
 			"command": "haxe",
-			"arguments": ["-main", "yhaxen.Main", "-neko", "${artifact}", "-cp", "src/main/haxe", "${dependencies}"]
+			"arguments": ["-main", "yhaxen.Main", "-neko", "${artifact}", "-cp", "src/main/haxe",
+				"${dependencies:classPath:-cp}"]
 		}
 	],
 
@@ -49,9 +50,9 @@
 		{
 			"command": "neko",
 			"arguments": ["${dependency:munit:dir}/run.n", "test", "cliconfig", "src/test/haxe", "bin/test",
-				"bin/test-report", "config:classPath=src/main/haxe", "config:coverageIgnoredClass=module",
-				"target:main=TestMain", "target:lib=munit", "target:cp=src/main/haxe", "target:cp=src/test/haxe",
-				"target:neko=bin/test/neko_test.n"]
+				"bin/test-report", "config:classPath", "src/main/haxe", "config:coverageIgnoredClass", "module",
+				"target:-main", "TestMain", "target:-cp", "src/main/haxe", "target:-cp", "src/test/haxe",
+				"${dependencies:classPath:target:-cp}", "target:-neko", "bin/test/neko_test.n"]
 		}
 	],
 

@@ -1,8 +1,10 @@
 package yhaxen.phase;
 
+import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
 import yhaxen.valueObject.config.Config;
+import yhaxen.valueObject.Error;
 
 import sys.FileSystem;
 
@@ -24,14 +26,14 @@ class AbstractPhase
 		this.verbose = verbose;
 	}
 
-	private function get_haxelib():Haxelib
+	function get_haxelib():Haxelib
 	{
 		if(haxelib == null)
 			haxelib = new Haxelib();
 		return haxelib;
 	}
 
-	private function set_haxelib(value:Haxelib):Haxelib
+	function set_haxelib(value:Haxelib):Haxelib
 	{
 		return haxelib = value;
 	}
@@ -74,5 +76,134 @@ class AbstractPhase
 	{
 		if(FileSystem.exists(TEMP_DIRECTORY))
 			haxelib.deleteDirectory(TEMP_DIRECTORY);
+	}
+
+	function getDependencyByName(name:String):DependencyDetail
+	{
+		for(dependency in config.dependencies)
+			if(dependency.name == name)
+				return dependency;
+		return null;
+	}
+
+	function getDependencies(scope:String):Array<DependencyDetail>
+	{
+		var result:Array<DependencyDetail> = [];
+		for(dependency in config.dependencies)
+			if(dependency.matchesScope(scope))
+				result.push(dependency);
+		return result;
+	}
+
+	function resolveVariablesInArray(input:Array<String>, ?env:Dynamic):Array<String>
+	{
+		var result:Array<String> = [];
+		for(item in input)
+		{
+			var resolvedResults = resolveVariablesInString(item, env);
+			if(resolvedResults == null)
+				result.push(item);
+			else
+				for(resolvedResult in resolvedResults)
+					result.push(resolvedResult);
+		}
+		return result;
+	}
+
+	function resolveVariablesInString(input:String, ?env:Dynamic):Array<String>
+	{
+		var result:Array<String> = [];
+		while(input != null && input != "" && input.indexOf("$" + "{") > -1)
+		{
+			log("Resolving variables in \"" + input + "\"");
+
+			var variableEReg:EReg = ~/\$\{([^}]+)\}/;
+			variableEReg.match(input);
+			var pos = variableEReg.matchedPos();
+			var matched:String = variableEReg.matched(1);
+			if(matched == null)
+				throw new Error(
+					"Invalid variable used!",
+					"Parser is not able to match variable in \"" + input + "\".",
+					"Make sure the variable is defined properly.");
+			var resolvedResults = resolveVariable(matched, env);
+			var prefix:String = input.substr(0, pos.pos);
+			var postfix:String = input.substr(pos.pos + pos.len);
+			if(resolvedResults != null)
+			{
+				for(resolvedResult in resolvedResults)
+				{
+					var fixedResult = prefix + resolvedResult + postfix;
+					result.push(fixedResult);
+					log("  -> " + fixedResult);
+				}
+			}
+			input = postfix;
+		}
+		return result.length == 0 ? null : result;
+	}
+
+	function resolveVariable(input:String, ?env:Dynamic):Array<String>
+	{
+		if(StringTools.startsWith(input, "dependency:"))
+			return resolveVariableDependency(input.substr("dependency:".length));
+
+		if(StringTools.startsWith(input, "dependencies:"))
+			return resolveVariableDependencies(input.substr("dependencies:".length));
+
+		throw new Error(
+			"Invalid variable $" + "{" + input + "}",
+			"Variable definition is unknown.",
+			"Make sure the variable is defined properly.");
+	}
+
+	function resolveVariableDependency(input:String):Array<String>
+	{
+		var chunks = input.split(":");
+		var name = chunks.shift();
+		var data = chunks.join(":");
+		var dependency = getDependencyByName(name);
+		if(dependency == null)
+			throw new Error(
+				"Invalid dependency " + name + "!",
+				"Dependency " + name + " is not defined in " + configFile + ".",
+				"Provide existing dependency name.");
+		switch(data)
+		{
+			case "dir":
+				return [haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false)];
+			default:
+				throw new Error(
+					"Invalid variable $" + "{" + input + "}",
+					"Variable definition \"" + data + "\" is unknown.",
+					"Make sure the variable is defined properly.");
+		}
+	}
+
+	function resolveVariableDependencies(input:String):Array<String>
+	{
+		var chunks = input.split(":");
+		var type = chunks.shift();
+		var data = chunks.join(":");
+		var dependencies = getDependencies(scope);
+		var result:Array<String> = [];
+		for(dependency in dependencies)
+		{
+			switch(type)
+			{
+				case "classPath":
+					result.push(data);
+					result.push(haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false));
+				case "lib":
+					result.push(data);
+					result.push(dependency.name);
+				default:
+					throw new Error(
+						"Invalid variable $" + "{" + input + "}",
+						"Variable definition \"" + data + "\" is unknown.",
+						"Make sure the variable is defined properly.");
+			}
+		}
+		return result.length == 0 ? null : result;
 	}
 }
