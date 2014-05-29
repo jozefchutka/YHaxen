@@ -1,28 +1,27 @@
 package yhaxen.valueObject.config;
 
-import yhaxen.enums.ReleaseType;
 import yhaxen.util.ScopeUtil;
 
-class Release
+class Test
 {
 	/**
 	 * Required
 	 **/
-	public var type:ReleaseType;
+	public var command:String;
 
 	/**
 	 * Optional
 	 **/
-	public var files:Array<String>;
+	public var arguments:Array<String>;
 
 	/**
 	 * Optional
 	 **/
 	public var scopes:Array<String>;
 
-	public function new(type:ReleaseType)
+	public function new(command:String)
 	{
-		this.type = type;
+		this.command = command;
 	}
 
 	public function matchesScope(scope:String):Bool

@@ -24,7 +24,10 @@ class CompilePhase extends AbstractPhase
 
 	override function execute():Void
 	{
-		executeValidatePhase();
+		super.execute();
+
+		if(config.builds == null || config.builds.length == 0)
+			return logPhase("compile", scope, "No builds found.");
 
 		logPhase("compile", scope, "Found " + config.builds.length + " builds.");
 
@@ -34,7 +37,7 @@ class CompilePhase extends AbstractPhase
 			compileBuild(build);
 	}
 
-	function executeValidatePhase():Void
+	override function executePreviousPhase():Void
 	{
 		validatePhase = new ValidatePhase(config, configFile, scope, verbose);
 		validatePhase.haxelib = haxelib;
@@ -48,8 +51,8 @@ class CompilePhase extends AbstractPhase
 		{
 			if(Lambda.has(names, build.name))
 				throw new Error(
-					"Misconfigured dependency " + build.name + "!",
-					"Dependency " + build.name + " is defined multiple times.",
+					"Misconfigured build " + build.name + "!",
+					"Build " + build.name + " is defined multiple times.",
 					"Provide only one definition for " + build.name + " in " + configFile + ".");
 
 			names.push(build.name);

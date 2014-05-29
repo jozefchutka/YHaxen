@@ -1,9 +1,10 @@
 package yhaxen.parser;
 
-import yhaxen.valueObject.command.ReleaseCommand;
 import yhaxen.valueObject.command.AbstractCommand;
 import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.command.HelpCommand;
+import yhaxen.valueObject.command.ReleaseCommand;
+import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.Command;
@@ -29,6 +30,8 @@ class CommandParser extends GenericParser<AbstractCommand>
 				return new ValidateCommand(configFile, scope, verbose);
 			case Command.KEY_COMPILE:
 				return new CompileCommand(configFile, scope, verbose);
+			case Command.KEY_TEST:
+				return new TestCommand(configFile, scope, verbose);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")

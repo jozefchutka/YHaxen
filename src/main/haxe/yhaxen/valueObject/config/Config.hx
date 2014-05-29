@@ -22,6 +22,11 @@ class Config
 	/**
 	 * Optional
 	 **/
+	public var tests:Array<Test>;
+
+	/**
+	 * Optional
+	 **/
 	public var releases:Array<Release>;
 
 	public function new(version:Int)

@@ -3,12 +3,14 @@ package yhaxen;
 import yhaxen.parser.CommandParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.phase.ReleasePhase;
+import yhaxen.phase.TestPhase;
 import yhaxen.phase.ValidatePhase;
 import yhaxen.util.System;
 import yhaxen.valueObject.command.AbstractCommand;
 import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.command.HelpCommand;
 import yhaxen.valueObject.command.ReleaseCommand;
+import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.valueObject.Command;
 import yhaxen.valueObject.Error;
@@ -19,6 +21,7 @@ class Main
 
 	private var commandValidate:Command;
 	private var commandCompile:Command;
+	private var commandTest:Command;
 	private var commandRelease:Command;
 	private var commandHelp:Command;
 
@@ -34,6 +37,7 @@ class Main
 
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
 		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
+		commandTest = new Command(Command.KEY_TEST, "Test the compiled source code using a unit testing framework.");
 		commandRelease = new Command(Command.KEY_RELEASE, "Release versioned project.");
 		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
 		commands = [commandValidate, commandCompile, commandRelease, commandHelp];
@@ -67,6 +71,9 @@ class Main
 
 		if(Std.is(command, CompileCommand))
 			return CompilePhase.fromCommand(cast command).execute();
+
+		if(Std.is(command, TestCommand))
+			return TestPhase.fromCommand(cast command).execute();
 
 		if(Std.is(command, ReleaseCommand))
 			return ReleasePhase.fromCommand(cast command).execute();

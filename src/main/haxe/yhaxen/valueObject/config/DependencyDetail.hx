@@ -1,6 +1,7 @@
 package yhaxen.valueObject.config;
 
 import yhaxen.enums.SourceType;
+import yhaxen.util.ScopeUtil;
 import yhaxen.valueObject.dependency.Dependency;
 
 class DependencyDetail extends Dependency
@@ -39,7 +40,7 @@ class DependencyDetail extends Dependency
 
 	public function matchesScope(scope:String):Bool
 	{
-		return (scope == null || scopes == null) ? true : Lambda.has(scopes, scope);
+		return ScopeUtil.matches(scopes, scope);
 	}
 
 	public static function getFromList(list:Array<DependencyDetail>, name:String):DependencyDetail

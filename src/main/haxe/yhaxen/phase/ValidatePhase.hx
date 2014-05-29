@@ -43,6 +43,8 @@ class ValidatePhase extends AbstractPhase
 
 	override function execute():Void
 	{
+		super.execute();
+
 		if(config.dependencies == null || config.dependencies.length == 0)
 			return logPhase("validate", scope, "No dependencies found.");
 
@@ -69,7 +71,20 @@ class ValidatePhase extends AbstractPhase
 
 	function resolveDependency(dependency:DependencyDetail)
 	{
-		if(haxelib.dependencyVersionExists(dependency.name, dependency.version))
+		var exists:Bool = false;
+		try
+		{
+			exists = haxelib.dependencyVersionExists(dependency.name, dependency.version);
+		}
+		catch(error:Dynamic)
+		{
+			throw new Error(
+				"Invalid dependency " + dependency.name + ".",
+				"Dependency directory " + dependency.version + " could not be resolved.",
+				"Provide valid dependency version that can be resolved into a directory.");
+		}
+
+		if(exists)
 		{
 			logKeyVal("Resolving " + dependency.toString(), 40, WORD_OK);
 			return;

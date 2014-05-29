@@ -38,7 +38,11 @@ class AbstractPhase
 
 	public function execute():Void
 	{
-		throw "Not implemented!";
+		executePreviousPhase();
+	}
+
+	function executePreviousPhase():Void
+	{
 	}
 
 	function logPhase(name:String, scope:String, details:String):Void

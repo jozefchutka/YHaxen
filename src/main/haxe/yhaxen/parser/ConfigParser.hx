@@ -35,6 +35,13 @@ class ConfigParser extends GenericParser<Config>
 			result.builds = buildParser.parseList(Reflect.field(source, "builds"));
 		}
 
+		if(Reflect.hasField(source, "tests"))
+		{
+			var testParser = new TestParser();
+			testParser.configFile = configFile;
+			result.tests = testParser.parseList(Reflect.field(source, "tests"));
+		}
+
 		if(Reflect.hasField(source, "releases"))
 		{
 			var releaseParser = new ReleaseParser();

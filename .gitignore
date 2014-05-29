@@ -3,5 +3,4 @@
 /bin
 /tmp
 /*.iml
-/src/test/haxe/ExampleTest.hx
 /src/test/haxe/TestSuite.hx

@@ -1,5 +1,6 @@
 package yhaxen.phase;
 
+import yhaxen.phase.TestPhase;
 import haxe.io.Path;
 
 import yhaxen.enums.ReleaseType;
@@ -21,7 +22,7 @@ class ReleasePhase extends AbstractPhase
 	public var version(default, null):String;
 	public var message(default, null):String;
 
-	var compilePhase:CompilePhase;
+	var testPhase:TestPhase;
 
 	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String, message:String)
 	{
@@ -39,26 +40,22 @@ class ReleasePhase extends AbstractPhase
 
 	override function execute():Void
 	{
-		executeCompilePhase();
+		super.execute();
+
+		if(config.releases == null || config.releases.length == 0)
+			return logPhase("release", scope, "No releases found.");
 
 		logPhase("release", scope, "Found " + config.releases.length + " releases.");
-
-		validateConfig();
 
 		for(release in config.releases)
 			resolveRelease(release);
 	}
 
-	function executeCompilePhase():Void
+	override function executePreviousPhase():Void
 	{
-		compilePhase = new CompilePhase(config, configFile, scope, verbose);
-		compilePhase.haxelib = haxelib;
-		compilePhase.execute();
-	}
-
-	function validateConfig():Void
-	{
-
+		testPhase = new TestPhase(config, configFile, scope, verbose);
+		testPhase.haxelib = haxelib;
+		testPhase.execute();
 	}
 
 	function resolveRelease(release:Release):Void

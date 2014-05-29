@@ -1,5 +1,7 @@
 package yhaxen.valueObject.config;
 
+import yhaxen.util.ScopeUtil;
+
 class Build
 {
 	inline public static var ARGUMENT_ARTIFACT:String = "${artifact}";
@@ -39,6 +41,6 @@ class Build
 
 	public function matchesScope(scope:String):Bool
 	{
-		return (scope == null || scopes == null) ? true : Lambda.has(scopes, scope);
+		return ScopeUtil.matches(scopes, scope);
 	}
 }
