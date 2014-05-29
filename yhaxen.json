@@ -5,7 +5,7 @@
 	[
 		{
 			"name":"munit",
-			"version":"32716de617",
+			"version":"cf0c91a2c9",
 			"source": "git@github.com:massiveinteractive/MassiveUnit.git",
 			"type": "git",
 			"classPath": "src",
@@ -50,7 +50,8 @@
 		{
 			"command": "neko",
 			"arguments": ["${dependency:munit:dir}/run.n", "test", "cliconfig", "src/test/haxe", "bin/test",
-				"bin/test-report", "config:classPath", "src/main/haxe", "config:coverageIgnoredClass", "module",
+				"bin/test-report", "-result-exit-code", "config:classPath", "src/main/haxe",
+				"config:coverageIgnoredClass", "module",
 				"target:-main", "TestMain", "target:-cp", "src/main/haxe", "target:-cp", "src/test/haxe",
 				"${dependencies:classPath:target:-cp}", "target:-neko", "bin/test/neko_test.n"]
 		}

@@ -1,7 +1,7 @@
 package yhaxen.phase;
 
-import yhaxen.util.System;
 import yhaxen.parser.ConfigParser;
+import yhaxen.util.System;
 import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;

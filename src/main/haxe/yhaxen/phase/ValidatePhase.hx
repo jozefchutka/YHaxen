@@ -1,13 +1,13 @@
 package yhaxen.phase;
 
-import yhaxen.parser.ConfigParser;
-import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.enums.DependencyVersionType;
 import yhaxen.enums.SourceType;
+import yhaxen.parser.ConfigParser;
 import yhaxen.util.ArrayUtil;
 import yhaxen.util.Git;
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
+import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.valueObject.dependency.Dependency;

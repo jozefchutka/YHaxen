@@ -112,44 +112,51 @@ class AbstractPhase
 
 	function resolveVariablesInString(input:String, ?env:Dynamic):Array<String>
 	{
-		var result:Array<String> = [];
-		while(input != null && input != "" && input.indexOf("$" + "{") > -1)
-		{
-			log("Resolving variables in \"" + input + "\"");
+		if(input == null)
+			return null;
 
-			var variableEReg:EReg = ~/\$\{([^}]+)\}/;
-			variableEReg.match(input);
-			var pos = variableEReg.matchedPos();
-			var matched:String = variableEReg.matched(1);
-			if(matched == null)
-				throw new Error(
-					"Invalid variable used!",
-					"Parser is not able to match variable in \"" + input + "\".",
-					"Make sure the variable is defined properly.");
-			var resolvedResults = resolveVariable(matched, env);
-			var prefix:String = input.substr(0, pos.pos);
-			var postfix:String = input.substr(pos.pos + pos.len);
-			if(resolvedResults != null)
-			{
-				for(resolvedResult in resolvedResults)
-				{
-					var fixedResult = prefix + resolvedResult + postfix;
-					result.push(fixedResult);
-					log("  -> " + fixedResult);
-				}
-			}
-			input = postfix;
+		if(input.indexOf("$" + "{") == -1)
+			return [input];
+
+		log("Resolving variable in \"" + input + "\"");
+
+		var variableEReg:EReg = ~/\$\{([^}]+?)\}/;
+		variableEReg.match(input);
+		var pos = variableEReg.matchedPos();
+		var matched:String = variableEReg.matched(1);
+		if(matched == null)
+			throw new Error(
+				"Invalid variable used!",
+				"Parser is not able to match variable in \"" + input + "\".",
+				"Make sure the variable is defined properly.");
+		var resolvedResults = resolveVariable(matched, env);
+		if(resolvedResults == null)
+			return null;
+
+		var prefix:String = input.substr(0, pos.pos);
+		var postfix:String = input.substr(pos.pos + pos.len);
+		var result:Array<String> = [];
+		for(resolvedResult in resolvedResults)
+		{
+			var fixedResult = prefix + resolvedResult + postfix;
+			result.push(fixedResult);
+			log("  -> " + fixedResult);
 		}
+
 		return result.length == 0 ? null : result;
 	}
 
 	function resolveVariable(input:String, ?env:Dynamic):Array<String>
 	{
-		if(StringTools.startsWith(input, "dependency:"))
-			return resolveVariableDependency(input.substr("dependency:".length));
+		var flag:String;
 
-		if(StringTools.startsWith(input, "dependencies:"))
-			return resolveVariableDependencies(input.substr("dependencies:".length));
+		flag = "dependency:";
+		if(StringTools.startsWith(input, flag))
+			return resolveVariableDependency(input.substr(flag.length));
+
+		flag = "dependencies:";
+		if(StringTools.startsWith(input, flag))
+			return resolveVariableDependencies(input.substr(flag.length));
 
 		throw new Error(
 			"Invalid variable $" + "{" + input + "}",

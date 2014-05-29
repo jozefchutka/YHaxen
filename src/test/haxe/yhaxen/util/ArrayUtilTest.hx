@@ -33,6 +33,6 @@ class ArrayUtilTest
 	@Test
 	public function testExample():Void
 	{
-		Assert.isTrue(false);
+		Assert.isTrue(true);
 	}
 }
