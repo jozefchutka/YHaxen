@@ -55,7 +55,13 @@ class DependencyParser extends GenericParser<DependencyDetail>
 			type,
 			Reflect.field(source, "source"));
 
-		result.scopes = Reflect.field(source, "scopes");
+		if(Reflect.hasField(source, "scopes"))
+			result.scopes = Reflect.field(source, "scopes");
+		if(result.scopes != null && result.scopes.length == 0)
+			result.scopes = null;
+
+		if(Reflect.hasField(source, "update"))
+			result.update = Reflect.field(source, "update");
 
 		result.classPath = Reflect.field(source, "classPath");
 		if(result.classPath == "")

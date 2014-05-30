@@ -7,20 +7,21 @@ import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Test;
 import yhaxen.valueObject.Error;
+import yhaxen.valueObject.PhaseEnvironment;
 
 class TestPhase extends AbstractPhase
 {
 	var compilePhase:CompilePhase;
 
-	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
+	public function new(config:Config, configFile:String)
 	{
-		super(config, configFile, scope, verbose);
+		super(config, configFile);
 	}
 
 	public static function fromCommand(command:TestCommand):TestPhase
 	{
-		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new TestPhase(config, command.configFile, command.scope, command.verbose);
+		var config = ConfigParser.fromFile(command.configFile);
+		return new TestPhase(config, command.configFile);
 	}
 
 	override function execute():Void
@@ -28,9 +29,9 @@ class TestPhase extends AbstractPhase
 		super.execute();
 
 		if(config.tests == null || config.tests.length == 0)
-			return logPhase("tests", scope, "No tests found.");
+			return logPhase("tests", "No tests found.");
 
-		logPhase("test", scope, "Found " + config.tests.length + " tests.");
+		logPhase("test", "Found " + config.tests.length + " tests.");
 
 		for(test in config.tests)
 			resolveTest(test);
@@ -38,7 +39,7 @@ class TestPhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		compilePhase = new CompilePhase(config, configFile, scope, verbose);
+		compilePhase = new CompilePhase(config, configFile);
 		compilePhase.haxelib = haxelib;
 		compilePhase.execute();
 	}
@@ -46,8 +47,11 @@ class TestPhase extends AbstractPhase
 	function resolveTest(test:Test):Void
 	{
 		var arguments = null;
+		var phaseEnvironment = new PhaseEnvironment();
+		phaseEnvironment.test = test;
+
 		if(test.arguments != null && test.arguments.length > 0)
-			arguments = resolveVariablesInArray(test.arguments);
+			arguments = resolveVariablesInArray(test.arguments, phaseEnvironment);
 
 		if(System.command(test.command, arguments) != 0)
 			throw new Error(

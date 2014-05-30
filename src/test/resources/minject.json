@@ -6,9 +6,9 @@
 			"name": "minject",
 			"version": "1.2.0",
 			"source": "git@github.com:massiveinteractive/minject.git",
-			"sourceType": "git",
+			"type": "git",
 			"classPath": "src",
-			"scope": ["build", "test"]
+			"scopes": ["build", "test"]
 		}
 	]
 }

@@ -1,7 +1,6 @@
 package yhaxen.valueObject.config;
 
 import yhaxen.enums.ReleaseType;
-import yhaxen.util.ScopeUtil;
 
 class Release
 {
@@ -15,18 +14,8 @@ class Release
 	 **/
 	public var files:Array<String>;
 
-	/**
-	 * Optional
-	 **/
-	public var scopes:Array<String>;
-
 	public function new(type:ReleaseType)
 	{
 		this.type = type;
-	}
-
-	public function matchesScope(scope:String):Bool
-	{
-		return ScopeUtil.matches(scopes, scope);
 	}
 }

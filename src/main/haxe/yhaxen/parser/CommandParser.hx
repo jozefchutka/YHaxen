@@ -20,18 +20,15 @@ class CommandParser extends GenericParser<AbstractCommand>
 		if(configFile == null)
 			configFile = Config.DEFAULT_FILENAME;
 
-		var verbose:Bool = getBool("verbose", args);
-		var scope:String = getString("scope", args);
-
 		var phase = args[0];
 		switch(phase)
 		{
 			case Command.KEY_VALIDATE:
-				return new ValidateCommand(configFile, scope, verbose);
+				return new ValidateCommand(configFile);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile, scope, verbose);
+				return new CompileCommand(configFile);
 			case Command.KEY_TEST:
-				return new TestCommand(configFile, scope, verbose);
+				return new TestCommand(configFile);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")
@@ -40,7 +37,7 @@ class CommandParser extends GenericParser<AbstractCommand>
 						"Command " + Command.KEY_RELEASE + " is missing required version argument.",
 						"Provide version in " + Command.KEY_RELEASE + " command e.g. \"-version 1.2.3\".");
 				var message = getString("message", args);
-				return new ReleaseCommand(configFile, scope, verbose, version, message);
+				return new ReleaseCommand(configFile, version, message);
 			case Command.KEY_HELP:
 				return new HelpCommand();
 			default:

@@ -60,6 +60,12 @@ class Haxelib extends tools.haxelib.Main
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir);
 	}
 
+	public function removeDependencyVersion(name:String, version:String):Void
+	{
+		var dir = getDependencyVersionDirectory(name, version, false);
+		deleteRec(dir);
+	}
+
 	public function makeDirectory(dir:String):Bool
 	{
 		return safeDir(dir);

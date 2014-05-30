@@ -52,7 +52,7 @@ class ConfigParser extends GenericParser<Config>
 		return result;
 	}
 
-	public static function fromFile(configFile:String, scope:String=null):Config
+	public static function fromFile(configFile:String):Config
 	{
 		checkFile(configFile);
 		var data = File.getContent(configFile);
@@ -69,41 +69,7 @@ class ConfigParser extends GenericParser<Config>
 		var parser = new ConfigParser();
 		parser.configFile = configFile;
 		var result = parser.parse(json);
-		filterScope(result, scope);
 		return result;
-	}
-
-	static function filterScope(config:Config, scope:String):Void
-	{
-		if(scope == null)
-			return;
-
-		if(config.dependencies != null)
-		{
-			var dependencies:Array<DependencyDetail> = [];
-			for(dependency in config.dependencies)
-				if(dependency.matchesScope(scope))
-					dependencies.push(dependency);
-			config.dependencies = dependencies;
-		}
-
-		if(config.builds != null)
-		{
-			var builds:Array<Build> = [];
-			for(build in config.builds)
-				if(build.matchesScope(scope))
-					builds.push(build);
-			config.builds = builds;
-		}
-
-		if(config.releases != null)
-		{
-			var releases:Array<Release> = [];
-			for(release in config.releases)
-				if(release.matchesScope(scope))
-					releases.push(release);
-			config.releases = releases;
-		}
 	}
 
 	static function checkFile(file:String):Void

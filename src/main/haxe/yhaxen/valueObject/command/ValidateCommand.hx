@@ -2,8 +2,8 @@ package yhaxen.valueObject.command;
 
 class ValidateCommand extends AbstractLifecycleCommand
 {
-	public function new(configFile:String, scope:String, verbose:Bool)
+	public function new(configFile:String)
 	{
-		super(configFile, scope, verbose);
+		super(configFile);
 	}
 }

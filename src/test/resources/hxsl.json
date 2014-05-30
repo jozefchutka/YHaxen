@@ -6,7 +6,7 @@
 			"name": "hxsl",
 			"version": "master",
 			"source": "git@github.com:ncannasse/hxsl.git",
-			"sourceType": "git"
+			"type": "git"
 		}
 	]
 }

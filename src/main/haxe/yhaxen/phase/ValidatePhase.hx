@@ -27,16 +27,17 @@ class ValidatePhase extends AbstractPhase
 	inline static var WORD_WARNING:String = "WARNING";
 	inline static var WORD_INVALID:String = "INVALID";
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
+	inline static var WORD_UPDATE:String = "UPDATE";
 
-	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
+	public function new(config:Config, configFile:String)
 	{
-		super(config, configFile, scope, verbose);
+		super(config, configFile);
 	}
 
 	public static function fromCommand(command:ValidateCommand):ValidatePhase
 	{
-		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new ValidatePhase(config, command.configFile, command.scope, command.verbose);
+		var config = ConfigParser.fromFile(command.configFile);
+		return new ValidatePhase(config, command.configFile);
 	}
 
 	override function execute():Void
@@ -44,9 +45,9 @@ class ValidatePhase extends AbstractPhase
 		super.execute();
 
 		if(config.dependencies == null || config.dependencies.length == 0)
-			return logPhase("validate", scope, "No dependencies found.");
+			return logPhase("validate", "No dependencies found.");
 
-		logPhase("validate", scope, "Found " + config.dependencies.length + " dependencies.");
+		logPhase("validate", "Found " + config.dependencies.length + " dependencies.");
 		validateConfig();
 
 		for(dependency in config.dependencies)
@@ -80,13 +81,22 @@ class ValidatePhase extends AbstractPhase
 				"Provide valid dependency version that can be resolved into a directory.");
 		}
 
-		if(exists)
+		if(exists && !dependency.update)
 		{
 			logKeyVal("Resolving " + dependency.toString(), 40, WORD_OK);
 			return;
 		}
 
-		log("Resolving " + dependency.toString());
+		if(exists && dependency.update)
+		{
+			logKeyVal("Resolving " + dependency.toString(), 40, WORD_UPDATE);
+			haxelib.removeDependencyVersion(dependency.name, dependency.version);
+		}
+		else
+		{
+			log("Resolving " + dependency.toString());
+		}
+
 		switch(dependency.type)
 		{
 			case SourceType.GIT:
@@ -127,8 +137,7 @@ class ValidatePhase extends AbstractPhase
 			if(detail == null)
 				throw new Error(
 					"Undefined dependency " + item.name + "!",
-					"Dependency " + item.name + " is not defined in " + configFile
-						+ (scope != null ? " for scope " + scope : "") + ".",
+					"Dependency " + item.name + " is not defined in " + configFile + ".",
 					"Provide dependency details in " + configFile + ".");
 
 			if(item.versionResolved == null)

@@ -64,7 +64,25 @@ When a specific phase is requested, each preceding phase is invoked as well (e.g
 
 ### Validate
 
-Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git**). Config dependencies relates to validate phase.
+Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git**).
+ 
+**name** (String, required) - Dependency name to be used for haxelib.
+
+**version** (String, required) - Dependency version to be used for haxelib. In case of git dependency, can point to branch, tag or commit.
+
+**type** (String, required) - Only *git* or *haxelib* values are available. 
+
+**source** (String, required for git) - Points to git repository.
+ 
+**classPath** (String, optional) - Class path to sources. Only available with git.
+
+**scopes** (Array<String>, optional) - Scope filtering is used with build or test phase. If dependency scope is not defined, the dependency will be avialable for all builds and tests. If scopes are defined, dependency will be used only for appropriate build or test name.
+
+**forceVersion** (Bool, optional) - If multiple versions of a lib is used, phase fails with error describing the conflicting dependencies. Enable this flag to resolve conflicts.
+
+**update** (Bool, optional) - Removes old version if exists and replaces with new one. Consider using this flag when dependency version is pointing to a branch. 
+
+Example dependency configuration:
  
 ```json
 "dependencies":
@@ -72,43 +90,75 @@ Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git*
 		{
 			"name": "msignal",
 			"version": "1.2.2",
-			"sourceType": "haxelib",
+			"type": "haxelib",
 			"forceVersion": true
 		},
 		...
 	]
 ```
 
-If multiple versions of a lib is used phase fails with error describing the conflicting dependencies. Conflicting dependencies can be resolved using `forceVersion` in config. 
-
 ### Compile
 
-Executes compilation command.
+Compile the source code of the project.
 
 Todo: example json, how dependencies variable is used
 
 ### Test
 
-Not yet implemented.
+Test the compiled source code using a unit testing framework.
+
+### Release
+
+Release versioned project.
+
+Todo: example json, describe git tags, submit to haxelib
 
 ### Deploy
 
 Not yet implemented.
 
-### Release
+## Variables
 
-Todo: example json, describe git tags, submit to haxelib
+Available in build and test arguments.
+
+### Dependencies
+
+Single dependendcy **$dir**: 
+```
+${dependency:munit:$dir} -> c:/haxe/lib/munit/123
+${dependency:munit:$dir:-cp} -> -cp c:/haxe/lib/munit/123
+```
+
+All scope related dependencies **$dir** via **-cp** argument:
+```
+${dependency:*:$dir} -> c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
+${dependency:*:$dir:-cp} -> -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+```
+
+Other examples **$name**:
+```
+${dependency:munit:$name:-lib} -> -lib munit
+${dependency:munit:$nameVersion:-lib} -> -lib munit:123
+${dependency:*:$name} -> munit mcover ...
+${dependency:*:$nameVersion:-lib} -> -lib munit:123 -lib mcover:123 ...
+```
+
+### Artifacts
+
+Artifact is available on build arguments and will be replaced by build artifact value: 
+
+```
+${build:artifact} -> index.js
+```
 
 ## TODO
-- use verbose
-- validate all dependencies even when used scope, provide cp paths filtered by scope
-- snapshot dependencies - via "reinstall"
-- provide dependencies in haxelib.json
-- provide commit message with release when available (via -message)
-- unit tests
-- deploy target
+- remove version from config
+- with release provide dependencies in haxelib.json
 - test osx, linux
+- test with mtask
+- deploy target
 - running yhaxen without privileges to haxelib/lib folder
+- make sure using dependency.classPath throws exception when used with type haxelib 
 
 ### should
 - install specific version from git

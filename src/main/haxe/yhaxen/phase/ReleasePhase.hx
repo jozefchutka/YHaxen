@@ -24,9 +24,9 @@ class ReleasePhase extends AbstractPhase
 
 	var testPhase:TestPhase;
 
-	public function new(config:Config, configFile:String, scope:String, verbose:Bool, version:String, message:String)
+	public function new(config:Config, configFile:String, version:String, message:String)
 	{
-		super(config, configFile, scope, verbose);
+		super(config, configFile);
 
 		this.version = version;
 		this.message = message;
@@ -34,8 +34,8 @@ class ReleasePhase extends AbstractPhase
 
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
 	{
-		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new ReleasePhase(config, command.configFile, command.scope, command.verbose, command.version, command.message);
+		var config = ConfigParser.fromFile(command.configFile);
+		return new ReleasePhase(config, command.configFile, command.version, command.message);
 	}
 
 	override function execute():Void
@@ -43,9 +43,9 @@ class ReleasePhase extends AbstractPhase
 		super.execute();
 
 		if(config.releases == null || config.releases.length == 0)
-			return logPhase("release", scope, "No releases found.");
+			return logPhase("release", "No releases found.");
 
-		logPhase("release", scope, "Found " + config.releases.length + " releases.");
+		logPhase("release", "Found " + config.releases.length + " releases.");
 
 		for(release in config.releases)
 			resolveRelease(release);
@@ -53,7 +53,7 @@ class ReleasePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		testPhase = new TestPhase(config, configFile, scope, verbose);
+		testPhase = new TestPhase(config, configFile);
 		testPhase.haxelib = haxelib;
 		testPhase.execute();
 	}

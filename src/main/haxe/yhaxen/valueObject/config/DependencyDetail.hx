@@ -31,6 +31,11 @@ class DependencyDetail extends Dependency
 	 **/
 	public var forceVersion:Bool = false;
 
+	/**
+	 * Optional
+	 **/
+	public var update:Bool = false;
+
 	public function new(name:String, version:String, type:SourceType, source:String)
 	{
 		super(name, version);

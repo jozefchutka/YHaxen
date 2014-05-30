@@ -1,9 +1,12 @@
 package yhaxen.valueObject.config;
 
-import yhaxen.util.ScopeUtil;
-
 class Test
 {
+	/**
+	 * Required
+	 **/
+	public var name:String;
+
 	/**
 	 * Required
 	 **/
@@ -14,18 +17,9 @@ class Test
 	 **/
 	public var arguments:Array<String>;
 
-	/**
-	 * Optional
-	 **/
-	public var scopes:Array<String>;
-
-	public function new(command:String)
+	public function new(name:String, command:String)
 	{
+		this.name = name;
 		this.command = command;
-	}
-
-	public function matchesScope(scope:String):Bool
-	{
-		return ScopeUtil.matches(scopes, scope);
 	}
 }

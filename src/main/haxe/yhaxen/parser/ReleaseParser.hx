@@ -32,7 +32,6 @@ class ReleaseParser extends GenericParser<Release>
 
 		var result = new Release(type);
 		result.files = Reflect.field(source, "files");
-		result.scopes = Reflect.field(source, "scopes");
 		return result;
 	}
 }

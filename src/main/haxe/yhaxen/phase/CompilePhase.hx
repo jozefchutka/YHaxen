@@ -6,20 +6,21 @@ import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.Error;
+import yhaxen.valueObject.PhaseEnvironment;
 
 class CompilePhase extends AbstractPhase
 {
 	var validatePhase:ValidatePhase;
 
-	public function new(config:Config, configFile:String, scope:String, verbose:Bool)
+	public function new(config:Config, configFile:String)
 	{
-		super(config, configFile, scope, verbose);
+		super(config, configFile);
 	}
 
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
-		var config = ConfigParser.fromFile(command.configFile, command.scope);
-		return new CompilePhase(config, command.configFile, command.scope, command.verbose);
+		var config = ConfigParser.fromFile(command.configFile);
+		return new CompilePhase(config, command.configFile);
 	}
 
 	override function execute():Void
@@ -27,9 +28,9 @@ class CompilePhase extends AbstractPhase
 		super.execute();
 
 		if(config.builds == null || config.builds.length == 0)
-			return logPhase("compile", scope, "No builds found.");
+			return logPhase("compile", "No builds found.");
 
-		logPhase("compile", scope, "Found " + config.builds.length + " builds.");
+		logPhase("compile", "Found " + config.builds.length + " builds.");
 
 		validateConfig();
 
@@ -39,7 +40,7 @@ class CompilePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		validatePhase = new ValidatePhase(config, configFile, scope, verbose);
+		validatePhase = new ValidatePhase(config, configFile);
 		validatePhase.haxelib = haxelib;
 		validatePhase.execute();
 	}
@@ -62,8 +63,11 @@ class CompilePhase extends AbstractPhase
 	function compileBuild(build:Build):Void
 	{
 		var arguments = null;
+		var phaseEnvironment = new PhaseEnvironment();
+		phaseEnvironment.build = build;
+
 		if(build.arguments != null && build.arguments.length > 0)
-			arguments = resolveVariablesInArray(build.arguments, build);
+			arguments = resolveVariablesInArray(build.arguments, phaseEnvironment);
 
 		if(System.command(build.command, arguments) != 0)
 			throw new Error(
@@ -72,11 +76,11 @@ class CompilePhase extends AbstractPhase
 				"Make sure system command can be executed.");
 	}
 
-	override function resolveVariable(input:String, ?env:Dynamic):Array<String>
+	override function resolveVariable(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
 	{
-		if(input == "artifact")
-			return [cast(env, Build).artifact];
+		if(input == "build:artifact")
+			return [phaseEnvironment.build.artifact];
 
-		return super.resolveVariable(input);
+		return super.resolveVariable(input, phaseEnvironment);
 	}
 }

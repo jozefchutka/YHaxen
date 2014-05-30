@@ -1,10 +1,11 @@
 package yhaxen.phase;
 
-import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
 import yhaxen.valueObject.config.Config;
+import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.valueObject.Error;
+import yhaxen.valueObject.PhaseEnvironment;
 
 import sys.FileSystem;
 
@@ -14,16 +15,12 @@ class AbstractPhase
 
 	public var config(default, null):Config;
 	public var configFile(default, null):String;
-	public var scope(default, null):String;
-	public var verbose(default, null):Bool;
 	@:isVar public var haxelib(get, set):Haxelib;
 
-	private function new(config:Config, configFile:String, scope:String, verbose:Bool)
+	private function new(config:Config, configFile:String)
 	{
 		this.config = config;
 		this.configFile = configFile;
-		this.scope = scope;
-		this.verbose = verbose;
 	}
 
 	function get_haxelib():Haxelib
@@ -47,11 +44,11 @@ class AbstractPhase
 	{
 	}
 
-	function logPhase(name:String, scope:String, details:String):Void
+	function logPhase(name:String, details:String):Void
 	{
 		log("");
 		System.printRow("-");
-		log("PHASE: " + name + (scope != null ? " " + scope : ""));
+		log("PHASE: " + name);
 		log(details);
 		System.printRow("-");
 	}
@@ -92,15 +89,15 @@ class AbstractPhase
 		for(dependency in config.dependencies)
 			if(dependency.matchesScope(scope))
 				result.push(dependency);
-		return result;
+		return result.length == 0 ? null : result;
 	}
 
-	function resolveVariablesInArray(input:Array<String>, ?env:Dynamic):Array<String>
+	function resolveVariablesInArray(input:Array<String>, phaseEnvironment:PhaseEnvironment):Array<String>
 	{
 		var result:Array<String> = [];
 		for(item in input)
 		{
-			var resolvedResults = resolveVariablesInString(item, env);
+			var resolvedResults = resolveVariablesInString(item, phaseEnvironment);
 			if(resolvedResults == null)
 				result.push(item);
 			else
@@ -110,7 +107,7 @@ class AbstractPhase
 		return result;
 	}
 
-	function resolveVariablesInString(input:String, ?env:Dynamic):Array<String>
+	function resolveVariablesInString(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
 	{
 		if(input == null)
 			return null;
@@ -129,34 +126,35 @@ class AbstractPhase
 				"Invalid variable used!",
 				"Parser is not able to match variable in \"" + input + "\".",
 				"Make sure the variable is defined properly.");
-		var resolvedResults = resolveVariable(matched, env);
-		if(resolvedResults == null)
-			return null;
 
-		var prefix:String = input.substr(0, pos.pos);
-		var postfix:String = input.substr(pos.pos + pos.len);
 		var result:Array<String> = [];
-		for(resolvedResult in resolvedResults)
+		var resolvedResults = resolveVariable(matched, phaseEnvironment);
+		if(resolvedResults == null)
 		{
-			var fixedResult = prefix + resolvedResult + postfix;
-			result.push(fixedResult);
-			log("  -> " + fixedResult);
+			log("  -> emtpy value");
 		}
-
-		return result.length == 0 ? null : result;
+		else
+		{
+			var prefix:String = input.substr(0, pos.pos);
+			var postfix:String = input.substr(pos.pos + pos.len);
+			for(resolvedResult in resolvedResults)
+			{
+				var fixedResult = prefix + resolvedResult + postfix;
+				result.push(fixedResult);
+				log("  -> " + fixedResult);
+			}
+		}
+		log("");
+		return result;
 	}
 
-	function resolveVariable(input:String, ?env:Dynamic):Array<String>
+	function resolveVariable(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
 	{
 		var flag:String;
 
 		flag = "dependency:";
 		if(StringTools.startsWith(input, flag))
-			return resolveVariableDependency(input.substr(flag.length));
-
-		flag = "dependencies:";
-		if(StringTools.startsWith(input, flag))
-			return resolveVariableDependencies(input.substr(flag.length));
+			return resolveVariableDependency(input.substr(flag.length), phaseEnvironment);
 
 		throw new Error(
 			"Invalid variable $" + "{" + input + "}",
@@ -164,53 +162,45 @@ class AbstractPhase
 			"Make sure the variable is defined properly.");
 	}
 
-	function resolveVariableDependency(input:String):Array<String>
+	function resolveVariableDependency(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
 	{
 		var chunks = input.split(":");
 		var name = chunks.shift();
-		var data = chunks.join(":");
-		var dependency = getDependencyByName(name);
-		if(dependency == null)
-			throw new Error(
-				"Invalid dependency " + name + "!",
-				"Dependency " + name + " is not defined in " + configFile + ".",
-				"Provide existing dependency name.");
-		switch(data)
-		{
-			case "dir":
-				return [haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false)];
-			default:
-				throw new Error(
-					"Invalid variable $" + "{" + input + "}",
-					"Variable definition \"" + data + "\" is unknown.",
-					"Make sure the variable is defined properly.");
-		}
-	}
+		var scope:String = phaseEnvironment.scope;
+		var dependencies:Array<DependencyDetail> = (name == "*") ? getDependencies(scope) : [getDependencyByName(name)];
+		if(dependencies == null)
+			return null;
 
-	function resolveVariableDependencies(input:String):Array<String>
-	{
-		var chunks = input.split(":");
 		var type = chunks.shift();
 		var data = chunks.join(":");
-		var dependencies = getDependencies(scope);
 		var result:Array<String> = [];
 		for(dependency in dependencies)
 		{
+			if(dependency == null)
+				throw new Error(
+					"Invalid dependency " + name + "!",
+					"Dependency " + name + " is not defined in " + configFile + ".",
+					"Provide existing dependency name.");
+
+			if(data != "")
+				result.push(data);
+
 			switch(type)
 			{
-				case "classPath":
-					result.push(data);
+				case "$dir":
 					result.push(haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false));
-				case "lib":
-					result.push(data);
+				case "$name":
 					result.push(dependency.name);
+				case "$nameVersion":
+					result.push(dependency.name + ":" + dependency.version);
 				default:
 					throw new Error(
 						"Invalid variable $" + "{" + input + "}",
-						"Variable definition \"" + data + "\" is unknown.",
+						"Variable definition type \"" + type + "\" is unknown.",
 						"Make sure the variable is defined properly.");
 			}
 		}
+
 		return result.length == 0 ? null : result;
 	}
 }
