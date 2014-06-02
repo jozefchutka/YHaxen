@@ -18,12 +18,12 @@ haxelib git yhaxen git@github.com:jozefchutka/YHaxen.git 0.0.20 src/main/haxe
 
 Recommended build from sources using yhaxen:
 ```
-haxelib run yhaxen compile
+haxelib run yhaxen compile -version 123
 ```
 
 Optionally can be built from sources using haxe:
 ```
-haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe
+haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=123
 ```
 
 ## Usage
@@ -31,9 +31,12 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
 yhaxen validate -scope web
-yhaxen compile -version 0.0.1
-yhaxen compile -version 0.0.1 -config src/test/resources/yhaxen.json
-yhaxen compile -version 0.0.1 -scope web
+yhaxen compile
+yhaxen compile:compile
+yhaxen compile -config src/test/resources/yhaxen.json
+yhaxen compile -scope web
+yhaxen test
+yhaxen test:test
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -scope web
@@ -149,6 +152,15 @@ Artifact is available on build arguments and will be replaced by build artifact 
 
 ```
 ${build:artifact} -> index.js
+```
+
+### Arguments
+
+Command line arguments:
+
+```
+haxelib run yhaxen compile version 123 
+${arg:version} -> 123
 ```
 
 ## TODO 
