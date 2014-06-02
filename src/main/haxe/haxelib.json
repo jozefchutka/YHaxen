@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Fixed git release.",
-	"version": "snapshot",
+	"releasenote": "Added test phase, improved flow",
+	"version": "0.0.21",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
