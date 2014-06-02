@@ -5,11 +5,6 @@ class Config
 	inline public static var DEFAULT_FILENAME:String = "yhaxen.json";
 
 	/**
-	 * Required
-	 **/
-	public var version:Int;
-
-	/**
 	 * Optional
 	 **/
 	public var dependencies:Array<DependencyDetail>;
@@ -29,8 +24,7 @@ class Config
 	 **/
 	public var releases:Array<Release>;
 
-	public function new(version:Int)
+	public function new()
 	{
-		this.version = version;
 	}
 }

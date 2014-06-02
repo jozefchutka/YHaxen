@@ -143,7 +143,7 @@ class ValidatePhase extends AbstractPhase
 			if(item.versionResolved == null)
 				throw new Error(
 					"Invalid dependency " + item.name + "!",
-					"Dependency " + item.name + " is defined without version information.",
+					"Dependency " + item.name + " has mismatched version used and can not be resolved.",
 					"Provide forceVersion in " + configFile + " for this dependency.");
 
 			if(!item.versionResolvedExists)
@@ -239,36 +239,71 @@ class ValidatePhase extends AbstractPhase
 
 	function installDependencyGit(dependency:DependencyDetail):Void
 	{
-		createTempDirectory();
+		var directory = haxelib.getGitDependencyDirectory(dependency.name);
+		prepareGitDirectory(dependency, directory);
 
 		try
 		{
-			Git.checkout(dependency.source, dependency.version, AbstractPhase.TEMP_DIRECTORY);
+			Git.pull(directory);
+			Git.checkout(dependency.source, dependency.version, directory);
 		}
 		catch(error:Dynamic)
 		{
-			deleteTempDirectory();
+			System.deleteDirectory(directory);
 			throw error;
 		}
 
-		haxelib.deleteDirectory(AbstractPhase.TEMP_DIRECTORY + "/.git");
 		var depenencyDirectory:String = haxelib.getDependencyDirectory(dependency.name);
-		haxelib.makeDirectory(depenencyDirectory);
+		System.createDirectory(depenencyDirectory);
 
 		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
-		if(dependency.classPath != null)
+
+		if(dependency.classPath == null)
 		{
-			FileSystem.rename(AbstractPhase.TEMP_DIRECTORY + "/" + dependency.classPath, target);
-			deleteTempDirectory();
+			System.copyDirectory(directory, target);
+			System.deleteDirectory(target + "/.git");
 		}
 		else
 		{
-			FileSystem.rename(AbstractPhase.TEMP_DIRECTORY, target);
+			System.copyDirectory(directory + "/" + dependency.classPath, target);
 		}
 
 		var currentFile:String = depenencyDirectory + "/" + Haxelib.FILE_CURRENT;
 		if(!FileSystem.exists(currentFile))
 			File.saveContent(currentFile, dependency.version);
+	}
+
+	function prepareGitDirectory(dependency:DependencyDetail, directory:String):Void
+	{
+		if(!FileSystem.exists(directory))
+		{
+			Git.clone(dependency.source, directory);
+			return;
+		}
+
+		if(!FileSystem.isDirectory(directory))
+		{
+			System.deleteDirectory(directory);
+			Git.clone(dependency.source, directory);
+			return;
+		}
+
+		var remoteOriginUrl:String;
+		try
+		{
+			remoteOriginUrl = Git.getRemoteOriginUrl(directory);
+		}
+		catch(error:Dynamic)
+		{
+			System.deleteDirectory(directory);
+			throw error;
+		}
+
+		if(remoteOriginUrl != dependency.source)
+		{
+			System.deleteDirectory(directory);
+			Git.clone(dependency.source, directory);
+		}
 	}
 
 	function installDependencyHaxelib(dependency:DependencyDetail):Void

@@ -16,11 +16,7 @@ class ConfigParser extends GenericParser<Config>
 
 	override function parse(source:Dynamic):Config
 	{
-		if(!Reflect.hasField(source, "version"))
-			throw "Missing version.";
-
-		var version = Reflect.field(source, "version");
-		var result:Config = new Config(version);
+		var result:Config = new Config();
 		if(Reflect.hasField(source, "dependencies"))
 		{
 			var dependencyParser = new DependencyParser();

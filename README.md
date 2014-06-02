@@ -152,8 +152,8 @@ ${build:artifact} -> index.js
 ```
 
 ## TODO
-- remove version from config
 - with release provide dependencies in haxelib.json
+- how to handle build artifact?
 - test osx, linux
 - test with mtask
 - deploy target

@@ -6,25 +6,49 @@ import sys.io.Process;
 
 class Git
 {
-	public static function checkout(source:String, branch:String, directory:String):Void
+	public static function clone(source:String, directory:String):Void
 	{
-		var cwd = Sys.getCwd();
-
 		if(System.command("git", ["clone", "--quiet", source, directory]) != 0)
 			throw new Error(
 				"Git clone failed.",
 				"Git command is not configured or repository does not exist.",
 				"Make sure git is configured and repository exists.");
+	}
 
+	public static function checkout(source:String, branch:String, directory:String):Void
+	{
+		var cwd = Sys.getCwd();
 		Sys.setCwd(directory);
 
-		if(System.command("git", ["checkout", "--quiet", "-b", "yhaxen-" + branch, branch]) != 0)
-			throw new Error(
+		var error:Error = null;
+		if(System.command("git", ["checkout", "--quiet", branch]) != 0)
+			error = new Error(
 				"Git checkout failed.",
 				"Git was not able to checkout branch, tag or commit " + branch + ".",
 				"Make sure " + branch + " exists in git repository.");
 
 		Sys.setCwd(cwd);
+
+		if(error != null)
+			throw error;
+	}
+
+	public static function pull(directory:String):Void
+	{
+		var cwd = Sys.getCwd();
+		Sys.setCwd(directory);
+
+		var error:Error = null;
+		if(System.command("git", ["pull", "--quiet", "--all"]) != 0)
+			error = new Error(
+				"Git pull failed.",
+				"Git was not able to pull.",
+				"Make sure directory " + directory + " is valid git repository.");
+
+		Sys.setCwd(cwd);
+
+		if(error != null)
+			throw error;
 	}
 
 	public static function getCurrentCommit():String
@@ -97,5 +121,25 @@ class Git
 				"Git push failed.",
 				"Git was not able to push to origin.",
 				"Make sure project is under git control.");
+	}
+
+
+
+	public static function getRemoteOriginUrl(directory:String):String
+	{
+		var cwd = Sys.getCwd();
+		Sys.setCwd(directory);
+		var process:Process = System.process("git", ["config", "--get", "remote.origin.url"]);
+		var exitCode = process.exitCode();
+		var result = StringTools.trim(process.stdout.readAll().toString());
+		Sys.setCwd(cwd);
+
+		if(exitCode != 0)
+			throw new Error(
+				"Git config failed.",
+				"Git was not able to get current remote origin url.",
+				"Make sure directory is under git control.");
+
+		return result;
 	}
 }

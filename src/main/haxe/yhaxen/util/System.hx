@@ -1,5 +1,6 @@
 package yhaxen.util;
 
+import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
 
@@ -32,6 +33,76 @@ class System
 	{
 		print("  $ " + cmd + " " + args.join(" "));
 		return new Process(cmd, args);
+	}
+
+	public static function deleteDirectory(dir:String):Void
+	{
+		for(item in FileSystem.readDirectory(dir))
+		{
+			var path = dir + "/" + item;
+			if(FileSystem.isDirectory(path))
+				deleteDirectory(path);
+			else
+				deleteFile(path);
+		}
+		FileSystem.deleteDirectory(dir);
+	}
+
+	public static function deleteFile(file:String):Bool
+	{
+		try
+		{
+			FileSystem.deleteFile(file);
+			return true;
+		}
+		catch(e:Dynamic)
+		{
+			if(Sys.systemName() == "Windows")
+			{
+				try
+				{
+					Sys.command("attrib -R \"" +file+ "\"");
+					FileSystem.deleteFile(file);
+					return true;
+				}
+				catch(e:Dynamic){}
+			}
+			return false;
+		}
+	}
+
+	public static function createDirectory(dir:String):Bool
+	{
+		if(FileSystem.exists(dir) && !FileSystem.isDirectory(dir))
+			throw ("A file is preventing " + dir + " to be created!");
+
+		try
+		{
+			FileSystem.createDirectory(dir);
+		}
+		catch(error:Dynamic)
+		{
+			throw "You don't have enough user rights to create the directory " + dir + "!";
+		}
+		return true;
+	}
+
+	public static function copyDirectory(source:String, target:String):Void
+	{
+		if(!FileSystem.exists(target))
+			createDirectory(target);
+		else if(!FileSystem.isDirectory(target))
+			throw "Target " + target + " is not a directory";
+
+		for(item in FileSystem.readDirectory(source))
+		{
+			var sourcePath = source + "/" + item;
+			var targetPath = target + "/" + item;
+			if(FileSystem.isDirectory(sourcePath))
+				copyDirectory(sourcePath, targetPath);
+			else
+				File.copy(sourcePath, targetPath);
+		}
 	}
 
 	/**

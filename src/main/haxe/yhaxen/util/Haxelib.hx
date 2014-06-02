@@ -62,18 +62,8 @@ class Haxelib extends tools.haxelib.Main
 
 	public function removeDependencyVersion(name:String, version:String):Void
 	{
-		var dir = getDependencyVersionDirectory(name, version, false);
-		deleteRec(dir);
-	}
-
-	public function makeDirectory(dir:String):Bool
-	{
-		return safeDir(dir);
-	}
-
-	public function deleteDirectory(dir:String):Void
-	{
-		return deleteRec(dir);
+		var directory = getDependencyVersionDirectory(name, version, false);
+		System.deleteDirectory(directory);
 	}
 
 	public function updateHaxelibFile(file:String, version:String, releasenote:String):Bool
@@ -90,5 +80,10 @@ class Haxelib extends tools.haxelib.Main
 
 		File.saveContent(file, result);
 		return true;
+	}
+
+	public function getGitDependencyDirectory(name:String):String
+	{
+		return getDependencyDirectory(name) + "/git";
 	}
 }

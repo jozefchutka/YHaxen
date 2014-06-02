@@ -72,7 +72,7 @@ class AbstractPhase
 	function deleteTempDirectory():Void
 	{
 		if(FileSystem.exists(TEMP_DIRECTORY))
-			haxelib.deleteDirectory(TEMP_DIRECTORY);
+			System.deleteDirectory(TEMP_DIRECTORY);
 	}
 
 	function getDependencyByName(name:String):DependencyDetail
