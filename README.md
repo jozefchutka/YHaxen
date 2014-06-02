@@ -39,7 +39,6 @@ yhaxen test
 yhaxen test:test
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
-yhaxen release -version 0.0.1 -scope web
 ```
 
 ## Config
