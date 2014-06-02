@@ -15,19 +15,19 @@ class AbstractPhase
 
 	public var config(default, null):Config;
 	public var configFile(default, null):String;
+	public var followPhaseFlow(default, null):Bool;
 	@:isVar public var haxelib(get, set):Haxelib;
 
-	private function new(config:Config, configFile:String)
+	private function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
 		this.config = config;
 		this.configFile = configFile;
+		this.followPhaseFlow = followPhaseFlow;
 	}
 
 	function get_haxelib():Haxelib
 	{
-		if(haxelib == null)
-			haxelib = new Haxelib();
-		return haxelib;
+		return Haxelib.instance;
 	}
 
 	function set_haxelib(value:Haxelib):Haxelib
@@ -37,7 +37,8 @@ class AbstractPhase
 
 	public function execute():Void
 	{
-		executePreviousPhase();
+		if(followPhaseFlow)
+			executePreviousPhase();
 	}
 
 	function executePreviousPhase():Void
@@ -152,6 +153,10 @@ class AbstractPhase
 	{
 		var flag:String;
 
+		flag = "arg:";
+		if(StringTools.startsWith(input, flag))
+			return resolveVariableArg(input.substr(flag.length), phaseEnvironment);
+
 		flag = "dependency:";
 		if(StringTools.startsWith(input, flag))
 			return resolveVariableDependency(input.substr(flag.length), phaseEnvironment);
@@ -160,6 +165,26 @@ class AbstractPhase
 			"Invalid variable $" + "{" + input + "}",
 			"Variable definition is unknown.",
 			"Make sure the variable is defined properly.");
+	}
+
+	function resolveVariableArg(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
+	{
+		var chunks = input.split(":");
+		var name = chunks.shift();
+		var result:Array<String> = [];
+		var args = Sys.args();
+		var length = args.length;
+		for(i in 0...length)
+			if(args[i] == name && i < length)
+				result.push(args[i + 1]);
+
+		if(result.length == 0)
+			throw new Error(
+				"Invalid argument " + name + "!",
+				"Argument " + name + " is not available in command.",
+				"Provide command argument via command line (e.g. for ${arg.version} use \"version 123\").");
+
+		return result.length == 0 ? null : result;
 	}
 
 	function resolveVariableDependency(input:String, phaseEnvironment:PhaseEnvironment):Array<String>

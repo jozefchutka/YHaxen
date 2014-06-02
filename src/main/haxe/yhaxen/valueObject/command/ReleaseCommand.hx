@@ -7,7 +7,7 @@ class ReleaseCommand extends AbstractLifecycleCommand
 
 	public function new(configFile:String, version:String, message:String)
 	{
-		super(configFile);
+		super(configFile, true);
 
 		this.version = version;
 		this.message = message;

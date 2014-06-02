@@ -39,7 +39,7 @@
 			"artifact": "src/main/haxe/run.n",
 			"command": "haxe",
 			"arguments": ["-main", "yhaxen.Main", "-neko", "${build:artifact}", "-cp", "src/main/haxe",
-				"${dependency:*:$dir:-cp}"]
+				"${dependency:*:$dir:-cp}", "-D", "version=${arg:-version}"]
 		}
 	],
 

@@ -12,15 +12,15 @@ class CompilePhase extends AbstractPhase
 {
 	var validatePhase:ValidatePhase;
 
-	public function new(config:Config, configFile:String)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
-		super(config, configFile);
+		super(config, configFile, followPhaseFlow);
 	}
 
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new CompilePhase(config, command.configFile);
+		return new CompilePhase(config, command.configFile, command.followPhaseFlow);
 	}
 
 	override function execute():Void
@@ -40,7 +40,7 @@ class CompilePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		validatePhase = new ValidatePhase(config, configFile);
+		validatePhase = new ValidatePhase(config, configFile, followPhaseFlow);
 		validatePhase.haxelib = haxelib;
 		validatePhase.execute();
 	}

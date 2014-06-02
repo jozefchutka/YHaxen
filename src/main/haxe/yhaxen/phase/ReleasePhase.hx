@@ -24,9 +24,9 @@ class ReleasePhase extends AbstractPhase
 
 	var testPhase:TestPhase;
 
-	public function new(config:Config, configFile:String, version:String, message:String)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool, version:String, message:String)
 	{
-		super(config, configFile);
+		super(config, configFile, followPhaseFlow);
 
 		this.version = version;
 		this.message = message;
@@ -35,7 +35,7 @@ class ReleasePhase extends AbstractPhase
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new ReleasePhase(config, command.configFile, command.version, command.message);
+		return new ReleasePhase(config, command.configFile, command.followPhaseFlow, command.version, command.message);
 	}
 
 	override function execute():Void
@@ -53,7 +53,7 @@ class ReleasePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		testPhase = new TestPhase(config, configFile);
+		testPhase = new TestPhase(config, configFile, followPhaseFlow);
 		testPhase.haxelib = haxelib;
 		testPhase.execute();
 	}

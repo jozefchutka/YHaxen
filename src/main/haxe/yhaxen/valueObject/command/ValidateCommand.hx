@@ -4,6 +4,6 @@ class ValidateCommand extends AbstractLifecycleCommand
 {
 	public function new(configFile:String)
 	{
-		super(configFile);
+		super(configFile, true);
 	}
 }

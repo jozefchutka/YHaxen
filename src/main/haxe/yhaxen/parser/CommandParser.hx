@@ -26,9 +26,13 @@ class CommandParser extends GenericParser<AbstractCommand>
 			case Command.KEY_VALIDATE:
 				return new ValidateCommand(configFile);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile);
+				return new CompileCommand(configFile, true);
+			case Command.KEY_COMPILE_COMPILE:
+				return new CompileCommand(configFile, false);
 			case Command.KEY_TEST:
-				return new TestCommand(configFile);
+				return new TestCommand(configFile, true);
+			case Command.KEY_TEST_TEST:
+				return new TestCommand(configFile, false);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")

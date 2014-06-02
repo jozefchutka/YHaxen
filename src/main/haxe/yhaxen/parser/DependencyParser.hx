@@ -43,11 +43,18 @@ class DependencyParser extends GenericParser<DependencyDetail>
 				"Provide valid dependency type in " + configFile + ".");
 		}
 
-		if(type == SourceType.GIT && !Reflect.hasField(source, "source"))
+		var hasSource = Reflect.hasField(source, "source");
+		if(type == SourceType.GIT && !hasSource)
 			throw new Error(
 				"Missing dependency source!",
 				"Dependency " + name + " is missing source field.",
 				"Provide dependency source in " + configFile + ".");
+
+		if(type == SourceType.HAXELIB && hasSource)
+			throw new Error(
+				"Invalid dependency source!",
+				"Haxelib dependency " + name + " should not contain source field.",
+				"Remove source field in " + configFile + ".");
 
 		var result:DependencyDetail = new DependencyDetail(
 			name,

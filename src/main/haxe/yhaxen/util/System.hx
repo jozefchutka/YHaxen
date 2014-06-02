@@ -1,10 +1,11 @@
 package yhaxen.util;
 
-import sys.io.File;
-import sys.FileSystem;
+import haxe.macro.Context;
 import haxe.io.Path;
 
+import sys.io.File;
 import sys.io.Process;
+import sys.FileSystem;
 
 class System
 {
@@ -126,5 +127,20 @@ class System
 		Sys.setCwd(last);
 		args.pop();
 		return args;
+	}
+
+	public static function getVersion():String
+	{
+		return getCompilerVariable("version");
+	}
+
+	macro public static function getCompilerVariable(key:String)
+	{
+		return Context.makeExpr(Context.definedValue(key), Context.currentPos());
+	}
+
+	macro public static function getBuildDate()
+	{
+		return Context.makeExpr(Date.now().toString(), Context.currentPos());
 	}
 }

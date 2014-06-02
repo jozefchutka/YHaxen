@@ -29,15 +29,15 @@ class ValidatePhase extends AbstractPhase
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
 	inline static var WORD_UPDATE:String = "UPDATE";
 
-	public function new(config:Config, configFile:String)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
-		super(config, configFile);
+		super(config, configFile, followPhaseFlow);
 	}
 
 	public static function fromCommand(command:ValidateCommand):ValidatePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new ValidatePhase(config, command.configFile);
+		return new ValidatePhase(config, command.configFile, command.followPhaseFlow);
 	}
 
 	override function execute():Void

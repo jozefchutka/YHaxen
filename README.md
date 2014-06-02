@@ -31,9 +31,9 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
 yhaxen validate -scope web
-yhaxen compile
-yhaxen compile -config src/test/resources/yhaxen.json
-yhaxen compile -scope web
+yhaxen compile -version 0.0.1
+yhaxen compile -version 0.0.1 -config src/test/resources/yhaxen.json
+yhaxen compile -version 0.0.1 -scope web
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -scope web
@@ -151,14 +151,12 @@ Artifact is available on build arguments and will be replaced by build artifact 
 ${build:artifact} -> index.js
 ```
 
-## TODO
+## TODO 
+- test osx, linux
 - with release provide dependencies in haxelib.json
 - how to handle build artifact?
-- test osx, linux
-- test with mtask
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder
-- make sure using dependency.classPath throws exception when used with type haxelib 
 
 ### should
 - install specific version from git
@@ -167,11 +165,13 @@ ${build:artifact} -> index.js
 - provide list of necessary sub dependencies with versions
 - dependencies in yhaxen.json
 - yhaxen.json only at app/prject level not in dependencies (use haxelib.json)
+- only place for defining dependencies (no .munit, munit.hxml, main.hxml)
 
 ### should not
 - not use .current .dev
 - change lib/compiler state at all
 - do not install subdependencies but have them all defined in yhaxen.json
+- no channel.json
 
 ### known issues
 - on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like

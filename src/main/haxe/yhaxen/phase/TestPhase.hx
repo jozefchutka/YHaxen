@@ -13,15 +13,15 @@ class TestPhase extends AbstractPhase
 {
 	var compilePhase:CompilePhase;
 
-	public function new(config:Config, configFile:String)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
-		super(config, configFile);
+		super(config, configFile, followPhaseFlow);
 	}
 
 	public static function fromCommand(command:TestCommand):TestPhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new TestPhase(config, command.configFile);
+		return new TestPhase(config, command.configFile, command.followPhaseFlow);
 	}
 
 	override function execute():Void
@@ -39,7 +39,7 @@ class TestPhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		compilePhase = new CompilePhase(config, configFile);
+		compilePhase = new CompilePhase(config, configFile, followPhaseFlow);
 		compilePhase.haxelib = haxelib;
 		compilePhase.execute();
 	}

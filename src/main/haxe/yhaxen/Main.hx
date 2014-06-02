@@ -1,5 +1,7 @@
 package yhaxen;
 
+import haxe.macro.Context;
+
 import yhaxen.parser.CommandParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.phase.ReleasePhase;
@@ -21,7 +23,9 @@ class Main
 
 	private var commandValidate:Command;
 	private var commandCompile:Command;
+	private var commandCompileCompile:Command;
 	private var commandTest:Command;
+	private var commandTestTest:Command;
 	private var commandRelease:Command;
 	private var commandHelp:Command;
 
@@ -33,14 +37,17 @@ class Main
 	private function new()
 	{
 		var args = System.fixCwd();
-		System.print("YHaxen");
+		System.print("YHaxen version " + System.getVersion() + " from " + System.getBuildDate());
 
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
 		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
+		commandCompileCompile = new Command(Command.KEY_COMPILE_COMPILE, "Execute compile phase only.");
 		commandTest = new Command(Command.KEY_TEST, "Test the compiled source code using a unit testing framework.");
+		commandTestTest = new Command(Command.KEY_TEST_TEST, "Execute test phase only.");
 		commandRelease = new Command(Command.KEY_RELEASE, "Release versioned project.");
 		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
-		commands = [commandValidate, commandCompile, commandRelease, commandHelp];
+		commands = [commandValidate, commandCompile, commandCompileCompile, commandTest, commandTestTest,
+			commandRelease, commandHelp];
 
 		try
 		{
@@ -80,7 +87,6 @@ class Main
 
 		if(Std.is(command, HelpCommand))
 		{
-			System.print(commandHelp.key);
 			printHelp();
 			return;
 		}

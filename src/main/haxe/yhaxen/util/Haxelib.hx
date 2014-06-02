@@ -11,14 +11,18 @@ class Haxelib extends tools.haxelib.Main
 	inline public static var FILE_CURRENT:String = ".current";
 	inline public static var FILE_HAXELIB:String = "haxelib.json";
 
+	public static var instance(get, null):Haxelib;
+
 	private var repositoryPath(get, never):String;
 
-	public function new()
+	static function get_instance():Haxelib
 	{
-		super();
+		if(instance == null)
+			instance = new Haxelib();
+		return instance;
 	}
 
-	private function get_repositoryPath():String
+	function get_repositoryPath():String
 	{
 		return StringTools.replace(getRepository(), "\\", "/");
 	}
