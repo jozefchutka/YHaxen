@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Fixed git release.",
-	"version": "snapshot",
+	"releasenote": "Non zero exit code on error.",
+	"version": "0.0.22",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
