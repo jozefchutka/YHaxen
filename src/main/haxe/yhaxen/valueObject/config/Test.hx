@@ -17,6 +17,11 @@ class Test
 	 **/
 	public var arguments:Array<String>;
 
+	/**
+	 * Optional
+	 **/
+	public var dir:String;
+
 	public function new(name:String, command:String)
 	{
 		this.name = name;

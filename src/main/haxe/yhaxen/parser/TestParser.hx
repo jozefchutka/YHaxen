@@ -23,9 +23,11 @@ class TestParser extends GenericParser<Test>
 				"Provide test command in " + configFile + ".");
 
 		var command:String = Reflect.field(source, "command");
+		var dir:String = Reflect.field(source, "dir");
 
 		var result:Test = new Test(name, command);
 		result.arguments = Reflect.field(source, "arguments");
+		result.dir = dir;
 		return result;
 	}
 }

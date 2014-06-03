@@ -53,10 +53,17 @@ class TestPhase extends AbstractPhase
 		if(test.arguments != null && test.arguments.length > 0)
 			arguments = resolveVariablesInArray(test.arguments, phaseEnvironment);
 
+		var cwd = Sys.getCwd();
+
+		if(test.dir != null)
+			Sys.setCwd(resolveVariablesInArray([test.dir], phaseEnvironment).join(""));
+
 		if(System.command(test.command, arguments) != 0)
 			throw new Error(
 				"Test failed!",
 				"System command failed to execute or tests failed.",
 				"Make sure system command can be executed and fix tests.");
+
+		Sys.setCwd(cwd);
 	}
 }

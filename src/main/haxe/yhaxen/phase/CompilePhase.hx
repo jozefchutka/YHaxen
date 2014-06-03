@@ -69,11 +69,18 @@ class CompilePhase extends AbstractPhase
 		if(build.arguments != null && build.arguments.length > 0)
 			arguments = resolveVariablesInArray(build.arguments, phaseEnvironment);
 
+		var cwd = Sys.getCwd();
+
+		if(build.dir != null)
+			Sys.setCwd(resolveVariablesInArray([build.dir], phaseEnvironment).join(""));
+
 		if(System.command(build.command, arguments) != 0)
 			throw new Error(
 				"Build " + build.name + " failed!",
 				"System command failed to execute.",
 				"Make sure system command can be executed.");
+
+		Sys.setCwd(cwd);
 	}
 
 	override function resolveVariable(input:String, phaseEnvironment:PhaseEnvironment):Array<String>

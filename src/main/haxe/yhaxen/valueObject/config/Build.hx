@@ -22,6 +22,11 @@ class Build
 	 **/
 	public var arguments:Array<String>;
 
+	/**
+	 * Optional
+	 **/
+	public var dir:String;
+
 	public function new(name:String, artifact:String, command:String)
 	{
 		this.name = name;

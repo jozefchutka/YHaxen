@@ -30,9 +30,11 @@ class BuildParser extends GenericParser<Build>
 
 		var artifact:String = Reflect.field(source, "artifact");
 		var command:String = Reflect.field(source, "command");
+		var dir:String = Reflect.field(source, "dir");
 
 		var result:Build = new Build(name, artifact, command);
 		result.arguments = Reflect.field(source, "arguments");
+		result.dir = dir;
 		return result;
 	}
 }
