@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Fixed git release.",
-	"version": "snapshot",
+	"releasenote": "Configurable execution dir for build and test.",
+	"version": "0.0.23",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
