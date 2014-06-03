@@ -1,7 +1,5 @@
 package yhaxen;
 
-import haxe.macro.Context;
-
 import yhaxen.parser.CommandParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.phase.ReleasePhase;
@@ -56,6 +54,7 @@ class Main
 			execute(command);
 			System.print("");
 			System.print("Successfully completed.");
+			Sys.exit(0);
 		}
 		catch(error:Error)
 		{
@@ -63,11 +62,13 @@ class Main
 			System.print("Error: " + error.message);
 			System.print("  reason: " + error.reason);
 			System.print("  solution: " + error.solution);
+			Sys.exit(1);
 		}
 		catch(error:String)
 		{
 			System.print("");
 			System.print("Error: " + error);
+			Sys.exit(1);
 		}
 	}
 

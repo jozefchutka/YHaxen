@@ -2,6 +2,15 @@
 
 YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's validation, build, deployment and releasement.
 
+## Dependencies
+
+Works with:
+
+| OS         | Haxe  | Neko  | Haxelib    |
+| ---------- | ----- | ----- | ---------- |
+| Win 8.1    | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
+| OSX        | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
+ 
 ## Install
 
 Recommended installation from from haxelib:
