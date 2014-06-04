@@ -134,24 +134,24 @@ Available in build and test arguments.
 
 ### Dependencies
 
-Single dependendcy **$dir**: 
+Single dependendcy **dir**: 
 ```
-${dependency:munit:$dir} -> c:/haxe/lib/munit/123
-${dependency:munit:$dir:-cp} -> -cp c:/haxe/lib/munit/123
-```
-
-All scope related dependencies **$dir** via **-cp** argument:
-```
-${dependency:*:$dir} -> c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
-${dependency:*:$dir:-cp} -> -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+${dependency:munit:dir} -> c:/haxe/lib/munit/123
+${dependency:munit:dir:-cp} -> -cp c:/haxe/lib/munit/123
 ```
 
-Other examples **$name**:
+All scope related dependencies **dir** via **-cp** argument:
 ```
-${dependency:munit:$name:-lib} -> -lib munit
-${dependency:munit:$nameVersion:-lib} -> -lib munit:123
-${dependency:*:$name} -> munit mcover ...
-${dependency:*:$nameVersion:-lib} -> -lib munit:123 -lib mcover:123 ...
+${dependency:*:dir} -> c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
+${dependency:*:dir:-cp} -> -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+```
+
+Other examples:
+```
+${dependency:munit:name:-lib} -> -lib munit
+${dependency:munit:nameVersion:-lib} -> -lib munit:123
+${dependency:*:name} -> munit mcover ...
+${dependency:*:nameVersion:-lib} -> -lib munit:123 -lib mcover:123 ...
 ```
 
 ### Artifacts

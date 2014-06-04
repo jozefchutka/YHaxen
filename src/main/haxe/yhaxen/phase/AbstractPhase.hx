@@ -153,6 +153,10 @@ class AbstractPhase
 	{
 		var flag:String;
 
+		flag = "system:cwd";
+		if(input == flag)
+			return [Sys.getCwd()];
+
 		flag = "arg:";
 		if(StringTools.startsWith(input, flag))
 			return resolveVariableArg(input.substr(flag.length), phaseEnvironment);
@@ -212,11 +216,11 @@ class AbstractPhase
 
 			switch(type)
 			{
-				case "$dir":
+				case "dir":
 					result.push(haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false));
-				case "$name":
+				case "name":
 					result.push(dependency.name);
-				case "$nameVersion":
+				case "nameVersion":
 					result.push(dependency.name + ":" + dependency.version);
 				default:
 					throw new Error(
