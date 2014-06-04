@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Added system:cwd command.",
-	"version": "0.0.24",
+	"releasenote": "Fixed git release.",
+	"version": "snapshot",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
