@@ -55,14 +55,31 @@
 	"tests":
 	[
 		{
+			"name": "prepare",
+			"command": "haxelib",
+			"arguments": ["dev", "${dependency:munit:name}"]
+		},
+		{
+			"name": "prepare2",
+			"command": "haxelib",
+			"arguments": ["set", "${dependency:munit:name}", "${dependency:munit:version}"]
+		},
+		{
 			"name": "test",
-			"command": "neko",
-			"arguments": ["${dependency:munit:dir}/run.n", "test", "cliconfig", "${variable:testSourceDirectory}",
-				"${variable:testOutputDirectory}", "bin/test-report", "-result-exit-code",
-				"config:classPath", "${variable:sourceDirectory}", "config:coverageIgnoredClass", "module",
+			"command": "haxelib",
+			"arguments":
+			 [
+			 	"run", "munit", "test", "cliconfig",
+			 	"${variable:testSourceDirectory}", "${variable:testOutputDirectory}", "bin/test-report",
+			 	"-result-exit-code",
+				"config:classPath", "${variable:sourceDirectory}",
+				"config:coverageIgnoredClass", "module",
 				"target:-main", "TestMain",
-				"target:-cp", "${variable:sourceDirectory}", "target:-cp", "${variable:testSourceDirectory}",
-				"${dependency:*:dir:target:-cp}", "target:-neko", "${variable:testOutputDirectory}/neko_test.n"]
+				"target:-cp", "${variable:sourceDirectory}",
+				"target:-cp", "${variable:testSourceDirectory}",
+				"${dependency:*:dir:target:-cp}",
+				"target:-neko", "${variable:testOutputDirectory}/neko_test.n"
+			]
 		}
 	],
 
@@ -71,9 +88,14 @@
 		{
 			"name": "main",
 			"command": "haxe",
-			"arguments": ["-main", "yhaxen.Main", "-neko", "${variable:outputDirectory}/run.n",
+			"arguments":
+			[
+				"-main", "yhaxen.Main",
+				"-neko", "${variable:outputDirectory}/run.n",
 				"-cp", "${variable:sourceDirectory}",
-				"${dependency:*:dir:-cp}", "-D", "version=${arg:-version}"]
+				"${dependency:*:dir:-cp}",
+				"-D", "version=${arg:-version}"
+			]
 		}
 	],
 

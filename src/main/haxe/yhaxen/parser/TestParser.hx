@@ -30,4 +30,23 @@ class TestParser extends GenericParser<Test>
 		result.dir = dir;
 		return result;
 	}
+
+	override function parseList(source:Array<Dynamic>):Array<Test>
+	{
+		var result = super.parseList(source);
+
+		var names:Array<String> = [];
+		for(test in result)
+		{
+			if(Lambda.has(names, test.name))
+				throw new Error(
+					"Misconfigured test " + test.name + "!",
+					"Test " + test.name + " is defined multiple times.",
+					"Provide only one definition for " + test.name + " in " + configFile + ".");
+
+			names.push(test.name);
+		}
+
+		return result;
+	}
 }

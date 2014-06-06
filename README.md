@@ -172,7 +172,7 @@ haxelib run yhaxen compile version 123
 ${arg:version} -> 123
 ```
 
-## TODO 
+## TODO
 - with release provide dependencies in haxelib.json
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder

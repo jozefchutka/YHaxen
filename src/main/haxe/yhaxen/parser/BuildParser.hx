@@ -30,4 +30,23 @@ class BuildParser extends GenericParser<Build>
 		result.dir = dir;
 		return result;
 	}
+
+	override function parseList(source:Array<Dynamic>):Array<Build>
+	{
+		var result = super.parseList(source);
+
+		var names:Array<String> = [];
+		for(build in result)
+		{
+			if(Lambda.has(names, build.name))
+				throw new Error(
+					"Misconfigured build " + build.name + "!",
+					"Build " + build.name + " is defined multiple times.",
+					"Provide only one definition for " + build.name + " in " + configFile + ".");
+
+			names.push(build.name);
+		}
+
+		return result;
+	}
 }

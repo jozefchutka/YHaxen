@@ -31,8 +31,6 @@ class CompilePhase extends AbstractPhase
 
 		logPhase("compile", "Found " + config.builds.length + " builds.");
 
-		validateConfig();
-
 		for(build in config.builds)
 			compileBuild(build);
 	}
@@ -42,21 +40,6 @@ class CompilePhase extends AbstractPhase
 		testPhase = new TestPhase(config, configFile, followPhaseFlow);
 		testPhase.haxelib = haxelib;
 		testPhase.execute();
-	}
-
-	function validateConfig():Void
-	{
-		var names:Array<String> = [];
-		for(build in config.builds)
-		{
-			if(Lambda.has(names, build.name))
-				throw new Error(
-					"Misconfigured build " + build.name + "!",
-					"Build " + build.name + " is defined multiple times.",
-					"Provide only one definition for " + build.name + " in " + configFile + ".");
-
-			names.push(build.name);
-		}
 	}
 
 	function compileBuild(build:Build):Void
