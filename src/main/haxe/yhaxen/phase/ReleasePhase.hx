@@ -69,24 +69,33 @@ class ReleasePhase extends AbstractPhase
 		}
 	}
 
+	function getResolvedFiles(release:Release):Array<String>
+	{
+		var result:Array<String> = [];
+		for(item in release.files)
+		{
+			var file = resolveVariable(item, release);
+			result.push(file);
+		}
+		return result;
+	}
+
 	function releaseGit(release:Release):Void
 	{
-		for(file in release.files)
+		var files = getResolvedFiles(release);
+		for(file in files)
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
 				updateHaxelibJson(file);
 
 		var commit = Git.getCurrentCommit();
 
-		for(item in release.files)
-		{
-			var file = resolveVariable(item, release);
+		for(file in files)
 			Git.add(file);
-		}
 
 		Git.commit("YHaxen release " + version + ".");
 		Git.tag(version, "YHaxen release " + version + ".");
 
-		for(file in release.files)
+		for(file in files)
 		{
 			try
 			{
@@ -105,10 +114,10 @@ class ReleasePhase extends AbstractPhase
 
 	function releaseHaxelib(release:Release):Void
 	{
+		var files = getResolvedFiles(release);
 		var zip:Zip = new Zip();
-		for(item in release.files)
+		for(file in files)
 		{
-			var file = resolveVariable(item, release);
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
 				updateHaxelibJson(file);
 
