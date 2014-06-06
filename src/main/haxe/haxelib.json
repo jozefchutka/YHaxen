@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Fixed git release.",
-	"version": "snapshot",
+	"releasenote": "Added variables, test phase before compile.",
+	"version": "0.0.25",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
