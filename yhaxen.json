@@ -1,4 +1,24 @@
 {
+	"variables":
+	[
+		{
+			"name":"sourceDirectory",
+			"value":"src/main/haxe"
+		},
+		{
+			"name":"testSourceDirectory",
+			"value":"src/test/haxe"
+		},
+		{
+			"name":"outputDirectory",
+			"value":"src/main/haxe"
+		},
+		{
+			"name":"testOutputDirectory",
+			"value":"bin/test"
+		}
+	],
+
 	"dependencies":
 	[
 		{
@@ -32,27 +52,28 @@
 		}
 	],
 
-	"builds":
-	[
-		{
-			"name": "main",
-			"artifact": "src/main/haxe/run.n",
-			"command": "haxe",
-			"arguments": ["-main", "yhaxen.Main", "-neko", "${build:artifact}", "-cp", "src/main/haxe",
-				"${dependency:*:dir:-cp}", "-D", "version=${arg:-version}"]
-		}
-	],
-
 	"tests":
 	[
 		{
 			"name": "test",
 			"command": "neko",
-			"arguments": ["${dependency:munit:dir}/run.n", "test", "cliconfig", "src/test/haxe", "bin/test",
-				"bin/test-report", "-result-exit-code", "config:classPath", "src/main/haxe",
-				"config:coverageIgnoredClass", "module",
-				"target:-main", "TestMain", "target:-cp", "src/main/haxe", "target:-cp", "src/test/haxe",
-				"${dependency:*:dir:target:-cp}", "target:-neko", "bin/test/neko_test.n"]
+			"arguments": ["${dependency:munit:dir}/run.n", "test", "cliconfig", "${variable:testSourceDirectory}",
+				"${variable:testOutputDirectory}", "bin/test-report", "-result-exit-code",
+				"config:classPath", "${variable:sourceDirectory}", "config:coverageIgnoredClass", "module",
+				"target:-main", "TestMain",
+				"target:-cp", "${variable:sourceDirectory}", "target:-cp", "${variable:testSourceDirectory}",
+				"${dependency:*:dir:target:-cp}", "target:-neko", "${variable:testOutputDirectory}/neko_test.n"]
+		}
+	],
+
+	"builds":
+	[
+		{
+			"name": "main",
+			"command": "haxe",
+			"arguments": ["-main", "yhaxen.Main", "-neko", "${variable:outputDirectory}/run.n",
+				"-cp", "${variable:sourceDirectory}",
+				"${dependency:*:dir:-cp}", "-D", "version=${arg:-version}"]
 		}
 	],
 
@@ -60,11 +81,20 @@
 	[
 		{
 			"type": "git",
-			"files": ["src/main/haxe/haxelib.json", "src/main/haxe/run.n"]
+			"files":
+			[
+				"${variable:sourceDirectory}/haxelib.json",
+				"${variable:outputDirectory}/run.n"
+			]
 		},
 		{
 			"type": "haxelib",
-			"files": ["src/main/haxe/haxelib.json", "src/main/haxe/run.n", "src/main/haxe/yhaxen"]
+			"files":
+			 [
+				"${variable:sourceDirectory}/haxelib.json",
+				"${variable:outputDirectory}/run.n",
+				"${variable:sourceDirectory}/yhaxen"
+			]
 		}
 	]
 }

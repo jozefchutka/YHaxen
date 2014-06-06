@@ -6,11 +6,10 @@ import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.Error;
-import yhaxen.valueObject.PhaseEnvironment;
 
 class CompilePhase extends AbstractPhase
 {
-	var validatePhase:ValidatePhase;
+	var testPhase:TestPhase;
 
 	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
@@ -40,9 +39,9 @@ class CompilePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		validatePhase = new ValidatePhase(config, configFile, followPhaseFlow);
-		validatePhase.haxelib = haxelib;
-		validatePhase.execute();
+		testPhase = new TestPhase(config, configFile, followPhaseFlow);
+		testPhase.haxelib = haxelib;
+		testPhase.execute();
 	}
 
 	function validateConfig():Void
@@ -63,16 +62,14 @@ class CompilePhase extends AbstractPhase
 	function compileBuild(build:Build):Void
 	{
 		var arguments = null;
-		var phaseEnvironment = new PhaseEnvironment();
-		phaseEnvironment.build = build;
 
 		if(build.arguments != null && build.arguments.length > 0)
-			arguments = resolveVariablesInArray(build.arguments, phaseEnvironment);
+			arguments = resolveVariablesInArray(build.arguments, build);
 
 		var cwd = Sys.getCwd();
 
 		if(build.dir != null)
-			Sys.setCwd(resolveVariablesInArray([build.dir], phaseEnvironment).join(""));
+			Sys.setCwd(resolveVariablesInArray([build.dir], build).join(""));
 
 		if(System.command(build.command, arguments) != 0)
 			throw new Error(
@@ -81,13 +78,5 @@ class CompilePhase extends AbstractPhase
 				"Make sure system command can be executed.");
 
 		Sys.setCwd(cwd);
-	}
-
-	override function resolveVariable(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
-	{
-		if(input == "build:artifact")
-			return [phaseEnvironment.build.artifact];
-
-		return super.resolveVariable(input, phaseEnvironment);
 	}
 }

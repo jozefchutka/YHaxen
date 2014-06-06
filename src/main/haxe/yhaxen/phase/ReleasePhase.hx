@@ -77,8 +77,11 @@ class ReleasePhase extends AbstractPhase
 
 		var commit = Git.getCurrentCommit();
 
-		for(file in release.files)
+		for(item in release.files)
+		{
+			var file = resolveVariable(item, release);
 			Git.add(file);
+		}
 
 		Git.commit("YHaxen release " + version + ".");
 		Git.tag(version, "YHaxen release " + version + ".");
@@ -103,8 +106,9 @@ class ReleasePhase extends AbstractPhase
 	function releaseHaxelib(release:Release):Void
 	{
 		var zip:Zip = new Zip();
-		for(file in release.files)
+		for(item in release.files)
 		{
+			var file = resolveVariable(item, release);
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
 				updateHaxelibJson(file);
 

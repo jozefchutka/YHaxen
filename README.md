@@ -10,6 +10,7 @@ Works with:
 | ---------- | ----- | ----- | ---------- |
 | Win 8.1    | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
 | OSX        | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
+| Ubuntu 14  | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
  
 ## Install
 
@@ -56,7 +57,7 @@ Default config filename is **yhaxen.json**. Each phase has a related section in 
 
 ```json
 {
-	"version": 1,
+	"variables": {...},
 	"dependencies": [...],
 	"builds": [...],
 	"releases": [...],
@@ -66,8 +67,8 @@ Default config filename is **yhaxen.json**. Each phase has a related section in 
 ## Phases
 
 1. validate
-2. compile
-3. test
+2. test
+3. compile
 4. deploy
 5. release
 
@@ -104,19 +105,19 @@ Example dependency configuration:
 			"type": "haxelib",
 			"forceVersion": true
 		},
-		...
+		{...}
 	]
 ```
+
+### Test
+
+Test the compiled source code using a unit testing framework.
 
 ### Compile
 
 Compile the source code of the project.
 
 Todo: example json, how dependencies variable is used
-
-### Test
-
-Test the compiled source code using a unit testing framework.
 
 ### Release
 
@@ -172,9 +173,7 @@ ${arg:version} -> 123
 ```
 
 ## TODO 
-- test osx, linux
 - with release provide dependencies in haxelib.json
-- how to handle build artifact?
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder
 

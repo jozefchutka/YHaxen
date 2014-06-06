@@ -244,7 +244,7 @@ class ValidatePhase extends AbstractPhase
 
 		try
 		{
-			Git.pull(directory);
+			Git.pull(directory, dependency.version);
 			Git.checkout(dependency.source, dependency.version, directory);
 		}
 		catch(error:Dynamic)

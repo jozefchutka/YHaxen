@@ -33,13 +33,13 @@ class Git
 			throw error;
 	}
 
-	public static function pull(directory:String):Void
+	public static function pull(directory:String, branch:String):Void
 	{
 		var cwd = Sys.getCwd();
 		Sys.setCwd(directory);
 
 		var error:Error = null;
-		if(System.command("git", ["pull", "--quiet", "--all"]) != 0)
+		if(System.command("git", ["pull", "--quiet", "origin", branch]) != 0)
 			error = new Error(
 				"Git pull failed.",
 				"Git was not able to pull.",

@@ -2,10 +2,7 @@ package yhaxen.parser;
 
 import haxe.Json;
 
-import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;
-import yhaxen.valueObject.config.DependencyDetail;
-import yhaxen.valueObject.config.Release;
 
 import sys.io.File;
 import sys.FileSystem;
@@ -17,6 +14,14 @@ class ConfigParser extends GenericParser<Config>
 	override function parse(source:Dynamic):Config
 	{
 		var result:Config = new Config();
+
+		if(Reflect.hasField(source, "variables"))
+		{
+			var variableParser = new VariableParser();
+			variableParser.configFile = configFile;
+			result.variables = variableParser.parseList(Reflect.field(source, "variables"));
+		}
+
 		if(Reflect.hasField(source, "dependencies"))
 		{
 			var dependencyParser = new DependencyParser();

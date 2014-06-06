@@ -1,17 +1,15 @@
 package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
-import yhaxen.phase.CompilePhase;
 import yhaxen.util.System;
 import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Test;
 import yhaxen.valueObject.Error;
-import yhaxen.valueObject.PhaseEnvironment;
 
 class TestPhase extends AbstractPhase
 {
-	var compilePhase:CompilePhase;
+	var validatePhase:ValidatePhase;
 
 	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
 	{
@@ -39,28 +37,26 @@ class TestPhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		compilePhase = new CompilePhase(config, configFile, followPhaseFlow);
-		compilePhase.haxelib = haxelib;
-		compilePhase.execute();
+		validatePhase = new ValidatePhase(config, configFile, followPhaseFlow);
+		validatePhase.haxelib = haxelib;
+		validatePhase.execute();
 	}
 
 	function resolveTest(test:Test):Void
 	{
 		var arguments = null;
-		var phaseEnvironment = new PhaseEnvironment();
-		phaseEnvironment.test = test;
 
 		if(test.arguments != null && test.arguments.length > 0)
-			arguments = resolveVariablesInArray(test.arguments, phaseEnvironment);
+			arguments = resolveVariablesInArray(test.arguments, test);
 
 		var cwd = Sys.getCwd();
 
 		if(test.dir != null)
-			Sys.setCwd(resolveVariablesInArray([test.dir], phaseEnvironment).join(""));
+			Sys.setCwd(resolveVariablesInArray([test.dir], test).join(""));
 
 		if(System.command(test.command, arguments) != 0)
 			throw new Error(
-				"Test failed!",
+				"Test " + test.name + " failed!",
 				"System command failed to execute or tests failed.",
 				"Make sure system command can be executed and fix tests.");
 

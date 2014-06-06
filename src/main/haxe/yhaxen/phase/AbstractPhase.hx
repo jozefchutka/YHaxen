@@ -2,10 +2,11 @@ package yhaxen.phase;
 
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
+import yhaxen.valueObject.config.AbstractBuild;
+import yhaxen.valueObject.config.AbstractStep;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.valueObject.Error;
-import yhaxen.valueObject.PhaseEnvironment;
 
 import sys.FileSystem;
 
@@ -93,12 +94,22 @@ class AbstractPhase
 		return result.length == 0 ? null : result;
 	}
 
-	function resolveVariablesInArray(input:Array<String>, phaseEnvironment:PhaseEnvironment):Array<String>
+	function getScopeFromStep(step:AbstractStep):String
+	{
+		return Std.is(step, AbstractBuild) ? cast(step, AbstractBuild).name : null;
+	}
+
+	function resolveVariable(input:String, step:AbstractStep, separator:String=""):String
+	{
+		return resolveVariablesInArray([input], step).join(separator);
+	}
+
+	function resolveVariablesInArray(input:Array<String>, step:AbstractStep):Array<String>
 	{
 		var result:Array<String> = [];
 		for(item in input)
 		{
-			var resolvedResults = resolveVariablesInString(item, phaseEnvironment);
+			var resolvedResults = _resolveVariablesInString(item, step);
 			if(resolvedResults == null)
 				result.push(item);
 			else
@@ -108,7 +119,7 @@ class AbstractPhase
 		return result;
 	}
 
-	function resolveVariablesInString(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
+	function _resolveVariablesInString(input:String, step:AbstractStep):Array<String>
 	{
 		if(input == null)
 			return null;
@@ -129,7 +140,7 @@ class AbstractPhase
 				"Make sure the variable is defined properly.");
 
 		var result:Array<String> = [];
-		var resolvedResults = resolveVariable(matched, phaseEnvironment);
+		var resolvedResults = _resolveVariable(matched, step);
 		if(resolvedResults == null)
 		{
 			log("  -> emtpy value");
@@ -149,7 +160,7 @@ class AbstractPhase
 		return result;
 	}
 
-	function resolveVariable(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
+	function _resolveVariable(input:String, step:AbstractStep):Array<String>
 	{
 		var flag:String;
 
@@ -159,11 +170,15 @@ class AbstractPhase
 
 		flag = "arg:";
 		if(StringTools.startsWith(input, flag))
-			return resolveVariableArg(input.substr(flag.length), phaseEnvironment);
+			return _resolveVariableArg(input.substr(flag.length), step);
 
 		flag = "dependency:";
 		if(StringTools.startsWith(input, flag))
-			return resolveVariableDependency(input.substr(flag.length), phaseEnvironment);
+			return _resolveVariableDependency(input.substr(flag.length), step);
+
+		flag = "variable:";
+		if(StringTools.startsWith(input, flag))
+			return _resolveVariableVariable(input.substr(flag.length), step);
 
 		throw new Error(
 			"Invalid variable $" + "{" + input + "}",
@@ -171,7 +186,7 @@ class AbstractPhase
 			"Make sure the variable is defined properly.");
 	}
 
-	function resolveVariableArg(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
+	function _resolveVariableArg(input:String, step:AbstractStep):Array<String>
 	{
 		var chunks = input.split(":");
 		var name = chunks.shift();
@@ -191,11 +206,11 @@ class AbstractPhase
 		return result.length == 0 ? null : result;
 	}
 
-	function resolveVariableDependency(input:String, phaseEnvironment:PhaseEnvironment):Array<String>
+	function _resolveVariableDependency(input:String, step:AbstractStep):Array<String>
 	{
 		var chunks = input.split(":");
 		var name = chunks.shift();
-		var scope:String = phaseEnvironment.scope;
+		var scope:String = getScopeFromStep(step);
 		var dependencies:Array<DependencyDetail> = (name == "*") ? getDependencies(scope) : [getDependencyByName(name)];
 		if(dependencies == null)
 			return null;
@@ -220,16 +235,38 @@ class AbstractPhase
 					result.push(haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false));
 				case "name":
 					result.push(dependency.name);
+				case "version":
+					result.push(dependency.version);
 				case "nameVersion":
 					result.push(dependency.name + ":" + dependency.version);
 				default:
 					throw new Error(
-						"Invalid variable $" + "{" + input + "}",
+						"Invalid variable $" + "{dependency:" + input + "}!",
 						"Variable definition type \"" + type + "\" is unknown.",
 						"Make sure the variable is defined properly.");
 			}
 		}
 
 		return result.length == 0 ? null : result;
+	}
+
+	function _resolveVariableVariable(input:String, step:AbstractStep):Array<String>
+	{
+		var name = input;
+		if(name == "")
+			throw new Error(
+				"Invalid variable $" + "{variable:" + input + "}!",
+				"Variable has empty name defined.",
+				"Provide proper variable name.");
+
+		if(config.variables != null)
+			for(variable in config.variables)
+				if(variable.name == name)
+					return [variable.value];
+
+		throw new Error(
+			"Invalid variable $" + "{variable:" + input + "}!",
+			"Variable " + name + " is not defined in " + configFile + ".",
+			"Define variable " + name + ".");
 	}
 }

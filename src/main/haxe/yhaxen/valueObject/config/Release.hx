@@ -2,7 +2,7 @@ package yhaxen.valueObject.config;
 
 import yhaxen.enums.ReleaseType;
 
-class Release
+class Release extends AbstractStep
 {
 	/**
 	 * Required

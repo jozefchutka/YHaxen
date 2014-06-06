@@ -7,17 +7,22 @@ class Config
 	/**
 	 * Optional
 	 **/
+	public var variables:Array<Variable>;
+
+	/**
+	 * Optional
+	 **/
 	public var dependencies:Array<DependencyDetail>;
 
 	/**
 	 * Optional
 	 **/
-	public var builds:Array<Build>;
+	public var tests:Array<Test>;
 
 	/**
 	 * Optional
 	 **/
-	public var tests:Array<Test>;
+	public var builds:Array<Build>;
 
 	/**
 	 * Optional
