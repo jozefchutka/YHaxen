@@ -40,11 +40,9 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 ```
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
-yhaxen validate -scope web
 yhaxen compile
 yhaxen compile:compile
 yhaxen compile -config src/test/resources/yhaxen.json
-yhaxen compile -scope web
 yhaxen test
 yhaxen test:test
 yhaxen release -version 0.0.1
@@ -97,16 +95,22 @@ Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git*
 Example dependency configuration:
  
 ```json
-"dependencies":
-	[
-		{
-			"name": "msignal",
-			"version": "1.2.2",
-			"type": "haxelib",
-			"forceVersion": true
-		},
-		{...}
-	]
+"dependencies": [
+	{
+		"name": "msignal",
+		"version": "1.2.2",
+		"type": "haxelib"
+	},
+	{
+		"name":"munit",
+		"version":"2.1.1",
+		"source": "git@github.com:massiveinteractive/MassiveUnit.git",
+		"type": "git",
+		"classPath": "src",
+		"scopes": ["test"]
+	},
+	{...}
+]
 ```
 
 ### Test
@@ -131,7 +135,26 @@ Not yet implemented.
 
 ## Variables
 
-Available in build and test arguments.
+Available in build, test and release phases.
+
+Variable configuration and usage in yhaxen.json: 
+```json
+{
+	"variables": [
+		{
+			"name": "sourceDirectory",
+			"value": "src/main/haxe"
+		}
+	],
+	"builds": [
+		{
+			"name": "main",
+			"command": "haxe",
+			"arguments": ["-cp", "${variable:sourceDirectory}"]
+		}
+	]
+}
+```
 
 ### Dependencies
 
@@ -155,14 +178,6 @@ ${dependency:*:name} -> munit mcover ...
 ${dependency:*:nameVersion:-lib} -> -lib munit:123 -lib mcover:123 ...
 ```
 
-### Artifacts
-
-Artifact is available on build arguments and will be replaced by build artifact value: 
-
-```
-${build:artifact} -> index.js
-```
-
 ### Arguments
 
 Command line arguments:
@@ -173,6 +188,7 @@ ${arg:version} -> 123
 ```
 
 ## TODO
+- compile:$name, test:$name should execute correspoding phase, compile:* all
 - with release provide dependencies in haxelib.json
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder

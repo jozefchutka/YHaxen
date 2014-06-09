@@ -52,7 +52,7 @@ class TestPhase extends AbstractPhase
 		var cwd = Sys.getCwd();
 
 		if(test.dir != null)
-			Sys.setCwd(resolveVariablesInArray([test.dir], test).join(""));
+			Sys.setCwd(resolveVariable(test.dir, test));
 
 		if(System.command(test.command, arguments) != 0)
 			throw new Error(

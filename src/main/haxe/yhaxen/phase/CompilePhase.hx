@@ -52,7 +52,7 @@ class CompilePhase extends AbstractPhase
 		var cwd = Sys.getCwd();
 
 		if(build.dir != null)
-			Sys.setCwd(resolveVariablesInArray([build.dir], build).join(""));
+			Sys.setCwd(resolveVariable(build.dir, build));
 
 		if(System.command(build.command, arguments) != 0)
 			throw new Error(
