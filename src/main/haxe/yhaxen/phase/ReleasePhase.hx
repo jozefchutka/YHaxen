@@ -2,6 +2,8 @@ package yhaxen.phase;
 
 import haxe.io.Path;
 
+import tools.haxelib.SemVer;
+
 import yhaxen.enums.ReleaseType;
 import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
@@ -84,7 +86,7 @@ class ReleasePhase extends AbstractPhase
 		var files = getResolvedFiles(release);
 		for(file in files)
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(file);
+				updateHaxelibJson(file, false);
 
 		var commit = Git.getCurrentCommit();
 
@@ -118,7 +120,7 @@ class ReleasePhase extends AbstractPhase
 		for(file in files)
 		{
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(file);
+				updateHaxelibJson(file, true);
 
 			zip.add(file, Path.withoutDirectory(file));
 		}
@@ -130,19 +132,44 @@ class ReleasePhase extends AbstractPhase
 		deleteTempDirectory();
 	}
 
-	function updateHaxelibJson(file:String):Void
+	function updateHaxelibJson(file:String, forHaxelib:Bool):Void
 	{
 		var message:String = this.message == null || this.message == "" ? DEFAULT_MESSAGE : this.message;
-
-		var dependencies = {};
-		if(config.dependencies != null)
-			for(dependency in config.dependencies)
-				Reflect.setProperty(dependencies, dependency.name, dependency.version);
-
+		var dependencies:Dynamic = getHaxelibJsonDependencies(forHaxelib);
 		if(!haxelib.updateHaxelibFile(file, version, dependencies, message))
 			throw new Error(
 				"Invalid " + Haxelib.FILE_HAXELIB + " file!",
 				"Release related file " + file + " does not exist or is invalid.",
 				"Provide correct path to " + Haxelib.FILE_HAXELIB + " file in " + configFile + ".");
+	}
+
+	/**
+	 * Haxelib does not like dependencies with version other then semver format submitted.
+	 **/
+	function getHaxelibJsonDependencies(forHaxelib:Bool):Dynamic
+	{
+		var result = {};
+		if(config.dependencies == null)
+			return result;
+
+		for(dependency in config.dependencies)
+		{
+			var version = dependency.version;
+			if(forHaxelib)
+			{
+				try
+				{
+					SemVer.ofString(dependency.version);
+				}
+				catch(error:Dynamic)
+				{
+					version = "";
+				}
+			}
+
+			Reflect.setProperty(result, dependency.name, version);
+		}
+
+		return result;
 	}
 }
