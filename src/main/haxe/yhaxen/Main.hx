@@ -21,9 +21,11 @@ class Main
 
 	private var commandValidate:Command;
 	private var commandCompile:Command;
-	private var commandCompileCompile:Command;
+	private var commandCompileAll:Command;
+	private var commandCompileName:Command;
 	private var commandTest:Command;
-	private var commandTestTest:Command;
+	private var commandTestAll:Command;
+	private var commandTestName:Command;
 	private var commandRelease:Command;
 	private var commandHelp:Command;
 
@@ -39,12 +41,16 @@ class Main
 
 		commandValidate = new Command(Command.KEY_VALIDATE, "Validate the project is correct and all necessary information is available.");
 		commandCompile = new Command(Command.KEY_COMPILE, "Compile the source code of the project.");
-		commandCompileCompile = new Command(Command.KEY_COMPILE_COMPILE, "Execute compile phase only.");
+		commandCompileAll = new Command(Command.KEY_COMPILE_ALL, "Execute compile phase only.");
+		commandCompileName = new Command(Command.KEY_COMPILE_NAME, "Execute build named XY only.");
 		commandTest = new Command(Command.KEY_TEST, "Test the compiled source code using a unit testing framework.");
-		commandTestTest = new Command(Command.KEY_TEST_TEST, "Execute test phase only.");
+		commandTestAll = new Command(Command.KEY_TEST_ALL, "Execute test phase only.");
+		commandTestName = new Command(Command.KEY_TEST_NAME, "Execute test named XY only.");
 		commandRelease = new Command(Command.KEY_RELEASE, "Release versioned project.");
 		commandHelp = new Command(Command.KEY_HELP, "Print this legend.");
-		commands = [commandValidate, commandCompile, commandCompileCompile, commandTest, commandTestTest,
+		commands = [commandValidate,
+			commandTest, commandTestAll, commandTestName,
+			commandCompile, commandCompileAll, commandCompileName,
 			commandRelease, commandHelp];
 
 		try

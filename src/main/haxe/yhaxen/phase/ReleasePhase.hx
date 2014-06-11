@@ -1,6 +1,5 @@
 package yhaxen.phase;
 
-import yhaxen.phase.TestPhase;
 import haxe.io.Path;
 
 import yhaxen.enums.ReleaseType;
@@ -22,7 +21,7 @@ class ReleasePhase extends AbstractPhase
 	public var version(default, null):String;
 	public var message(default, null):String;
 
-	var testPhase:TestPhase;
+	var compilePhase:CompilePhase;
 
 	public function new(config:Config, configFile:String, followPhaseFlow:Bool, version:String, message:String)
 	{
@@ -53,9 +52,9 @@ class ReleasePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		testPhase = new TestPhase(config, configFile, followPhaseFlow);
-		testPhase.haxelib = haxelib;
-		testPhase.execute();
+		compilePhase = new CompilePhase(config, configFile, followPhaseFlow, null);
+		compilePhase.haxelib = haxelib;
+		compilePhase.execute();
 	}
 
 	function resolveRelease(release:Release):Void

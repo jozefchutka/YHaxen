@@ -188,7 +188,6 @@ ${arg:version} -> 123
 ```
 
 ## TODO
-- compile:$name, test:$name should execute correspoding phase, compile:* all
 - with release provide dependencies in haxelib.json
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder

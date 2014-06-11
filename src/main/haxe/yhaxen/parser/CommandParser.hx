@@ -20,19 +20,19 @@ class CommandParser extends GenericParser<AbstractCommand>
 		if(configFile == null)
 			configFile = Config.DEFAULT_FILENAME;
 
-		var phase = args[0];
-		switch(phase)
+
+		var phaseChunks = args[0].split(":");
+		var phaseKey = phaseChunks[0];
+		var phasePart = phaseChunks.length > 1 ? phaseChunks[1] : null;
+
+		switch(phaseKey)
 		{
 			case Command.KEY_VALIDATE:
 				return new ValidateCommand(configFile);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile, true);
-			case Command.KEY_COMPILE_COMPILE:
-				return new CompileCommand(configFile, false);
+				return new CompileCommand(configFile, phasePart == null, phasePart == "*" ? null : phasePart);
 			case Command.KEY_TEST:
-				return new TestCommand(configFile, true);
-			case Command.KEY_TEST_TEST:
-				return new TestCommand(configFile, false);
+				return new TestCommand(configFile, phasePart == null, phasePart == "*" ? null : phasePart);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")
@@ -47,7 +47,7 @@ class CommandParser extends GenericParser<AbstractCommand>
 			default:
 				throw new Error(
 					"Invalid command arguments.",
-					"Command argument " + phase + " is invalid.",
+					"Command argument " + phaseKey + " is invalid.",
 					"Execute \"" + Command.KEY_HELP + "\" for help.");
 		}
 	}

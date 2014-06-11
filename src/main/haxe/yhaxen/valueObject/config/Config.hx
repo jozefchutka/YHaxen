@@ -32,4 +32,22 @@ class Config
 	public function new()
 	{
 	}
+
+	public function getTest(name:String):Test
+	{
+		if(tests != null)
+			for(test in tests)
+				if(test.name == name)
+					return test;
+		return null;
+	}
+
+	public function getBuild(name:String):Build
+	{
+		if(builds != null)
+			for(build in builds)
+				if(build.name == name)
+					return build;
+		return null;
+	}
 }

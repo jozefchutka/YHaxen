@@ -9,23 +9,35 @@ import yhaxen.valueObject.Error;
 
 class CompilePhase extends AbstractPhase
 {
+	public var part(default, null):String;
+
 	var testPhase:TestPhase;
 
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool, part:String)
 	{
 		super(config, configFile, followPhaseFlow);
+
+		this.part = part;
 	}
 
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new CompilePhase(config, command.configFile, command.followPhaseFlow);
+		return new CompilePhase(config, command.configFile, command.followPhaseFlow, command.part);
 	}
 
 	override function execute():Void
 	{
 		super.execute();
 
+		if(part != null)
+			executePart(part);
+		else
+			executeAll();
+	}
+
+	function executeAll():Void
+	{
 		if(config.builds == null || config.builds.length == 0)
 			return logPhase("compile", "No builds found.");
 
@@ -35,9 +47,24 @@ class CompilePhase extends AbstractPhase
 			compileBuild(build);
 	}
 
+	function executePart(part:String):Void
+	{
+		var build = config.getBuild(part);
+
+		if(build == null)
+			throw new Error(
+				"Build " + part + " not found!",
+				"Build named " + part + " is not defined in " + configFile + ".",
+				"Provide build in " + configFile + " or execute different build.");
+
+		logPhase("compile", "Found 1 build.");
+		compileBuild(build);
+	}
+
+
 	override function executePreviousPhase():Void
 	{
-		testPhase = new TestPhase(config, configFile, followPhaseFlow);
+		testPhase = new TestPhase(config, configFile, followPhaseFlow, null);
 		testPhase.haxelib = haxelib;
 		testPhase.execute();
 	}

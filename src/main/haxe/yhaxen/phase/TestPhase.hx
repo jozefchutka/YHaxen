@@ -9,23 +9,35 @@ import yhaxen.valueObject.Error;
 
 class TestPhase extends AbstractPhase
 {
+	public var part(default, null):String;
+
 	var validatePhase:ValidatePhase;
 
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool)
+	public function new(config:Config, configFile:String, followPhaseFlow:Bool, part:String)
 	{
 		super(config, configFile, followPhaseFlow);
+
+		this.part = part;
 	}
 
 	public static function fromCommand(command:TestCommand):TestPhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new TestPhase(config, command.configFile, command.followPhaseFlow);
+		return new TestPhase(config, command.configFile, command.followPhaseFlow, command.part);
 	}
 
 	override function execute():Void
 	{
 		super.execute();
 
+		if(part != null)
+			executePart(part);
+		else
+			executeAll();
+	}
+
+	function executeAll():Void
+	{
 		if(config.tests == null || config.tests.length == 0)
 			return logPhase("tests", "No tests found.");
 
@@ -33,6 +45,20 @@ class TestPhase extends AbstractPhase
 
 		for(test in config.tests)
 			resolveTest(test);
+	}
+
+	function executePart(part:String):Void
+	{
+		var test = config.getTest(part);
+
+		if(test == null)
+			throw new Error(
+				"Test " + part + " not found!",
+				"Test named " + part + " is not defined in " + configFile + ".",
+				"Provide test in " + configFile + " or execute different test.");
+
+		logPhase("test", "Found 1 test.");
+		resolveTest(test);
 	}
 
 	override function executePreviousPhase():Void
