@@ -1,6 +1,7 @@
 package yhaxen.util;
 
 import haxe.Json;
+
 import sys.io.File;
 import sys.FileSystem;
 
@@ -70,16 +71,19 @@ class Haxelib extends tools.haxelib.Main
 		System.deleteDirectory(directory);
 	}
 
-	public function updateHaxelibFile(file:String, version:String, releasenote:String):Bool
+	public function updateHaxelibFile(file:String, version:String, dependencies:Dynamic, releasenote:String):Bool
 	{
 		if(!FileSystem.exists(file) || FileSystem.isDirectory(file))
 			return false;
 
 		var content = File.getContent(file);
 		var json = Json.parse(content);
+
 		json.version = version;
+		json.dependencies = dependencies;
 		if(releasenote != null || releasenote != "")
 			json.releasenote = releasenote;
+
 		var result = JsonPrinter.print(json, null, "\t");
 
 		File.saveContent(file, result);

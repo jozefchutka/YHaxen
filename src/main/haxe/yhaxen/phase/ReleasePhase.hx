@@ -133,7 +133,13 @@ class ReleasePhase extends AbstractPhase
 	function updateHaxelibJson(file:String):Void
 	{
 		var message:String = this.message == null || this.message == "" ? DEFAULT_MESSAGE : this.message;
-		if(!haxelib.updateHaxelibFile(file, version, message))
+
+		var dependencies = {};
+		if(config.dependencies != null)
+			for(dependency in config.dependencies)
+				Reflect.setProperty(dependencies, dependency.name, dependency.version);
+
+		if(!haxelib.updateHaxelibFile(file, version, dependencies, message))
 			throw new Error(
 				"Invalid " + Haxelib.FILE_HAXELIB + " file!",
 				"Release related file " + file + " does not exist or is invalid.",
