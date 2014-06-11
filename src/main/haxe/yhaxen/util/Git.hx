@@ -6,74 +6,71 @@ import sys.io.Process;
 
 class Git
 {
+	static function execute(arguments:Array<String>, directory:String):{exitCode:Int, result:String}
+	{
+		var cwd = Sys.getCwd();
+		if(directory != null)
+			Sys.setCwd(directory);
+
+		var process:Process = System.process("git", arguments);
+		var exitCode = process.exitCode();
+		var result = StringTools.trim(process.stdout.readAll().toString());
+
+		if(directory != null)
+			Sys.setCwd(cwd);
+		return {exitCode:exitCode, result:result};
+	}
+
 	public static function clone(source:String, directory:String):Void
 	{
-		if(System.command("git", ["clone", "--quiet", source, directory]) != 0)
+		if(execute(["clone", "--quiet", source, directory], null).exitCode != 0)
 			throw new Error(
 				"Git clone failed.",
 				"Git command is not configured or repository does not exist.",
 				"Make sure git is configured and repository exists.");
 	}
 
-	public static function checkout(source:String, branch:String, directory:String):Void
+	public static function checkout(branch:String, directory:String=null):Void
 	{
-		var cwd = Sys.getCwd();
-		Sys.setCwd(directory);
-
-		var error:Error = null;
-		if(System.command("git", ["checkout", "--quiet", branch]) != 0)
-			error = new Error(
+		if(execute(["checkout", "--quiet", branch], directory).exitCode != 0)
+			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkout branch, tag or commit " + branch + ".",
 				"Make sure " + branch + " exists in git repository.");
-
-		Sys.setCwd(cwd);
-
-		if(error != null)
-			throw error;
 	}
 
-	public static function pull(directory:String, branch:String):Void
+	public static function fetchAll(directory:String=null):Void
 	{
-		var cwd = Sys.getCwd();
-		Sys.setCwd(directory);
-
-		var error:Error = null;
-		if(System.command("git", ["pull", "--quiet", "origin", branch]) != 0)
-			error = new Error(
-				"Git pull failed.",
-				"Git was not able to pull.",
+		if(execute(["fetch", "--quiet", "--all"], directory).exitCode != 0)
+			throw new Error(
+				"Git fetch failed.",
+				"Git was not able to fetch.",
 				"Make sure directory " + directory + " is valid git repository.");
-
-		Sys.setCwd(cwd);
-
-		if(error != null)
-			throw error;
 	}
 
-	public static function getCurrentCommit():String
+	public static function getCurrentCommit(directory:String=null):String
 	{
-		var process:Process = System.process("git", ["rev-parse", "HEAD"]);
-		if(process.exitCode() != 0)
+		var execution = execute(["rev-parse", "HEAD"], directory);
+		if(execution.exitCode != 0)
 			throw new Error(
 				"Git rev-parse failed.",
 				"Git was not able to get current commit.",
 				"Make sure project is under git control and current user has suffucient rights.");
-		return StringTools.trim(process.stdout.readAll().toString());
+		return execution.result;
 	}
 
-	public static function add(file:String):Void
+	public static function add(file:String, directory:String=null):Void
 	{
-		if(System.command("git", ["add", file]) != 0)
+		if(execute(["add", file], directory).exitCode != 0)
 			throw new Error(
 				"Git add failed.",
 				"Git was not able to add file " + file + ".",
 				"Make sure project is under git control and file " + file + " exists.");
 	}
 
-	public static function commit(message:String):Void
+	public static function commit(message:String, directory:String=null):Void
 	{
-		if(System.command("git", ["commit", "-m", message]) != 0)
+		if(execute(["commit", "-m", message], directory).exitCode != 0)
 			throw new Error(
 				"Git commit failed.",
 				"Git was not able to commit.",
@@ -81,65 +78,57 @@ class Git
 	}
 
 
-	public static function tag(version:String, message:String):Void
+	public static function tag(version:String, message:String, directory:String=null):Void
 	{
-		if(System.command("git", ["tag", "-a", version, "-m", message]) != 0)
+		if(execute(["tag", "-a", version, "-m", message], directory).exitCode != 0)
 			throw new Error(
 				"Git tag failed.",
 				"Git was not able to tag.",
 				"Make sure project is under git control.");
 	}
 
-	public static function checkoutFile(commit:String, file:String):Void
+	public static function checkoutFile(commit:String, file:String, directory:String=null):Void
 	{
-		if(System.command("git", ["checkout", commit, "--", file]) != 0)
+		if(execute(["checkout", commit, "--", file], directory).exitCode != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkot " + file + " from " + commit + ".",
 				"Make sure project is under git control.");
 	}
 
-	public static function rmKeepLocal(file:String):Void
+	public static function rmCachedFile(file:String, directory:String=null):Void
 	{
-		if(System.command("git", ["rm", "--cached", file]) != 0)
+		if(execute(["rm", "--cached", file], directory).exitCode != 0)
 			throw new Error(
 				"Git rm failed.",
 				"Git was not able to remove " + file + ".",
 				"Make sure project is under git control.");
 	}
 
-	public static function pushWithTags():Void
+	public static function pushWithTags(directory:String=null):Void
 	{
-		if(System.command("git", ["push", "origin", "--all"]) != 0)
+		if(execute(["push", "origin", "--all"], directory).exitCode != 0)
 			throw new Error(
 				"Git push failed.",
 				"Git was not able to push to origin.",
 				"Make sure project is under git control.");
 
-		if(System.command("git", ["push", "origin", "--tags"]) != 0)
+		if(execute(["push", "origin", "--tags"], directory).exitCode != 0)
 			throw new Error(
 				"Git push failed.",
 				"Git was not able to push to origin.",
 				"Make sure project is under git control.");
 	}
 
-
-
-	public static function getRemoteOriginUrl(directory:String):String
+	public static function getRemoteOriginUrl(directory:String=null):String
 	{
-		var cwd = Sys.getCwd();
-		Sys.setCwd(directory);
-		var process:Process = System.process("git", ["config", "--get", "remote.origin.url"]);
-		var exitCode = process.exitCode();
-		var result = StringTools.trim(process.stdout.readAll().toString());
-		Sys.setCwd(cwd);
-
-		if(exitCode != 0)
+		var execution = execute(["config", "--get", "remote.origin.url"], directory);
+		if(execution.exitCode != 0)
 			throw new Error(
 				"Git config failed.",
 				"Git was not able to get current remote origin url.",
 				"Make sure directory is under git control.");
 
-		return result;
+		return execution.result;
 	}
 }

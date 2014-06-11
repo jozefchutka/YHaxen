@@ -188,7 +188,6 @@ ${arg:version} -> 123
 ```
 
 ## TODO
-- git pull SHA1 (revision) does not work with git (git checkout SHA1 works)
 - compile:$name, test:$name should execute correspoding phase, compile:* all
 - with release provide dependencies in haxelib.json
 - deploy target
