@@ -246,6 +246,12 @@ class ValidatePhase extends AbstractPhase
 		{
 			Git.fetchAll(directory);
 			Git.checkout(dependency.version, directory);
+			try
+			{
+				// in case we were in branch already pull is required after fetch
+				Git.pull(directory);
+			}
+			catch(error:Dynamic){}
 		}
 		catch(error:Dynamic)
 		{

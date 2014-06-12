@@ -39,6 +39,15 @@ class Git
 				"Make sure " + branch + " exists in git repository.");
 	}
 
+	public static function pull(directory:String=null):Void
+	{
+		if(execute(["pull", "--quiet"], directory).exitCode != 0)
+			throw new Error(
+				"Git pull failed.",
+				"Git was not able to pull.",
+				"Make sure directory " + directory + " is valid git repository.");
+	}
+
 	public static function fetchAll(directory:String=null):Void
 	{
 		if(execute(["fetch", "--quiet", "--all"], directory).exitCode != 0)

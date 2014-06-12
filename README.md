@@ -188,6 +188,7 @@ ${arg:version} -> 123
 ```
 
 ## TODO
+- with release provide only scoped dependencies in haxelib.json
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder
 
