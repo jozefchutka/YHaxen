@@ -8,13 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Solving git branch related issues.",
-	"version": "0.0.28",
+	"releasenote": "Fixed git release.",
+	"version": "snapshot",
 	"url": "https://github.com/jozefchutka/YHaxen",
-	"dependencies": {
-		"mlib": "2.0.2",
-		"mcover": "2.0.3",
-		"mconsole": "1.6.0",
-		"munit": "cf0c91a2c9"
-	}
+	"dependencies": {}
 }
