@@ -18,7 +18,7 @@ import yhaxen.valueObject.Error;
 
 class ReleasePhase extends AbstractPhase
 {
-	inline static var DEFAULT_MESSAGE:String = "Regular release by YHaxen.";
+	inline static var DEFAULT_MESSAGE:String = "Release ${version}.";
 
 	public var version(default, null):String;
 	public var message(default, null):String;
@@ -93,8 +93,9 @@ class ReleasePhase extends AbstractPhase
 		for(file in files)
 			Git.add(file);
 
-		Git.commit("YHaxen release " + version + ".");
-		Git.tag(version, "YHaxen release " + version + ".");
+		var message:String = getReleaseMessage();
+		Git.commit(message);
+		Git.tag(version, message);
 
 		for(file in files)
 		{
@@ -109,7 +110,7 @@ class ReleasePhase extends AbstractPhase
 			}
 		}
 
-		Git.commit("YHaxen release " + version + " revert.");
+		Git.commit("Revert: " + message);
 		Git.pushWithTags();
 	}
 
@@ -134,7 +135,7 @@ class ReleasePhase extends AbstractPhase
 
 	function updateHaxelibJson(file:String, forHaxelib:Bool):Void
 	{
-		var message:String = this.message == null || this.message == "" ? DEFAULT_MESSAGE : this.message;
+		var message:String = getReleaseMessage();
 		var dependencies:Dynamic = getHaxelibJsonDependencies(forHaxelib);
 		if(!haxelib.updateHaxelibFile(file, version, dependencies, message))
 			throw new Error(
@@ -170,6 +171,13 @@ class ReleasePhase extends AbstractPhase
 			Reflect.setProperty(result, dependency.name, version);
 		}
 
+		return result;
+	}
+
+	function getReleaseMessage():String
+	{
+		var result = message == null || message == "" ? DEFAULT_MESSAGE : message;
+		result = StringTools.replace(result, "${version}", version);
 		return result;
 	}
 }

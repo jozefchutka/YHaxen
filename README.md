@@ -1,6 +1,6 @@
 # YHaxen
 
-YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's validation, build, deployment and releasement.
+YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's validation, build, and release.
 
 ## Dependencies
 
@@ -41,10 +41,12 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
 yhaxen compile
-yhaxen compile:compile
+yhaxen compile:*
+yhaxen compile:buildName
 yhaxen compile -config src/test/resources/yhaxen.json
 yhaxen test
-yhaxen test:test
+yhaxen test:*
+yhaxen test:testName
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 ```
@@ -57,6 +59,7 @@ Default config filename is **yhaxen.json**. Each phase has a related section in 
 {
 	"variables": {...},
 	"dependencies": [...],
+	"tests": [...],
 	"builds": [...],
 	"releases": [...],
 }
@@ -67,10 +70,9 @@ Default config filename is **yhaxen.json**. Each phase has a related section in 
 1. validate
 2. test
 3. compile
-4. deploy
-5. release
+4. release
 
-When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen deploy` would run validate, compile and test phase before the actual deployment).
+When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
 
 ### Validate
 
@@ -128,10 +130,6 @@ Todo: example json, how dependencies variable is used
 Release versioned project.
 
 Todo: example json, describe git tags, submit to haxelib
-
-### Deploy
-
-Not yet implemented.
 
 ## Variables
 

@@ -8,7 +8,7 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Fixed git release.",
+	"releasenote": "",
 	"version": "snapshot",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
