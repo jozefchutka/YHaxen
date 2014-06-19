@@ -49,7 +49,7 @@ yhaxen test:*
 yhaxen test:testName
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
-yhaxen release -version 0.0.1 -message "Releasing version ${arg:version}."
+yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
 ```
 
 ## Config

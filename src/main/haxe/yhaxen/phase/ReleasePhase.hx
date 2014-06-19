@@ -21,7 +21,7 @@ import yhaxen.valueObject.Error;
 
 class ReleasePhase extends AbstractPhase
 {
-	inline static var DEFAULT_MESSAGE:String = "Release ${arg:version}.";
+	inline static var DEFAULT_MESSAGE:String = "Release ${arg:-version}.";
 
 	public var version(default, null):String;
 	public var message(default, null):String;
