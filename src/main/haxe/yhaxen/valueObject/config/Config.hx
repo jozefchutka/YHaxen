@@ -50,4 +50,15 @@ class Config
 					return build;
 		return null;
 	}
+
+	public function getBuildScopes():Array<String>
+	{
+		if(builds == null || builds.length == 0)
+			return null;
+
+		var result:Array<String> = [];
+		for(build in builds)
+			result.push(build.name);
+		return result;
+	}
 }

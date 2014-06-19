@@ -49,6 +49,7 @@ yhaxen test:*
 yhaxen test:testName
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
+yhaxen release -version 0.0.1 -message "Releasing version ${arg:version}."
 ```
 
 ## Config
@@ -186,7 +187,6 @@ ${arg:version} -> 123
 ```
 
 ## TODO
-- with release provide only scoped dependencies in haxelib.json
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder
 

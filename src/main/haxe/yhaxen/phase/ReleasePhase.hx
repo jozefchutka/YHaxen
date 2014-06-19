@@ -1,5 +1,8 @@
 package yhaxen.phase;
 
+import Lambda;
+import yhaxen.util.ScopeUtil;
+import yhaxen.valueObject.config.DependencyDetail;
 import haxe.io.Path;
 
 import tools.haxelib.SemVer;
@@ -150,10 +153,8 @@ class ReleasePhase extends AbstractPhase
 	function getHaxelibJsonDependencies(forHaxelib:Bool):Dynamic
 	{
 		var result = {};
-		if(config.dependencies == null)
-			return result;
-
-		for(dependency in config.dependencies)
+		var dependencies = getScopedDependencies();
+		for(dependency in dependencies)
 		{
 			var version = dependency.version;
 			if(forHaxelib)
@@ -178,5 +179,18 @@ class ReleasePhase extends AbstractPhase
 	{
 		var result = message == null || message == "" ? DEFAULT_MESSAGE : message;
 		return resolveVariable(result, release);
+	}
+
+	public function getScopedDependencies():Array<DependencyDetail>
+	{
+		var result:Array<DependencyDetail> = [];
+		var scopes = config.getBuildScopes();
+		if(scopes != null)
+			for(dependency in config.dependencies)
+				if(!Lambda.has(result, dependency))
+					for(scope in scopes)
+						if(ScopeUtil.matches(dependency.scopes, scope))
+							result.push(dependency);
+		return result;
 	}
 }
