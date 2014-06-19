@@ -18,7 +18,7 @@ import yhaxen.valueObject.Error;
 
 class ReleasePhase extends AbstractPhase
 {
-	inline static var DEFAULT_MESSAGE:String = "Release ${version}.";
+	inline static var DEFAULT_MESSAGE:String = "Release ${arg:version}.";
 
 	public var version(default, null):String;
 	public var message(default, null):String;
@@ -86,14 +86,14 @@ class ReleasePhase extends AbstractPhase
 		var files = getResolvedFiles(release);
 		for(file in files)
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(file, false);
+				updateHaxelibJson(release, file, false);
 
 		var commit = Git.getCurrentCommit();
 
 		for(file in files)
 			Git.add(file);
 
-		var message:String = getReleaseMessage();
+		var message:String = getReleaseMessage(release);
 		Git.commit(message);
 		Git.tag(version, message);
 
@@ -121,7 +121,7 @@ class ReleasePhase extends AbstractPhase
 		for(file in files)
 		{
 			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(file, true);
+				updateHaxelibJson(release, file, true);
 
 			zip.add(file, Path.withoutDirectory(file));
 		}
@@ -133,9 +133,9 @@ class ReleasePhase extends AbstractPhase
 		deleteTempDirectory();
 	}
 
-	function updateHaxelibJson(file:String, forHaxelib:Bool):Void
+	function updateHaxelibJson(release:Release, file:String, forHaxelib:Bool):Void
 	{
-		var message:String = getReleaseMessage();
+		var message:String = getReleaseMessage(release);
 		var dependencies:Dynamic = getHaxelibJsonDependencies(forHaxelib);
 		if(!haxelib.updateHaxelibFile(file, version, dependencies, message))
 			throw new Error(
@@ -174,10 +174,9 @@ class ReleasePhase extends AbstractPhase
 		return result;
 	}
 
-	function getReleaseMessage():String
+	function getReleaseMessage(release:Release):String
 	{
 		var result = message == null || message == "" ? DEFAULT_MESSAGE : message;
-		result = StringTools.replace(result, "${version}", version);
-		return result;
+		return resolveVariable(result, release);
 	}
 }
