@@ -232,7 +232,7 @@ class AbstractPhase
 			switch(type)
 			{
 				case "dir":
-					result.push(haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false));
+					result.push(_resolveVariableDependencyDir(dependency));
 				case "name":
 					result.push(dependency.name);
 				case "version":
@@ -248,6 +248,20 @@ class AbstractPhase
 		}
 
 		return result.length == 0 ? null : result;
+	}
+
+	function _resolveVariableDependencyDir(dependency:DependencyDetail):String
+	{
+		var dir:String;
+		try
+		{
+			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, dependency.followDev);
+		}
+		catch(error:Dynamic)
+		{
+			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
+		}
+		return dir;
 	}
 
 	function _resolveVariableVariable(input:String, step:AbstractStep):Array<String>
