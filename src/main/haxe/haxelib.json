@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Following dev dependencies.",
+	"version": "0.0.30",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
