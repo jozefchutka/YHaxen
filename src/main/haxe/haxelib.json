@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Only haxelib dependencies to appear in released haxelib.json",
+	"version": "0.0.32",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
