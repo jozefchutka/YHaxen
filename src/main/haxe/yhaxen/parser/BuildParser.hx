@@ -9,6 +9,8 @@ class BuildParser extends GenericParser<Build>
 
 	override function parse(source:Dynamic):Build
 	{
+		checkUnexpectedFields(source, Build);
+
 		if(!Reflect.hasField(source, "name"))
 			throw new Error(
 				"Missing build name!",

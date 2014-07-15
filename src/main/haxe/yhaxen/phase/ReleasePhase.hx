@@ -1,8 +1,5 @@
 package yhaxen.phase;
 
-import Lambda;
-import yhaxen.util.ScopeUtil;
-import yhaxen.valueObject.config.DependencyDetail;
 import haxe.io.Path;
 
 import tools.haxelib.SemVer;
@@ -12,10 +9,12 @@ import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.util.Git;
 import yhaxen.util.Haxelib;
+import yhaxen.util.ScopeUtil;
 import yhaxen.util.System;
 import yhaxen.util.Zip;
 import yhaxen.valueObject.command.ReleaseCommand;
 import yhaxen.valueObject.config.Config;
+import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.config.Release;
 import yhaxen.valueObject.Error;
 
@@ -181,9 +180,9 @@ class ReleasePhase extends AbstractPhase
 		return resolveVariable(result, release);
 	}
 
-	public function getScopedDependencies():Array<DependencyDetail>
+	public function getScopedDependencies():Array<Dependency>
 	{
-		var result:Array<DependencyDetail> = [];
+		var result:Array<Dependency> = [];
 		var scopes = config.getBuildScopes();
 		if(scopes != null)
 			for(dependency in config.dependencies)

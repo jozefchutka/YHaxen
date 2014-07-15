@@ -5,7 +5,7 @@ import yhaxen.util.System;
 import yhaxen.valueObject.config.AbstractBuild;
 import yhaxen.valueObject.config.AbstractStep;
 import yhaxen.valueObject.config.Config;
-import yhaxen.valueObject.config.DependencyDetail;
+import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.Error;
 
 import sys.FileSystem;
@@ -77,7 +77,7 @@ class AbstractPhase
 			System.deleteDirectory(TEMP_DIRECTORY);
 	}
 
-	function getDependencyByName(name:String):DependencyDetail
+	function getDependencyByName(name:String):Dependency
 	{
 		for(dependency in config.dependencies)
 			if(dependency.name == name)
@@ -85,9 +85,9 @@ class AbstractPhase
 		return null;
 	}
 
-	function getDependencies(scope:String):Array<DependencyDetail>
+	function getDependencies(scope:String):Array<Dependency>
 	{
-		var result:Array<DependencyDetail> = [];
+		var result:Array<Dependency> = [];
 		for(dependency in config.dependencies)
 			if(dependency.matchesScope(scope))
 				result.push(dependency);
@@ -211,7 +211,7 @@ class AbstractPhase
 		var chunks = input.split(":");
 		var name = chunks.shift();
 		var scope:String = getScopeFromStep(step);
-		var dependencies:Array<DependencyDetail> = (name == "*") ? getDependencies(scope) : [getDependencyByName(name)];
+		var dependencies:Array<Dependency> = (name == "*") ? getDependencies(scope) : [getDependencyByName(name)];
 		if(dependencies == null)
 			return null;
 
@@ -250,7 +250,7 @@ class AbstractPhase
 		return result.length == 0 ? null : result;
 	}
 
-	function _resolveVariableDependencyDir(dependency:DependencyDetail):String
+	function _resolveVariableDependencyDir(dependency:Dependency):String
 	{
 		var dir:String;
 		try

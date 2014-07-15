@@ -9,6 +9,8 @@ class TestParser extends GenericParser<Test>
 
 	override function parse(source:Dynamic):Test
 	{
+		checkUnexpectedFields(source, Test);
+
 		if(!Reflect.hasField(source, "name"))
 			throw new Error(
 				"Missing test name!",

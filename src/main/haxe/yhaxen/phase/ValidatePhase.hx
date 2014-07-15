@@ -9,7 +9,6 @@ import yhaxen.util.Haxelib;
 import yhaxen.util.System;
 import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.valueObject.config.Config;
-import yhaxen.valueObject.config.DependencyDetail;
 import yhaxen.valueObject.dependency.Dependency;
 import yhaxen.valueObject.dependency.DependencyTreeItem;
 import yhaxen.valueObject.dependency.FlattenDependencies;
@@ -66,7 +65,7 @@ class ValidatePhase extends AbstractPhase
 		validateFlatten(flatten);
 	}
 
-	function resolveDependency(dependency:DependencyDetail)
+	function resolveDependency(dependency:yhaxen.valueObject.config.Dependency)
 	{
 		var exists:Bool = false;
 		try
@@ -133,7 +132,7 @@ class ValidatePhase extends AbstractPhase
 			var pad:String = StringTools.lpad("", " ", level * 2 + 2);
 			logKeyVal(pad + item.toString(), 40, result);
 
-			var detail = DependencyDetail.getFromList(config.dependencies, item.name);
+			var detail = yhaxen.valueObject.config.Dependency.getFromList(config.dependencies, item.name);
 			if(detail == null)
 				throw new Error(
 					"Undefined dependency " + item.name + "!",
@@ -188,7 +187,7 @@ class ValidatePhase extends AbstractPhase
 					logKeyVal("    in " + (source == null ? configFile : source.toString()), 40, " ! (" + version + ")");
 			}
 
-			var detail = DependencyDetail.getFromList(config.dependencies, name);
+			var detail = yhaxen.valueObject.config.Dependency.getFromList(config.dependencies, name);
 			if(detail == null || !detail.forceVersion)
 				throw new Error(
 					"Invalid dependency version for " + name + "!",
@@ -237,7 +236,7 @@ class ValidatePhase extends AbstractPhase
 		return target;
 	}
 
-	function installDependencyGit(dependency:DependencyDetail):Void
+	function installDependencyGit(dependency:yhaxen.valueObject.config.Dependency):Void
 	{
 		var directory = haxelib.getGitDependencyDirectory(dependency.name);
 		prepareGitDirectory(dependency, directory);
@@ -279,7 +278,7 @@ class ValidatePhase extends AbstractPhase
 			File.saveContent(currentFile, dependency.version);
 	}
 
-	function prepareGitDirectory(dependency:DependencyDetail, directory:String):Void
+	function prepareGitDirectory(dependency:yhaxen.valueObject.config.Dependency, directory:String):Void
 	{
 		if(!FileSystem.exists(directory))
 		{
@@ -312,7 +311,7 @@ class ValidatePhase extends AbstractPhase
 		}
 	}
 
-	function installDependencyHaxelib(dependency:DependencyDetail):Void
+	function installDependencyHaxelib(dependency:Dependency):Void
 	{
 		if(System.command("haxelib", ["install", dependency.name, dependency.version]) != 0)
 			throw new Error(
@@ -348,7 +347,7 @@ class ValidatePhase extends AbstractPhase
 
 	function updateMetadata(dependency:Dependency):Void
 	{
-		var detail = DependencyDetail.getFromList(config.dependencies, dependency.name);
+		var detail = yhaxen.valueObject.config.Dependency.getFromList(config.dependencies, dependency.name);
 		dependency.exists = haxelib.dependencyExists(dependency.name);
 
 		if(dependency.exists && haxelib.getDependencyIsDev(dependency.name))

@@ -12,7 +12,7 @@ class Config
 	/**
 	 * Optional
 	 **/
-	public var dependencies:Array<DependencyDetail>;
+	public var dependencies:Array<Dependency>;
 
 	/**
 	 * Optional

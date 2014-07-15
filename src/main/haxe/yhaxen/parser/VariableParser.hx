@@ -9,6 +9,8 @@ class VariableParser extends GenericParser<Variable>
 
 	override function parse(source:Dynamic):Variable
 	{
+		checkUnexpectedFields(source, Variable);
+
 		if(!Reflect.hasField(source, "name"))
 			throw new Error(
 				"Missing variable name!",

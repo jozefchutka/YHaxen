@@ -1,15 +1,17 @@
 package yhaxen.parser;
 
 import yhaxen.enums.SourceType;
-import yhaxen.valueObject.config.DependencyDetail;
+import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.Error;
 
-class DependencyParser extends GenericParser<DependencyDetail>
+class DependencyParser extends GenericParser<Dependency>
 {
 	public var configFile:String;
 
-	override function parse(source:Dynamic):DependencyDetail
+	override function parse(source:Dynamic):Dependency
 	{
+		checkUnexpectedFields(source, Dependency);
+
 		if(!Reflect.hasField(source, "name"))
 			throw new Error(
 				"Missing dependency name!",
@@ -56,7 +58,7 @@ class DependencyParser extends GenericParser<DependencyDetail>
 				"Haxelib dependency " + name + " should not contain source field.",
 				"Remove source field in " + configFile + ".");
 
-		var result:DependencyDetail = new DependencyDetail(
+		var result:Dependency = new Dependency(
 			name,
 			Reflect.field(source, "version"),
 			type,

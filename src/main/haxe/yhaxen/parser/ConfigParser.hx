@@ -13,6 +13,8 @@ class ConfigParser extends GenericParser<Config>
 
 	override function parse(source:Dynamic):Config
 	{
+		checkUnexpectedFields(source, Config);
+
 		var result:Config = new Config();
 
 		if(Reflect.hasField(source, "variables"))

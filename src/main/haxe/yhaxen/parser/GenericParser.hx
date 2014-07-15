@@ -23,6 +23,21 @@ class GenericParser<T>
 		return result;
 	}
 
+	function checkUnexpectedFields(source:Dynamic, result:Class<T>):Void
+	{
+		var resultFields = Type.getInstanceFields(result);
+		for(field in Reflect.fields(source))
+			if(!Lambda.has(resultFields, field))
+				throw getSimpleClassName(result) + " contains unexpected field " + field + ".";
+	}
+
+	public static function getSimpleClassName(clazz:Class<Dynamic>):String
+	{
+		var result = Type.getClassName(clazz);
+		var chunks = result.split(".");
+		return chunks[chunks.length - 1];
+	}
+
 	public static function parseEnum<E>(e:Enum<E>, source:String):E
 	{
 		if(source == null)

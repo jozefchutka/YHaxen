@@ -2,9 +2,8 @@ package yhaxen.valueObject.config;
 
 import yhaxen.enums.SourceType;
 import yhaxen.util.ScopeUtil;
-import yhaxen.valueObject.dependency.Dependency;
 
-class DependencyDetail extends Dependency
+class Dependency extends yhaxen.valueObject.dependency.Dependency
 {
 	/**
 	 * Required for GIT sourceType
@@ -53,7 +52,7 @@ class DependencyDetail extends Dependency
 		return ScopeUtil.matches(scopes, scope);
 	}
 
-	public static function getFromList(list:Array<DependencyDetail>, name:String):DependencyDetail
+	public static function getFromList(list:Array<Dependency>, name:String):Dependency
 	{
 		if(list != null)
 			for(item in list)

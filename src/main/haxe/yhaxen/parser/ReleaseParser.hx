@@ -10,6 +10,8 @@ class ReleaseParser extends GenericParser<Release>
 
 	override function parse(source:Dynamic):Release
 	{
+		checkUnexpectedFields(source, Release);
+
 		if(!Reflect.hasField(source, "type"))
 			throw new Error(
 				"Missing release type!",
