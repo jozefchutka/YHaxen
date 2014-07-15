@@ -8,8 +8,10 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Changed classPath to subdirectory in config. Added classPath dependency variable.",
+	"version": "0.0.31",
 	"url": "https://github.com/jozefchutka/YHaxen",
-	"dependencies": {}
+	"dependencies": {
+		"haxelib": "ade424b545"
+	}
 }
