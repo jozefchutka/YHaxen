@@ -22,11 +22,17 @@
 	"dependencies":
 	[
 		{
+			"name":"haxelib",
+			"version":"ade424b545",
+			"source": "git@github.com:HaxeFoundation/haxelib.git",
+			"type": "git"
+		},
+		{
 			"name":"munit",
 			"version":"cf0c91a2c9",
 			"source": "git@github.com:massiveinteractive/MassiveUnit.git",
 			"type": "git",
-			"classPath": "src",
+			"subdirectory": "src",
 			"scopes": ["test"]
 		},
 		{
@@ -77,7 +83,7 @@
 				"target:-main", "TestMain",
 				"target:-cp", "${variable:sourceDirectory}",
 				"target:-cp", "${variable:testSourceDirectory}",
-				"${dependency:*:dir:target:-cp}",
+				"${dependency:*:classPath:target:-cp}",
 				"target:-neko", "${variable:testOutputDirectory}/neko_test.n"
 			]
 		}
@@ -93,7 +99,7 @@
 				"-main", "yhaxen.Main",
 				"-neko", "${variable:outputDirectory}/run.n",
 				"-cp", "${variable:sourceDirectory}",
-				"${dependency:*:dir:-cp}",
+				"${dependency:*:classPath:-cp}",
 				"-D", "version=${arg:-version}"
 			]
 		}

@@ -18,7 +18,7 @@ class Dependency extends yhaxen.valueObject.dependency.Dependency
 	/**
 	 * Optional
 	 **/
-	public var classPath:String;
+	public var subdirectory:String;
 
 	/**
 	 * Optional

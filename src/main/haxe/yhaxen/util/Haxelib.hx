@@ -53,6 +53,19 @@ class Haxelib extends tools.haxelib.Main
 		return directory + "/" + Data.safe(version);
 	}
 
+	public function getDependencyClassPath(name:String, version:String, isDev:Bool):String
+	{
+		var directory = getDependencyVersionDirectory(name, version, isDev);
+		var data = getDependencyData(directory);
+		return (data == null || data.classPath == null) ? directory : (directory + "/" + data.classPath);
+	}
+
+	public function getDependencyData(directory:String):Infos
+	{
+		var haxelibFile:String = directory + "/" + Haxelib.FILE_HAXELIB;
+		return FileSystem.exists(haxelibFile) ? Data.readData(File.getContent(haxelibFile), false) : null;
+	}
+
 	public function dependencyExists(name:String):Bool
 	{
 		var dir = getDependencyDirectory(name);

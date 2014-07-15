@@ -58,11 +58,23 @@ class DependencyParser extends GenericParser<Dependency>
 				"Haxelib dependency " + name + " should not contain source field.",
 				"Remove source field in " + configFile + ".");
 
+		var hasSubdirectory = Reflect.hasField(source, "subdirectory");
+		if(type == SourceType.HAXELIB && hasSubdirectory)
+			throw new Error(
+				"Invalid dependency subdirectory!",
+				"Haxelib dependency " + name + " should not contain subdirectory field.",
+				"Remove subdirectory field in " + configFile + ".");
+
 		var result:Dependency = new Dependency(
 			name,
 			Reflect.field(source, "version"),
 			type,
 			Reflect.field(source, "source"));
+
+		if(hasSubdirectory)
+			result.subdirectory = Reflect.field(source, "subdirectory");
+		if(result.subdirectory == "")
+			result.subdirectory = null;
 
 		if(Reflect.hasField(source, "scopes"))
 			result.scopes = Reflect.field(source, "scopes");
@@ -71,10 +83,6 @@ class DependencyParser extends GenericParser<Dependency>
 
 		if(Reflect.hasField(source, "update"))
 			result.update = Reflect.field(source, "update");
-
-		result.classPath = Reflect.field(source, "classPath");
-		if(result.classPath == "")
-			result.classPath = null;
 
 		if(Reflect.hasField(source, "forceVersion"))
 			result.forceVersion = Reflect.field(source, "forceVersion");

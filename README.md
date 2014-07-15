@@ -87,7 +87,7 @@ Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git*
 
 **source** (String, required for git) - Points to git repository.
  
-**classPath** (String, optional) - Class path to sources. Only available with git.
+**subdirectory** (String, optional) - Git subdirectory to sources or haxelib.json. Only available with git.
 
 **scopes** (Array<String>, optional) - Scope filtering is used with build or test phase. If dependency scope is not defined, the dependency will be avialable for all builds and tests. If scopes are defined, dependency will be used only for appropriate build or test name.
 
@@ -95,7 +95,7 @@ Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git*
 
 **update** (Bool, optional) - Removes old version if exists and replaces with new one. Consider using this flag when dependency version is pointing to a branch. 
 
-**followDev** (Bool, optional) - If true and .dev version of dependency is available, then the dependency dir will be resolved from .dev file when for variables (e.g. `${dependency:munit:dir}`).
+**followDev** (Bool, optional) - If true and .dev version of dependency is available, then the dependency dir will be resolved from .dev file when for variables (e.g. `${dependency:munit:dir}` or `${dependency:munit:classPath}`).
 
 Example dependency configuration:
  
@@ -163,12 +163,14 @@ Single dependendcy **dir**:
 ```
 ${dependency:munit:dir} -> c:/haxe/lib/munit/123
 ${dependency:munit:dir:-cp} -> -cp c:/haxe/lib/munit/123
+${dependency:munit:classPath:-cp} -> -cp c:/haxe/lib/munit/123/src
 ```
 
 All scope related dependencies **dir** via **-cp** argument:
 ```
 ${dependency:*:dir} -> c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
 ${dependency:*:dir:-cp} -> -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+${dependency:*:classPath:-cp} -> -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
 ```
 
 Other examples:

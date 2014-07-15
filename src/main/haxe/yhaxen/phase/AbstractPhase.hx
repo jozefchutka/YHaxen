@@ -239,6 +239,8 @@ class AbstractPhase
 					result.push(dependency.version);
 				case "nameVersion":
 					result.push(dependency.name + ":" + dependency.version);
+				case "classPath":
+					result.push(_resolveVariableDependencyClassPath(dependency));
 				default:
 					throw new Error(
 						"Invalid variable $" + "{dependency:" + input + "}!",
@@ -260,6 +262,20 @@ class AbstractPhase
 		catch(error:Dynamic)
 		{
 			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
+		}
+		return dir;
+	}
+
+	function _resolveVariableDependencyClassPath(dependency:Dependency):String
+	{
+		var dir:String;
+		try
+		{
+			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, dependency.followDev);
+		}
+		catch(error:Dynamic)
+		{
+			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, false);
 		}
 		return dir;
 	}

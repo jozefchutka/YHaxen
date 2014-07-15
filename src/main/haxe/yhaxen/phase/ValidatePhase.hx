@@ -14,8 +14,6 @@ import yhaxen.valueObject.dependency.DependencyTreeItem;
 import yhaxen.valueObject.dependency.FlattenDependencies;
 import yhaxen.valueObject.Error;
 
-import tools.haxelib.Data;
-
 import sys.io.File;
 import sys.FileSystem;
 
@@ -263,14 +261,14 @@ class ValidatePhase extends AbstractPhase
 
 		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
 
-		if(dependency.classPath == null)
+		if(dependency.subdirectory == null)
 		{
 			System.copyDirectory(directory, target);
 			System.deleteDirectory(target + "/.git");
 		}
 		else
 		{
-			System.copyDirectory(directory + "/" + dependency.classPath, target);
+			System.copyDirectory(directory + "/" + dependency.subdirectory, target);
 		}
 
 		var currentFile:String = depenencyDirectory + "/" + Haxelib.FILE_CURRENT;
@@ -328,11 +326,10 @@ class ValidatePhase extends AbstractPhase
 		if(directory == null)
 			return null;
 
-		var haxelibFile:String = directory + "/" + Haxelib.FILE_HAXELIB;
-		if(!FileSystem.exists(haxelibFile))
+		var list = haxelib.getDependencyData(directory);
+		if(list == null)
 			return null;
 
-		var list = Data.readData(File.getContent(haxelibFile), false);
 		var result:Array<DependencyTreeItem> = [];
 		for(info in list.dependencies)
 		{
