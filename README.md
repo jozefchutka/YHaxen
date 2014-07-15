@@ -132,6 +132,8 @@ Todo: example json, how dependencies variable is used
 
 Release versioned project.
 
+Only haxelib depenedencies will appear in updated haxelib.json.
+
 Todo: example json, describe git tags, submit to haxelib
 
 ## Variables

@@ -5,6 +5,7 @@ import haxe.io.Path;
 import tools.haxelib.SemVer;
 
 import yhaxen.enums.ReleaseType;
+import yhaxen.enums.SourceType;
 import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.util.Git;
@@ -155,6 +156,9 @@ class ReleasePhase extends AbstractPhase
 		var dependencies = getScopedDependencies();
 		for(dependency in dependencies)
 		{
+			if(dependency.type != SourceType.HAXELIB)
+				continue;
+
 			var version = dependency.version;
 			if(forHaxelib)
 			{
