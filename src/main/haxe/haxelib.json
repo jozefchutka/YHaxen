@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Fixed current directory path.",
+	"version": "0.0.35",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
