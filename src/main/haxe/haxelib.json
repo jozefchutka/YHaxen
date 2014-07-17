@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Added makeCurrent option for dependencies.",
+	"version": "0.0.33",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
