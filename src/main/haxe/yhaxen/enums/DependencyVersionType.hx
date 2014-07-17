@@ -2,7 +2,8 @@ package yhaxen.enums;
 
 enum DependencyVersionType
 {
-	REGULAR;
 	ANY;
+	CURRENT;
 	DEV;
+	REGULAR;
 }

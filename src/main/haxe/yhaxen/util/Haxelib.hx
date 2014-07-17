@@ -7,6 +7,8 @@ import sys.FileSystem;
 
 import tools.haxelib.Data;
 
+import yhaxen.enums.DependencyVersionType;
+
 class Haxelib extends tools.haxelib.Main
 {
 	inline public static var FILE_CURRENT:String = ".current";
@@ -43,19 +45,23 @@ class Haxelib extends tools.haxelib.Main
 		return FileSystem.exists(getDependencyDirectory(name) + "/.dev");
 	}
 
-	public function getDependencyVersionDirectory(name:String, version:String, isDev:Bool):String
+	public function getDependencyVersionDirectory(name:String, version:String, type:DependencyVersionType):String
 	{
 		var directory = getDependencyDirectory(name);
-		if(isDev)
-			return getDev(directory);
-		if(version == null)
-			return null;
-		return directory + "/" + Data.safe(version);
+		return switch(type)
+		{
+			case DependencyVersionType.DEV:
+				getDev(directory);
+			case DependencyVersionType.CURRENT:
+				getCurrent(directory);
+			default:
+				(version == null) ? null : (directory + "/" + Data.safe(version));
+		}
 	}
 
-	public function getDependencyClassPath(name:String, version:String, isDev:Bool):String
+	public function getDependencyClassPath(name:String, version:String, type:DependencyVersionType):String
 	{
-		var directory = getDependencyVersionDirectory(name, version, isDev);
+		var directory = getDependencyVersionDirectory(name, version, type);
 		var data = getDependencyData(directory);
 		return (data == null || data.classPath == null) ? directory : (directory + "/" + data.classPath);
 	}
@@ -74,13 +80,13 @@ class Haxelib extends tools.haxelib.Main
 
 	public function dependencyVersionExists(name:String, version:String):Bool
 	{
-		var dir = getDependencyVersionDirectory(name, version, false);
+		var dir = getDependencyVersionDirectory(name, version, null);
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir);
 	}
 
 	public function removeDependencyVersion(name:String, version:String):Void
 	{
-		var directory = getDependencyVersionDirectory(name, version, false);
+		var directory = getDependencyVersionDirectory(name, version, null);
 		System.deleteDirectory(directory);
 	}
 

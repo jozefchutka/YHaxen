@@ -50,6 +50,11 @@ class ValidatePhase extends AbstractPhase
 		for(dependency in config.dependencies)
 			resolveDependency(dependency);
 
+		log("");
+		log("Preparing:");
+		for(dependency in config.dependencies)
+			prepareDependency(dependency);
+
 		var list:Array<Dependency> = [];
 		var tree = getTree();
 		var flatten = flattenTree(tree);
@@ -101,7 +106,17 @@ class ValidatePhase extends AbstractPhase
 			case SourceType.HAXELIB:
 				installDependencyHaxelib(dependency);
 		}
+
 		log("");
+	}
+
+	function prepareDependency(dependency:yhaxen.valueObject.config.Dependency)
+	{
+		if(dependency.makeCurrent)
+		{
+			System.command("haxelib", ["dev", dependency.name]);
+			System.command("haxelib", ["set", dependency.name, dependency.version]);
+		}
 	}
 
 	function validateConfig():Void
@@ -259,7 +274,7 @@ class ValidatePhase extends AbstractPhase
 		var depenencyDirectory:String = haxelib.getDependencyDirectory(dependency.name);
 		System.createDirectory(depenencyDirectory);
 
-		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
+		var target:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, null);
 
 		if(dependency.subdirectory == null)
 		{
@@ -321,7 +336,7 @@ class ValidatePhase extends AbstractPhase
 	function getDependencyTree(dependency:Dependency):Array<DependencyTreeItem>
 	{
 		var directory:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.versionResolved,
-			dependency.versionType == DependencyVersionType.DEV);
+			dependency.versionType);
 
 		if(directory == null)
 			return null;

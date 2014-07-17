@@ -38,7 +38,12 @@ class Dependency extends yhaxen.valueObject.dependency.Dependency
 	/**
 	 * Optional
 	 **/
-	public var followDev:Bool = false;
+	public var useCurrent:Bool = false;
+
+	/**
+	 * Optional
+	 **/
+	public var makeCurrent:Bool = false;
 
 	public function new(name:String, version:String, type:SourceType, source:String)
 	{

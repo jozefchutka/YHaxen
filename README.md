@@ -95,7 +95,9 @@ Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git*
 
 **update** (Bool, optional) - Removes old version if exists and replaces with new one. Consider using this flag when dependency version is pointing to a branch. 
 
-**followDev** (Bool, optional) - If true and .dev version of dependency is available, then the dependency dir will be resolved from .dev file when for variables (e.g. `${dependency:munit:dir}` or `${dependency:munit:classPath}`).
+**useCurrent** (Bool, optional) - If true, the dependency dir will be resolved from .current file for variables (e.g. `${dependency:munit:dir}` or `${dependency:munit:classPath}`).
+
+**makeCurrent** (Bool, optional) - If true, the requested dependency version will be set as current with validation phase (using haxelib command `haxelib set munit 2.1.1`).
 
 Example dependency configuration:
  

@@ -33,6 +33,7 @@
 			"source": "git@github.com:massiveinteractive/MassiveUnit.git",
 			"type": "git",
 			"subdirectory": "src",
+			"makeCurrent": true,
 			"scopes": ["test"]
 		},
 		{
@@ -60,16 +61,6 @@
 
 	"tests":
 	[
-		{
-			"name": "prepare",
-			"command": "haxelib",
-			"arguments": ["dev", "${dependency:munit:name}"]
-		},
-		{
-			"name": "prepare2",
-			"command": "haxelib",
-			"arguments": ["set", "${dependency:munit:name}", "${dependency:munit:version}"]
-		},
 		{
 			"name": "test",
 			"command": "haxelib",

@@ -1,5 +1,6 @@
 package yhaxen.phase;
 
+import yhaxen.enums.DependencyVersionType;
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
 import yhaxen.valueObject.config.AbstractBuild;
@@ -257,11 +258,12 @@ class AbstractPhase
 		var dir:String;
 		try
 		{
-			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, dependency.followDev);
+			var type = dependency.useCurrent ? DependencyVersionType.CURRENT : null;
+			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, type);
 		}
 		catch(error:Dynamic)
 		{
-			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, false);
+			dir = haxelib.getDependencyVersionDirectory(dependency.name, dependency.version, null);
 		}
 		return dir;
 	}
@@ -271,11 +273,12 @@ class AbstractPhase
 		var dir:String;
 		try
 		{
-			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, dependency.followDev);
+			var type = dependency.useCurrent ? DependencyVersionType.CURRENT : null;
+			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, type);
 		}
 		catch(error:Dynamic)
 		{
-			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, false);
+			dir = haxelib.getDependencyClassPath(dependency.name, dependency.version, null);
 		}
 		return dir;
 	}

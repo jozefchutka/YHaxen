@@ -87,8 +87,11 @@ class DependencyParser extends GenericParser<Dependency>
 		if(Reflect.hasField(source, "forceVersion"))
 			result.forceVersion = Reflect.field(source, "forceVersion");
 
-		if(Reflect.hasField(source, "followDev"))
-			result.followDev = Reflect.field(source, "followDev");
+		if(Reflect.hasField(source, "useCurrent"))
+			result.useCurrent = Reflect.field(source, "useCurrent");
+
+		if(Reflect.hasField(source, "makeCurrent"))
+			result.makeCurrent = Reflect.field(source, "makeCurrent");
 
 		return result;
 	}
