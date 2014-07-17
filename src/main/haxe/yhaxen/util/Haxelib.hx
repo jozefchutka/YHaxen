@@ -56,7 +56,7 @@ class Haxelib extends tools.haxelib.Main
 		if(type == DependencyVersionType.DEV)
 			return getDev(directory);
 		if(type == DependencyVersionType.CURRENT)
-			return getDependencyIsDev(name) ? getDev(directory) : getCurrent(directory);
+			return getDependencyIsDev(name) ? getDev(directory) : (directory + "/" + getCurrent(directory));
 		return (version == null) ? null : (directory + "/" + Data.safe(version));
 	}
 
