@@ -114,8 +114,7 @@ class ValidatePhase extends AbstractPhase
 	{
 		if(dependency.makeCurrent)
 		{
-			System.command("haxelib", ["dev", dependency.name]);
-			System.command("haxelib", ["set", dependency.name, dependency.version]);
+			haxelib.makeCurrent(dependency.name, dependency.version);
 			logKeyVal("  " + dependency.toString(), 40, WORD_OK);
 		}
 	}

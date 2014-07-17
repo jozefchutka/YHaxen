@@ -40,9 +40,14 @@ class Haxelib extends tools.haxelib.Main
 		return StringTools.trim(File.getContent(getDependencyDirectory(name) + "/.current"));
 	}
 
+	public function getDependencyDevFilePath(name:String):String
+	{
+		return getDependencyDirectory(name) + "/.dev";
+	}
+
 	public function getDependencyIsDev(name:String):Bool
 	{
-		return FileSystem.exists(getDependencyDirectory(name) + "/.dev");
+		return FileSystem.exists(getDependencyDevFilePath(name));
 	}
 
 	public function getDependencyVersionDirectory(name:String, version:String, type:DependencyVersionType):String
@@ -51,7 +56,7 @@ class Haxelib extends tools.haxelib.Main
 		if(type == DependencyVersionType.DEV)
 			return getDev(directory);
 		if(type == DependencyVersionType.CURRENT)
-			return getCurrent(directory);
+			return getDependencyIsDev(name) ? getDev(directory) : getCurrent(directory);
 		return (version == null) ? null : (directory + "/" + Data.safe(version));
 	}
 
@@ -108,5 +113,13 @@ class Haxelib extends tools.haxelib.Main
 	public function getGitDependencyDirectory(name:String):String
 	{
 		return getDependencyDirectory(name) + "/git";
+	}
+
+	public function makeCurrent(name:String, version:String):Void
+	{
+		var devFile = getDependencyDevFilePath(name);
+		if(FileSystem.exists(devFile))
+			FileSystem.deleteFile(devFile);
+		setCurrent(name, version, false);
 	}
 }
