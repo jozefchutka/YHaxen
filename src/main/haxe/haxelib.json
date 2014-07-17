@@ -8,8 +8,8 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "Optimized makeCurrent flow.",
-	"version": "0.0.34",
+	"releasenote": "",
+	"version": "snapshot",
 	"url": "https://github.com/jozefchutka/YHaxen",
 	"dependencies": {}
 }
