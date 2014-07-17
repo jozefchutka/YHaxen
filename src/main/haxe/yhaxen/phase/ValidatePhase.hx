@@ -50,11 +50,6 @@ class ValidatePhase extends AbstractPhase
 		for(dependency in config.dependencies)
 			resolveDependency(dependency);
 
-		log("");
-		log("Preparing:");
-		for(dependency in config.dependencies)
-			prepareDependency(dependency);
-
 		var list:Array<Dependency> = [];
 		var tree = getTree();
 		var flatten = flattenTree(tree);
@@ -66,6 +61,11 @@ class ValidatePhase extends AbstractPhase
 		log("");
 		log("Flatten:");
 		validateFlatten(flatten);
+
+		log("");
+		log("Preparing:");
+		for(dependency in config.dependencies)
+			prepareDependency(dependency);
 	}
 
 	function resolveDependency(dependency:yhaxen.valueObject.config.Dependency)
@@ -116,6 +116,7 @@ class ValidatePhase extends AbstractPhase
 		{
 			System.command("haxelib", ["dev", dependency.name]);
 			System.command("haxelib", ["set", dependency.name, dependency.version]);
+			logKeyVal("  " + dependency.toString(), 40, WORD_OK);
 		}
 	}
 

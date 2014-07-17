@@ -93,6 +93,12 @@ class DependencyParser extends GenericParser<Dependency>
 		if(Reflect.hasField(source, "makeCurrent"))
 			result.makeCurrent = Reflect.field(source, "makeCurrent");
 
+		if(result.useCurrent && result.makeCurrent)
+			throw new Error(
+				"Invalid dependency useCurrent makeCurrent combination!",
+				"Haxelib dependency " + name + " should not have both useCurrent and makeCurrent enabled at the same time.",
+				"Remove useCurrent or makeCurrent field in " + configFile + ".");
+
 		return result;
 	}
 }

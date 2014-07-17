@@ -48,15 +48,11 @@ class Haxelib extends tools.haxelib.Main
 	public function getDependencyVersionDirectory(name:String, version:String, type:DependencyVersionType):String
 	{
 		var directory = getDependencyDirectory(name);
-		return switch(type)
-		{
-			case DependencyVersionType.DEV:
-				getDev(directory);
-			case DependencyVersionType.CURRENT:
-				getCurrent(directory);
-			default:
-				(version == null) ? null : (directory + "/" + Data.safe(version));
-		}
+		if(type == DependencyVersionType.DEV)
+			return getDev(directory);
+		if(type == DependencyVersionType.CURRENT)
+			return getCurrent(directory);
+		return (version == null) ? null : (directory + "/" + Data.safe(version));
 	}
 
 	public function getDependencyClassPath(name:String, version:String, type:DependencyVersionType):String
