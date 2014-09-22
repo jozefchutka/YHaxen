@@ -197,6 +197,9 @@ ${arg:version} -> 123
 ## TODO
 - deploy target
 - running yhaxen without privileges to haxelib/lib folder
+- when repository does not contain "subdirectory" specified in dependency config use more proper error than "Error: std@sys_read_dir"
+- automatic version guess based on current
+- dependencies with yhaxen.json - use subdependencies
 
 ### should
 - install specific version from git
