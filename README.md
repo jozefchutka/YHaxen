@@ -6,11 +6,11 @@ YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YH
 
 Works with:
 
-| OS         | Haxe  | Neko  | Haxelib    |
-| ---------- | ----- | ----- | ---------- |
-| Win 8.1    | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
-| OSX        | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
-| Ubuntu 14  | 3.0.1 | 2.0.0 | 3.1.0-rc.4 |
+| OS         | Haxe           | Neko  | Haxelib    |
+| ---------- | -------------- | ----- | ---------- |
+| Win 8.1    | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
+| OSX        | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
+| Ubuntu 14  | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
  
 ## Install
 

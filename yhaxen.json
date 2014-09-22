@@ -22,10 +22,9 @@
 	"dependencies":
 	[
 		{
-			"name":"haxelib",
-			"version":"ade424b545",
-			"source": "git@github.com:HaxeFoundation/haxelib.git",
-			"type": "git"
+			"name":"haxelib_client",
+			"version":"3.1.0-rc.4",
+			"type": "haxelib"
 		},
 		{
 			"name":"munit",
