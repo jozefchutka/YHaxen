@@ -156,9 +156,6 @@ class ReleasePhase extends AbstractPhase
 		var dependencies = getScopedDependencies();
 		for(dependency in dependencies)
 		{
-			if(dependency.type != SourceType.HAXELIB)
-				continue;
-
 			var version = dependency.version;
 			if(forHaxelib)
 			{
