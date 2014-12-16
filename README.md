@@ -147,16 +147,16 @@ Example release configuration:
 [
 	{
 		"type": "git",
-		"haxelib": "${variable:sourceDirectory}/haxelib.json"
+		"haxelib": "src/haxelib.json"
 	},
 	{
 		"type": "haxelib",
-		"haxelib": "${variable:sourceDirectory}/haxelib.json",
+		"haxelib": "src/haxelib.json",
 		"archiveInstructions":
 		[
-			{"source": "${variable:sourceDirectory}/haxelib.json", "target":"haxelib.json"},
-			{"source": "${variable:outputDirectory}/run.n", "target": "run.n"},
-			{"source": "${variable:sourceDirectory}/yhaxen", "target": "yhaxen"}
+			{"source": "src/haxelib.json", "target":"haxelib.json"},
+			{"source": "doc", "target": "doc"},
+			{"source": "bin/run.n", "target": "run.n"}
 		]
 	}
 ]
