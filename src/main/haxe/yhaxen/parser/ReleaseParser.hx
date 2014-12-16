@@ -33,18 +33,19 @@ class ReleaseParser extends GenericParser<Release>
 				"Provide valid release type in " + configFile + ".");
 		}
 
+		var hasArchiveInstructions = Reflect.hasField(source, "archiveInstructions");
 		var archiveInstructionsRaw = Reflect.field(source, "archiveInstructions");
 		var archiveInstructions:Array<ArchiveInstruction> = null;
 		switch(type)
 		{
 			case ReleaseType.GIT:
-				if(archiveInstructionsRaw != null)
+				if(hasArchiveInstructions)
 					throw new Error(
 						"Invalid release configuration!",
 						"Git release does not use archiveInstructions.",
 						"Remove archiveInstructions configuration for git release.");
 			case ReleaseType.HAXELIB:
-				if(archiveInstructionsRaw == null)
+				if(!hasArchiveInstructions)
 					throw new Error(
 						"Invalid release configuration!",
 						"Haxelib release requires archiveInstructions.",
