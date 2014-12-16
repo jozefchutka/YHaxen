@@ -98,10 +98,6 @@
 	"releases":
 	[
 		{
-			"type": "git",
-			"haxelib": "${variable:sourceDirectory}/haxelib.json"
-		},
-		{
 			"type": "haxelib",
 			"haxelib": "${variable:sourceDirectory}/haxelib.json",
 			"archiveInstructions":
@@ -110,6 +106,10 @@
 				{"source": "${variable:outputDirectory}/run.n", "target": "run.n"},
 				{"source": "${variable:sourceDirectory}/yhaxen", "target": "yhaxen"}
 			]
+		},
+		{
+			"type": "git",
+			"haxelib": "${variable:sourceDirectory}/haxelib.json"
 		}
 	]
 }
