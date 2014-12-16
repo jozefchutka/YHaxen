@@ -10,14 +10,14 @@ class Release extends AbstractStep
 	public var type:ReleaseType;
 
 	/**
-	 * Optional
-	 **/
-	public var files:Array<String>;
-
-	/**
-	 * Optional
+	 * Optional haxelib.json file location that would be updated with version and dependencies.
 	 **/
 	public var haxelib:String;
+
+	/**
+	 * Available and required for haxelib release type
+	 **/
+	public var archiveInstructions:Array<ArchiveInstruction>;
 
 	public function new(type:ReleaseType)
 	{

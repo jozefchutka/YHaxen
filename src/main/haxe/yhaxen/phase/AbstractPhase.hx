@@ -9,12 +9,8 @@ import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.Error;
 
-import sys.FileSystem;
-
 class AbstractPhase
 {
-	inline static var TEMP_DIRECTORY:String = ".yhaxen";
-
 	public var config(default, null):Config;
 	public var configFile(default, null):String;
 	public var followPhaseFlow(default, null):Bool;
@@ -64,18 +60,6 @@ class AbstractPhase
 	function logKeyVal(key:String, pad:Int, value:String):Void
 	{
 		System.printKeyVal(key, pad, value);
-	}
-
-	function createTempDirectory():Void
-	{
-		deleteTempDirectory();
-		FileSystem.createDirectory(TEMP_DIRECTORY);
-	}
-
-	function deleteTempDirectory():Void
-	{
-		if(FileSystem.exists(TEMP_DIRECTORY))
-			System.deleteDirectory(TEMP_DIRECTORY);
 	}
 
 	function getDependencyByName(name:String):Dependency

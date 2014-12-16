@@ -103,11 +103,12 @@
 		},
 		{
 			"type": "haxelib",
-			"files":
-			 [
-				"${variable:sourceDirectory}/haxelib.json",
-				"${variable:outputDirectory}/run.n",
-				"${variable:sourceDirectory}/yhaxen"
+			"haxelib": "${variable:sourceDirectory}/haxelib.json",
+			"archiveInstructions":
+			[
+				{"source": "${variable:sourceDirectory}/haxelib.json", "target":"haxelib.json"},
+				{"source": "${variable:outputDirectory}/run.n", "target": "run.n"},
+				{"source": "${variable:sourceDirectory}/yhaxen", "target": "yhaxen"}
 			]
 		}
 	]

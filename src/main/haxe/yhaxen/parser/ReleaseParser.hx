@@ -1,6 +1,7 @@
 package yhaxen.parser;
 
 import yhaxen.enums.ReleaseType;
+import yhaxen.valueObject.config.ArchiveInstruction;
 import yhaxen.valueObject.config.Release;
 import yhaxen.valueObject.Error;
 
@@ -32,9 +33,30 @@ class ReleaseParser extends GenericParser<Release>
 				"Provide valid release type in " + configFile + ".");
 		}
 
+		var archiveInstructionsRaw = Reflect.field(source, "archiveInstructions");
+		var archiveInstructions:Array<ArchiveInstruction> = null;
+		switch(type)
+		{
+			case ReleaseType.GIT:
+				if(archiveInstructionsRaw != null)
+					throw new Error(
+						"Invalid release configuration!",
+						"Git release does not use archiveInstructions.",
+						"Remove archiveInstructions configuration for git release.");
+			case ReleaseType.HAXELIB:
+				if(archiveInstructionsRaw == null)
+					throw new Error(
+						"Invalid release configuration!",
+						"Haxelib release requires archiveInstructions.",
+						"Provide archiveInstructions configuration for haxelib release.");
+				var archiveInstructionsParser = new ArchiveInstructionParser();
+				archiveInstructionsParser.configFile = configFile;
+				archiveInstructions = archiveInstructionsParser.parseList(archiveInstructionsRaw);
+		}
+
 		var result = new Release(type);
 		result.haxelib = Reflect.field(source, "haxelib");
-		result.files = Reflect.field(source, "files");
+		result.archiveInstructions = archiveInstructions;
 		return result;
 	}
 }

@@ -1,11 +1,8 @@
 package yhaxen.phase;
 
-import haxe.io.Path;
-
 import tools.haxelib.SemVer;
 
 import yhaxen.enums.ReleaseType;
-import yhaxen.enums.SourceType;
 import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.util.Git;
@@ -73,17 +70,6 @@ class ReleasePhase extends AbstractPhase
 		}
 	}
 
-	function getResolvedFiles(release:Release):Array<String>
-	{
-		var result:Array<String> = [];
-		for(item in release.files)
-		{
-			var file = resolveVariable(item, release);
-			result.push(file);
-		}
-		return result;
-	}
-
 	function releaseGit(release:Release):Void
 	{
 		if(release.haxelib != null)
@@ -104,20 +90,21 @@ class ReleasePhase extends AbstractPhase
 
 	function releaseHaxelib(release:Release):Void
 	{
-		var files = getResolvedFiles(release);
 		var zip:Zip = new Zip();
 
 		if(release.haxelib != null)
-			updateHaxelibJson(release, release.haxelib, true);
+			updateHaxelibJson(release, resolveVariable(release.haxelib, release), true);
 
-		for(file in files)
-			zip.add(file, Path.withoutDirectory(file));
+		for(instruction in release.archiveInstructions)
+		{
+			var source = resolveVariable(instruction.source, release);
+			var target = resolveVariable(instruction.target, release);
+			zip.add(source, target);
+		}
 
-		createTempDirectory();
-		var file = AbstractPhase.TEMP_DIRECTORY + "/release.zip";
+		var file = "release.zip";
 		zip.save(file);
 		System.command("haxelib", ["submit", file]);
-		deleteTempDirectory();
 	}
 
 	function updateHaxelibJson(release:Release, file:String, forHaxelib:Bool):Void
