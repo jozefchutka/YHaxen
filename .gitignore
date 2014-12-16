@@ -1,6 +1,6 @@
 /.idea
-/.yhaxen
 /bin
 /tmp
 /*.iml
 /src/test/haxe/TestSuite.hx
+/release.zip
