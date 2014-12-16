@@ -134,7 +134,33 @@ Todo: example json, how dependencies variable is used
 
 Release versioned project.
 
-Only haxelib depenedencies will appear in updated haxelib.json.
+**type** (String, required) - Release type (available options are **haxelib** or **git**).
+
+**haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information.
+
+**archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released.
+
+Example release configuration:
+
+```json
+"releases":
+[
+	{
+		"type": "git",
+		"haxelib": "${variable:sourceDirectory}/haxelib.json"
+	},
+	{
+		"type": "haxelib",
+		"haxelib": "${variable:sourceDirectory}/haxelib.json",
+		"archiveInstructions":
+		[
+			{"source": "${variable:sourceDirectory}/haxelib.json", "target":"haxelib.json"},
+			{"source": "${variable:outputDirectory}/run.n", "target": "run.n"},
+			{"source": "${variable:sourceDirectory}/yhaxen", "target": "yhaxen"}
+		]
+	}
+]
+```
 
 Todo: example json, describe git tags, submit to haxelib
 
