@@ -8,8 +8,10 @@
 	"contributors": [
 		"jozefchutka"
 	],
-	"releasenote": "",
-	"version": "snapshot",
+	"releasenote": "Release 0.0.40.",
+	"version": "0.0.40",
 	"url": "https://github.com/jozefchutka/YHaxen",
-	"dependencies": {}
+	"dependencies": {
+		"haxelib_client": "3.1.0-rc.4"
+	}
 }
