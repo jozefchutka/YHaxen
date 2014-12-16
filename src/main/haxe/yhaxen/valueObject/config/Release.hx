@@ -14,6 +14,11 @@ class Release extends AbstractStep
 	 **/
 	public var files:Array<String>;
 
+	/**
+	 * Optional
+	 **/
+	public var haxelib:String;
+
 	public function new(type:ReleaseType)
 	{
 		this.type = type;

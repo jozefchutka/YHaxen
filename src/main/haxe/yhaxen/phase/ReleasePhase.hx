@@ -86,48 +86,32 @@ class ReleasePhase extends AbstractPhase
 
 	function releaseGit(release:Release):Void
 	{
-		var files = getResolvedFiles(release);
-		for(file in files)
-			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(release, file, false);
+		if(release.haxelib != null)
+			updateHaxelibJson(release, resolveVariable(release.haxelib, release), false);
 
-		var commit = Git.getCurrentCommit();
-
-		for(file in files)
-			Git.add(file);
-
+		var currentBranch = Git.getCurrentBranch();
+		var releaseBranch = "release_" + version;
 		var message:String = getReleaseMessage(release);
+
+		Git.createBranch(releaseBranch);
+		Git.add(".");
 		Git.commit(message);
 		Git.tag(version, message);
-
-		for(file in files)
-		{
-			try
-			{
-				Git.checkoutFile(commit, file);
-				Git.add(file);
-			}
-			catch(error:Error)
-			{
-				Git.rmCachedFile(file);
-			}
-		}
-
-		Git.commit("Revert: " + message);
-		Git.pushWithTags();
+		Git.pushTag(version);
+		Git.checkout(currentBranch);
+		Git.deleteBranch(releaseBranch);
 	}
 
 	function releaseHaxelib(release:Release):Void
 	{
 		var files = getResolvedFiles(release);
 		var zip:Zip = new Zip();
-		for(file in files)
-		{
-			if(StringTools.endsWith(file, Haxelib.FILE_HAXELIB))
-				updateHaxelibJson(release, file, true);
 
+		if(release.haxelib != null)
+			updateHaxelibJson(release, release.haxelib, true);
+
+		for(file in files)
 			zip.add(file, Path.withoutDirectory(file));
-		}
 
 		createTempDirectory();
 		var file = AbstractPhase.TEMP_DIRECTORY + "/release.zip";

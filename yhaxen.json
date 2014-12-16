@@ -99,11 +99,7 @@
 	[
 		{
 			"type": "git",
-			"files":
-			[
-				"${variable:sourceDirectory}/haxelib.json",
-				"${variable:outputDirectory}/run.n"
-			]
+			"haxelib": "${variable:sourceDirectory}/haxelib.json"
 		},
 		{
 			"type": "haxelib",

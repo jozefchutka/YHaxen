@@ -33,6 +33,7 @@ class ReleaseParser extends GenericParser<Release>
 		}
 
 		var result = new Release(type);
+		result.haxelib = Reflect.field(source, "haxelib");
 		result.files = Reflect.field(source, "files");
 		return result;
 	}

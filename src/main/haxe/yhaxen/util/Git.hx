@@ -39,6 +39,25 @@ class Git
 				"Make sure " + branch + " exists in git repository.");
 	}
 
+	public static function createBranch(branch:String, directory:String=null):Void
+	{
+		if(execute(["checkout", "--quiet", "-b", branch], directory).exitCode != 0)
+			throw new Error(
+				"Git checkout failed.",
+				"Git was not able to create branch " + branch + ".",
+				"Make sure " + branch + " is a valid branch name.");
+	}
+
+	public static function deleteBranch(branch:String, directory:String=null):Void
+	{
+		if(execute(["branch", "--quiet", "-D", branch], directory).exitCode != 0)
+			throw new Error(
+				"Git checkout failed.",
+				"Git was not able to delete branch " + branch + ".",
+				"Make sure " + branch + " is a valid branch.");
+	}
+
+
 	public static function pull(directory:String=null):Void
 	{
 		if(execute(["pull", "--quiet"], directory).exitCode != 0)
@@ -65,6 +84,17 @@ class Git
 				"Git rev-parse failed.",
 				"Git was not able to get current commit.",
 				"Make sure project is under git control and current user has suffucient rights.");
+		return execution.result;
+	}
+
+	public static function getCurrentBranch(directory:String=null):String
+	{
+		var execution = execute(["rev-parse", "--abbrev-ref", "HEAD"], directory);
+		if(execution.exitCode != 0)
+			throw new Error(
+			"Git rev-parse failed.",
+			"Git was not able to get current branch.",
+			"Make sure project is under git control and current user has suffucient rights.");
 		return execution.result;
 	}
 
@@ -114,20 +144,16 @@ class Git
 				"Make sure project is under git control.");
 	}
 
-	public static function pushWithTags(directory:String=null):Void
+	public static function pushTag(tag:String, directory:String=null):Void
 	{
-		if(execute(["push", "origin", "--all"], directory).exitCode != 0)
+		if(execute(["push", "origin", tag], directory).exitCode != 0)
 			throw new Error(
 				"Git push failed.",
-				"Git was not able to push to origin.",
-				"Make sure project is under git control.");
-
-		if(execute(["push", "origin", "--tags"], directory).exitCode != 0)
-			throw new Error(
-				"Git push failed.",
-				"Git was not able to push to origin.",
-				"Make sure project is under git control.");
+				"Git was not able to push tag to origin.",
+				"Make sure project is under git control and " + tag + " is a valid tag name.");
 	}
+
+
 
 	public static function getRemoteOriginUrl(directory:String=null):String
 	{
