@@ -248,7 +248,6 @@ Example:
 ```
 
 # Roadmap
-- improved variables handling to add `-debug` flag etc.
 - support importing configurations from dependencies
 
 # Known Issues
