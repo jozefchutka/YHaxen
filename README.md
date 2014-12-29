@@ -93,10 +93,10 @@ Command line arguments `haxelib run yhaxen compile version 123`:
 
 ## Phases
 
-1. **validate** (variables)
-2. **test**
-3. **compile** (build)
-4. **release**
+1. [validate](#validate) (variables)
+2. [test](#test)
+3. [compile](#compile) (build)
+4. [release](#release)
 
 Each phase has a related (optional) section in the config file. If a phase related section is not defined in config file, the phase is skipped. When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
 
