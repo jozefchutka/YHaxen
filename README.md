@@ -70,26 +70,26 @@ Variable configuration in yhaxen.json:
 ```
 
 Config variable in use:
-`${variable:sourceDirectory}` outputs src/main/haxe
+- `${variable:sourceDirectory}` outputs src/main/haxe
 
 Single dependendcy **dir**:
-`${dependency:munit:dir}` c:/haxe/lib/munit/123
-`${dependency:munit:dir:-cp}` -cp c:/haxe/lib/munit/123
-`${dependency:munit:classPath:-cp}` -cp c:/haxe/lib/munit/123/src
+- `${dependency:munit:dir}` c:/haxe/lib/munit/123
+- `${dependency:munit:dir:-cp}` -cp c:/haxe/lib/munit/123
+- `${dependency:munit:classPath:-cp}` -cp c:/haxe/lib/munit/123/src
 
 All scope related dependencies **dir** via **-cp** argument:
-`${dependency:*:dir}` c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
-`${dependency:*:dir:-cp}` -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
-`${dependency:*:classPath:-cp}` -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
+- `${dependency:*:dir}` c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
+- `${dependency:*:dir:-cp}` -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+- `${dependency:*:classPath:-cp}` -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
 
 Other examples:
-`${dependency:munit:name:-lib}` -lib munit
-`${dependency:munit:nameVersion:-lib}` -lib munit:123
-`${dependency:*:name}` munit mcover ...
-`${dependency:*:nameVersion:-lib}` -lib munit:123 -lib mcover:123 ...
+- `${dependency:munit:name:-lib}` -lib munit
+- `${dependency:munit:nameVersion:-lib}` -lib munit:123
+- `${dependency:*:name}` munit mcover ...
+- `${dependency:*:nameVersion:-lib}` -lib munit:123 -lib mcover:123 ...
 
 Command line arguments `haxelib run yhaxen compile version 123`:
-`${arg:version}` 123
+- `${arg:version}` 123
 
 ## Phases
 
