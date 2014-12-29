@@ -83,11 +83,11 @@ class Main
 		if(Std.is(command, ValidateCommand))
 			return ValidatePhase.fromCommand(cast command).execute();
 
-		if(Std.is(command, CompileCommand))
-			return CompilePhase.fromCommand(cast command).execute();
-
 		if(Std.is(command, TestCommand))
 			return TestPhase.fromCommand(cast command).execute();
+
+		if(Std.is(command, CompileCommand))
+			return CompilePhase.fromCommand(cast command).execute();
 
 		if(Std.is(command, ReleaseCommand))
 			return ReleasePhase.fromCommand(cast command).execute();

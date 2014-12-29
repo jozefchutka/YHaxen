@@ -1,8 +1,6 @@
-# YHaxen
+YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's variables, dependency validation, tests, builds, and releases.
 
-YHaxen is a Haxe project management tool written in [Haxe](http://haxe.org/). YHaxen can manage a project's validation, build, and release.
-
-## Dependencies
+# Dependencies & Requirements
 
 Works with:
 
@@ -12,7 +10,7 @@ Works with:
 | OSX        | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
 | Ubuntu 14  | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
  
-## Install
+# Install
 
 Recommended installation from from haxelib:
 ```
@@ -24,19 +22,87 @@ Optionally can be also installed from git:
 haxelib git yhaxen git@github.com:jozefchutka/YHaxen.git 0.0.20 src/main/haxe
 ```
 
-## Build
+# Build
 
-Recommended build from sources using yhaxen:
+An yhaxen binary can be build from sources using yhaxen:
 ```
 haxelib run yhaxen compile -version 123
 ```
 
-Optionally can be built from sources using haxe:
+Optionally can be built from sources using haxe command:
 ```
 haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=123
 ```
 
-## Usage
+# Usage
+
+Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name' arguments.
+
+```json
+{
+	"variables": [...],
+	"dependencies": [...],
+	"tests": [...],
+	"builds": [...],
+	"releases": [...],
+}
+```
+
+A config file can be executed using `haxelib run yhaxen compile`. See further documentation for more details.
+
+## Variables
+
+Different kind of variables are available:
+
+1. defined in config file (use `${variable:...`)
+2. dependency related (use `${dependency:...`)
+3. command line arguments (use `${arg:...`)
+
+Variable configuration in yhaxen.json:
+
+```json
+"variables": [
+	{
+		"name": "sourceDirectory",
+		"value": "src/main/haxe"
+	}
+]
+```
+
+Config variable in use:
+`${variable:sourceDirectory}` outputs src/main/haxe
+
+Single dependendcy **dir**:
+`${dependency:munit:dir}` c:/haxe/lib/munit/123
+`${dependency:munit:dir:-cp}` -cp c:/haxe/lib/munit/123
+`${dependency:munit:classPath:-cp}` -cp c:/haxe/lib/munit/123/src
+
+All scope related dependencies **dir** via **-cp** argument:
+`${dependency:*:dir}` c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
+`${dependency:*:dir:-cp}` -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
+`${dependency:*:classPath:-cp}` -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
+
+Other examples:
+`${dependency:munit:name:-lib}` -lib munit
+`${dependency:munit:nameVersion:-lib}` -lib munit:123
+`${dependency:*:name}` munit mcover ...
+`${dependency:*:nameVersion:-lib}` -lib munit:123 -lib mcover:123 ...
+
+Command line arguments `haxelib run yhaxen compile version 123`:
+`${arg:version}` 123
+
+## Phases
+
+1. validate (variables)
+2. test
+3. compile (build)
+4. release
+
+Each phase has a related (optional) section in the config file. If a phase related section is not defined in config file, phase is skipped.
+
+When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
+
+Examples:
 ```
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
@@ -52,32 +118,9 @@ yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
 ```
 
-## Config
-
-Default config filename is **yhaxen.json**. Each phase has a related section in config file. If a phase related section is not defined in config file, phase would be skipped.   
-
-```json
-{
-	"variables": {...},
-	"dependencies": [...],
-	"tests": [...],
-	"builds": [...],
-	"releases": [...],
-}
-```
-
-## Phases
-
-1. validate
-2. test
-3. compile
-4. release
-
-When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
-
 ### Validate
 
-Resolve and install dependencies from GIT or Haxelib (type **haxelib** or **git**).
+Resolve and install dependencies from GIT or Haxelib (see type parameter).
  
 **name** (String, required) - Dependency name to be used for haxelib.
 
@@ -115,8 +158,7 @@ Example dependency configuration:
 		"type": "git",
 		"classPath": "src",
 		"scopes": ["test"]
-	},
-	{...}
+	}
 ]
 ```
 
@@ -124,15 +166,55 @@ Example dependency configuration:
 
 Test the compiled source code using a unit testing framework.
 
+**name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
+
+**command** (String, required) - Command to be executed.
+
+**arguments** (String, optional) - Additional arguments.
+
+Example:
+```json
+"tests":
+[
+	{
+		"name": "test",
+		"command": "haxelib",
+		"arguments": ["run", "munit", "test"]
+	}
+]
+```
+
 ### Compile
 
 Compile the source code of the project.
 
-Todo: example json, how dependencies variable is used
+**name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
+
+**command** (String, required) - Command to be executed.
+
+**arguments** (String, optional) - Additional arguments.
+
+Example:
+```json
+"builds":
+[
+	{
+		"name": "main",
+		"command": "haxe",
+		"arguments":
+		[
+			"-main", "Main",
+			"-js", "${variable:outputDirectory}/main.js",
+			"-cp", "${variable:sourceDirectory}",
+			"${dependency:*:classPath:-cp}"
+		]
+	}
+]
+```
 
 ### Release
 
-Release versioned project.
+Release versioned project. With git release, all modified files are commited and a tag is created in remote repository.
 
 **type** (String, required) - Release type (available options are **haxelib** or **git**).
 
@@ -140,8 +222,7 @@ Release versioned project.
 
 **archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released.
 
-Example release configuration:
-
+Example:
 ```json
 "releases":
 [
@@ -162,91 +243,13 @@ Example release configuration:
 ]
 ```
 
-Todo: example json, describe git tags, submit to haxelib
+# Roadmap
+- improved variables handling to add `-debug` flag etc.
+- support importing configurations from dependencies
 
-## Variables
-
-Available in build, test and release phases.
-
-Variable configuration and usage in yhaxen.json: 
-```json
-{
-	"variables": [
-		{
-			"name": "sourceDirectory",
-			"value": "src/main/haxe"
-		}
-	],
-	"builds": [
-		{
-			"name": "main",
-			"command": "haxe",
-			"arguments": ["-cp", "${variable:sourceDirectory}"]
-		}
-	]
-}
-```
-
-### Dependencies
-
-Single dependendcy **dir**: 
-```
-${dependency:munit:dir} -> c:/haxe/lib/munit/123
-${dependency:munit:dir:-cp} -> -cp c:/haxe/lib/munit/123
-${dependency:munit:classPath:-cp} -> -cp c:/haxe/lib/munit/123/src
-```
-
-All scope related dependencies **dir** via **-cp** argument:
-```
-${dependency:*:dir} -> c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
-${dependency:*:dir:-cp} -> -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
-${dependency:*:classPath:-cp} -> -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
-```
-
-Other examples:
-```
-${dependency:munit:name:-lib} -> -lib munit
-${dependency:munit:nameVersion:-lib} -> -lib munit:123
-${dependency:*:name} -> munit mcover ...
-${dependency:*:nameVersion:-lib} -> -lib munit:123 -lib mcover:123 ...
-```
-
-### Arguments
-
-Command line arguments:
-
-```
-haxelib run yhaxen compile version 123 
-${arg:version} -> 123
-```
-
-## TODO
-- deploy target
+# Known Issues
 - running yhaxen without privileges to haxelib/lib folder
 - when repository does not contain "subdirectory" specified in dependency config use more proper error than "Error: std@sys_read_dir"
-- automatic version guess based on current
-- dependencies with yhaxen.json - use subdependencies
-
-### should
-- install specific version from git
-- install into haxelib folder under proper version
-- install subdependencies automatically
-- provide list of necessary sub dependencies with versions
-- dependencies in yhaxen.json
-- yhaxen.json only at app/prject level not in dependencies (use haxelib.json)
-- only place for defining dependencies (no .munit, munit.hxml, main.hxml)
-
-### should not
-- not use .current .dev
-- change lib/compiler state at all
-- do not install subdependencies but have them all defined in yhaxen.json
-- no channel.json
-
-### known issues
-- on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like
-```
-c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-3.0.1\lib\
-```
-
+- on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like `c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-3.0.1\lib\`
 - if a haxelib lib contains .dev file, haxe compiler is not able to use specific lib version with -lib $lib:$version
 - if a lib A contains dependency B defined in haxelib.json with version C a haxe compiler cannot override it using `haxe -lib A -lib B:D`
