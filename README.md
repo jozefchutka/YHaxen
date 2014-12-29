@@ -58,7 +58,7 @@ Different kind of variables are available:
 2. dependency related (use `${dependency:...`)
 3. command line arguments (use `${arg:...`)
 
-Variable configuration in yhaxen.json:
+Variable configuration:
 
 ```json
 "variables": [
@@ -72,17 +72,17 @@ Variable configuration in yhaxen.json:
 Config variable in use:
 - `${variable:sourceDirectory}` outputs src/main/haxe
 
-Single dependendcy **dir**:
+Single dependendcy:
 - `${dependency:munit:dir}` c:/haxe/lib/munit/123
 - `${dependency:munit:dir:-cp}` -cp c:/haxe/lib/munit/123
 - `${dependency:munit:classPath:-cp}` -cp c:/haxe/lib/munit/123/src
 
-All scope related dependencies **dir** via **-cp** argument:
+Scope related dependencies:
 - `${dependency:*:dir}` c:/haxe/lib/munit/123 c:/haxe/lib/mcover/123 ...
 - `${dependency:*:dir:-cp}` -cp c:/haxe/lib/munit/123 -cp c:/haxe/lib/mcover/123 ...
 - `${dependency:*:classPath:-cp}` -cp c:/haxe/lib/munit/123/src -cp c:/haxe/lib/mcover/123/src ...
 
-Other examples:
+Other dependency examples:
 - `${dependency:munit:name:-lib}` -lib munit
 - `${dependency:munit:nameVersion:-lib}` -lib munit:123
 - `${dependency:*:name}` munit mcover ...
@@ -93,26 +93,24 @@ Command line arguments `haxelib run yhaxen compile version 123`:
 
 ## Phases
 
-1. validate (variables)
-2. test
-3. compile (build)
-4. release
+1. **validate** (variables)
+2. **test**
+3. **compile** (build)
+4. **release**
 
-Each phase has a related (optional) section in the config file. If a phase related section is not defined in config file, phase is skipped.
-
-When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
+Each phase has a related (optional) section in the config file. If a phase related section is not defined in config file, the phase is skipped. When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
 
 Examples:
 ```
 yhaxen validate
 yhaxen validate -config src/test/resources/yhaxen.json
+yhaxen test
+yhaxen test:*
+yhaxen test:testName
 yhaxen compile
 yhaxen compile:*
 yhaxen compile:buildName
 yhaxen compile -config src/test/resources/yhaxen.json
-yhaxen test
-yhaxen test:*
-yhaxen test:testName
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
@@ -122,28 +120,18 @@ yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
 
 Resolve and install dependencies from GIT or Haxelib (see type parameter).
  
-**name** (String, required) - Dependency name to be used for haxelib.
-
-**version** (String, required) - Dependency version to be used for haxelib. In case of git dependency, can point to branch, tag or commit.
-
-**type** (String, required) - Only *git* or *haxelib* values are available. 
-
-**source** (String, required for git) - Points to git repository.
- 
-**subdirectory** (String, optional) - Git subdirectory to sources or haxelib.json. Only available with git.
-
-**scopes** (Array<String>, optional) - Scope filtering is used with build or test phase. If dependency scope is not defined, the dependency will be avialable for all builds and tests. If scopes are defined, dependency will be used only for appropriate build or test name.
-
-**forceVersion** (Bool, optional) - If multiple versions of a lib is used, phase fails with error describing the conflicting dependencies. Enable this flag to resolve conflicts.
-
-**update** (Bool, optional) - Removes old version if exists and replaces with new one. Consider using this flag when dependency version is pointing to a branch. 
-
-**useCurrent** (Bool, optional) - If true, the dependency dir will be resolved from .current file for variables (e.g. `${dependency:munit:dir}` or `${dependency:munit:classPath}`).
-
-**makeCurrent** (Bool, optional) - If true, the requested dependency version will be set as current with validation phase (using haxelib command `haxelib set munit 2.1.1`).
+- **name** (String, required) - Dependency name to be used for haxelib.
+- **version** (String, required) - Dependency version to be used for haxelib. In case of git dependency, can point to branch, tag or commit.
+- **type** (String, required) - Only *git* or *haxelib* values are available.
+- **source** (String, required for git) - Points to git repository.
+- **subdirectory** (String, optional) - Git subdirectory to sources or haxelib.json. Only available with git.
+- **scopes** (Array<String>, optional) - Scope filtering is used with build or test phase. If dependency scope is not defined, the dependency will be avialable for all builds and tests. If scopes are defined, dependency will be used only for appropriate build or test name.
+- **forceVersion** (Bool, optional) - If multiple versions of a lib is used, phase fails with error describing the conflicting dependencies. Enable this flag to resolve conflicts.
+- **update** (Bool, optional) - Removes old version if exists and replaces with new one. Consider using this flag when dependency version is pointing to a branch.
+- **useCurrent** (Bool, optional) - If true, the dependency dir will be resolved from .current file for variables (e.g. `${dependency:munit:dir}` or `${dependency:munit:classPath}`).
+- **makeCurrent** (Bool, optional) - If true, the requested dependency version will be set as current with validation phase (using haxelib command `haxelib set munit 2.1.1`).
 
 Example dependency configuration:
- 
 ```json
 "dependencies": [
 	{
@@ -166,11 +154,9 @@ Example dependency configuration:
 
 Test the compiled source code using a unit testing framework.
 
-**name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
-
-**command** (String, required) - Command to be executed.
-
-**arguments** (String, optional) - Additional arguments.
+- **name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
+- **command** (String, required) - Command to be executed.
+- **arguments** (String, optional) - Additional arguments.
 
 Example:
 ```json
@@ -188,11 +174,9 @@ Example:
 
 Compile the source code of the project.
 
-**name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
-
-**command** (String, required) - Command to be executed.
-
-**arguments** (String, optional) - Additional arguments.
+- **name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
+- **command** (String, required) - Command to be executed.
+- **arguments** (String, optional) - Additional arguments.
 
 Example:
 ```json
@@ -216,11 +200,9 @@ Example:
 
 Release versioned project. With git release, all modified files are commited and a tag is created in remote repository.
 
-**type** (String, required) - Release type (available options are **haxelib** or **git**).
-
-**haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information.
-
-**archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released.
+- **type** (String, required) - Release type (available options are **haxelib** or **git**).
+- **haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information.
+- **archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released.
 
 Example:
 ```json
@@ -248,6 +230,7 @@ Example:
 - support importing configurations from dependencies
 
 # Known Issues
+- exeption with git release when no files to commit
 - running yhaxen without privileges to haxelib/lib folder
 - when repository does not contain "subdirectory" specified in dependency config use more proper error than "Error: std@sys_read_dir"
 - on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like `c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-3.0.1\lib\`
