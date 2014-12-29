@@ -20,19 +20,23 @@ class CommandParser extends GenericParser<AbstractCommand>
 		if(configFile == null)
 			configFile = Config.DEFAULT_FILENAME;
 
+		var phase = Command.KEY_HELP;
+		var phaseStep:String = null;
+		if(args != null && args.length > 0)
+		{
+			var phaseChunks = args[0].split(":");
+			phase = phaseChunks[0];
+			phaseStep = getPhaseStep(phaseChunks);
+		}
 
-		var phaseChunks = args[0].split(":");
-		var phaseKey = phaseChunks[0];
-		var phasePart = phaseChunks.length > 1 ? phaseChunks[1] : null;
-
-		switch(phaseKey)
+		switch(phase)
 		{
 			case Command.KEY_VALIDATE:
 				return new ValidateCommand(configFile);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile, phasePart == null, phasePart == "*" ? null : phasePart);
+				return new CompileCommand(configFile, phaseStep == null, phaseStep == "*" ? null : phaseStep);
 			case Command.KEY_TEST:
-				return new TestCommand(configFile, phasePart == null, phasePart == "*" ? null : phasePart);
+				return new TestCommand(configFile, phaseStep == null, phaseStep == "*" ? null : phaseStep);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")
@@ -47,12 +51,12 @@ class CommandParser extends GenericParser<AbstractCommand>
 			default:
 				throw new Error(
 					"Invalid command arguments.",
-					"Command argument " + phaseKey + " is invalid.",
+					"Command argument " + phase + " is invalid.",
 					"Execute \"" + Command.KEY_HELP + "\" for help.");
 		}
 	}
 
-	private function getStrings(key:String, args:Array<String>):Array<String>
+	function getStrings(key:String, args:Array<String>):Array<String>
 	{
 		var result:Array<String> = [];
 		for(i in 0...args.length)
@@ -61,14 +65,19 @@ class CommandParser extends GenericParser<AbstractCommand>
 		return result.length > 0 ? result : null;
 	}
 
-	private function getString(key:String, args:Array<String>):String
+	function getString(key:String, args:Array<String>):String
 	{
 		var result = getStrings(key, args);
 		return result != null ? result[0] : null;
 	}
 
-	private function getBool(key:String, args:Array<String>):Bool
+	function getBool(key:String, args:Array<String>):Bool
 	{
 		return getString(key, args) == "true";
+	}
+
+	function getPhaseStep(chunks:Array<String>):String
+	{
+		return (chunks != null && chunks.length > 1) ? chunks[1] : null;
 	}
 }

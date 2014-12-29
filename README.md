@@ -36,7 +36,7 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 
 # Usage
 
-Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name` arguments.
+Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name` argument.
 
 ```json
 {
@@ -157,6 +157,7 @@ Test the compiled source code using a unit testing framework.
 - **name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
 - **command** (String, required) - Command to be executed.
 - **arguments** (String, optional) - Additional arguments.
+- **dir** (String, optional) - Working directory.
 
 Example:
 ```json
@@ -177,6 +178,7 @@ Compile the source code of the project.
 - **name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
 - **command** (String, required) - Command to be executed.
 - **arguments** (String, optional) - Additional arguments.
+- **dir** (String, optional) - Working directory.
 
 Example:
 ```json
