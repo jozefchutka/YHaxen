@@ -14,13 +14,15 @@ class AbstractPhase
 	public var config(default, null):Config;
 	public var configFile(default, null):String;
 	public var followPhaseFlow(default, null):Bool;
+	public var mode(default, null):String;
 	@:isVar public var haxelib(get, set):Haxelib;
 
-	private function new(config:Config, configFile:String, followPhaseFlow:Bool)
+	private function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String)
 	{
 		this.config = config;
 		this.configFile = configFile;
 		this.followPhaseFlow = followPhaseFlow;
+		this.mode = mode;
 	}
 
 	function get_haxelib():Haxelib
@@ -278,7 +280,7 @@ class AbstractPhase
 
 		if(config.variables != null)
 			for(variable in config.variables)
-				if(variable.name == name)
+				if(variable.name == name && variable.matchesMode(mode))
 					return [variable.value];
 
 		throw new Error(

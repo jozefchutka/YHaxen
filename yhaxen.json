@@ -90,6 +90,7 @@
 				"-neko", "${variable:outputDirectory}/run.n",
 				"-cp", "${variable:sourceDirectory}",
 				"${dependency:*:classPath:-cp}",
+				"${variable:flag}",
 				"-D", "version=${arg:-version}"
 			]
 		}

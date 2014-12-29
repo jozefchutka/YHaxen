@@ -4,9 +4,9 @@ class TestCommand extends AbstractLifecycleCommand
 {
 	public var part(default, null):String;
 
-	public function new(configFile:String, followPhaseFlow:Bool, part:String)
+	public function new(configFile:String, followPhaseFlow:Bool, mode:String, part:String)
 	{
-		super(configFile, followPhaseFlow);
+		super(configFile, followPhaseFlow, mode);
 
 		this.part = part;
 	}

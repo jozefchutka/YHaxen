@@ -20,6 +20,8 @@ class CommandParser extends GenericParser<AbstractCommand>
 		if(configFile == null)
 			configFile = Config.DEFAULT_FILENAME;
 
+		var mode:String = getString("mode", args);
+
 		var phase = Command.KEY_HELP;
 		var phaseStep:String = null;
 		if(args != null && args.length > 0)
@@ -32,11 +34,11 @@ class CommandParser extends GenericParser<AbstractCommand>
 		switch(phase)
 		{
 			case Command.KEY_VALIDATE:
-				return new ValidateCommand(configFile);
+				return new ValidateCommand(configFile, mode);
 			case Command.KEY_COMPILE:
-				return new CompileCommand(configFile, phaseStep == null, phaseStep == "*" ? null : phaseStep);
+				return new CompileCommand(configFile, phaseStep == null, mode, phaseStep == "*" ? null : phaseStep);
 			case Command.KEY_TEST:
-				return new TestCommand(configFile, phaseStep == null, phaseStep == "*" ? null : phaseStep);
+				return new TestCommand(configFile, phaseStep == null, mode, phaseStep == "*" ? null : phaseStep);
 			case Command.KEY_RELEASE:
 				var version = getString("version", args);
 				if(version == null || version == "")
@@ -45,7 +47,7 @@ class CommandParser extends GenericParser<AbstractCommand>
 						"Command " + Command.KEY_RELEASE + " is missing required version argument.",
 						"Provide version in " + Command.KEY_RELEASE + " command e.g. \"-version 1.2.3\".");
 				var message = getString("message", args);
-				return new ReleaseCommand(configFile, version, message);
+				return new ReleaseCommand(configFile, mode, version, message);
 			case Command.KEY_HELP:
 				return new HelpCommand();
 			default:

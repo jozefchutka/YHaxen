@@ -77,9 +77,11 @@ class DependencyParser extends GenericParser<Dependency>
 			result.subdirectory = null;
 
 		if(Reflect.hasField(source, "scopes"))
-			result.scopes = Reflect.field(source, "scopes");
-		if(result.scopes != null && result.scopes.length == 0)
-			result.scopes = null;
+		{
+			var scopes:Array<String> = Reflect.field(source, "scopes");
+			if(scopes != null && scopes.length != 0)
+				result.scopes = scopes;
+		}
 
 		if(Reflect.hasField(source, "update"))
 			result.update = Reflect.field(source, "update");

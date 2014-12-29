@@ -57,15 +57,31 @@ Different kind of variables are available:
 1. defined in config file (use `${variable:...`)
 2. dependency related (use `${dependency:...`)
 3. command line arguments (use `${arg:...`)
+4. system variables (use `${system:...}`)
 
-Variable configuration:
 
+### Config Variables
+
+- **name** (String, required) - Name of a variable.
+- **value** (String, required) - Value of a variable.
+- **modes** (Array<String>, optional) - Array of modes where variable is available. Mode can be applied from command line i.e. `-mode debug`.
+
+Example:
 ```json
 "variables": [
 	{
 		"name": "sourceDirectory",
 		"value": "src/main/haxe"
-	}
+	},
+	{
+		"name": "outputDirectory",
+		"value": "bin/debug",
+		"modes": ["debug"]
+	},
+	{
+		"name": "outputDirectory",
+		"value": "bin/release"
+	},
 ]
 ```
 
@@ -91,6 +107,9 @@ Other dependency examples:
 Command line arguments `haxelib run yhaxen compile version 123`:
 - `${arg:version}` 123
 
+System variables:
+- `${system:cwd}` i.e. c:/Documents/Project
+
 ## Phases
 
 1. [validate](#validate) (variables)
@@ -111,6 +130,7 @@ yhaxen compile
 yhaxen compile:*
 yhaxen compile:buildName
 yhaxen compile -config src/test/resources/yhaxen.json
+yhaxen compile -mode debug
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
