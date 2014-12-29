@@ -36,7 +36,7 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 
 # Usage
 
-Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name' arguments.
+Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name` arguments.
 
 ```json
 {
