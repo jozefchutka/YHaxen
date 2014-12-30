@@ -58,6 +58,7 @@ A config file can be executed using `haxelib run yhaxen compile`. See further do
 - **-version** - Required by release phase. Recommended format is [SemVer](http://semver.org/)
 - **-message** - Optional for release phase.
 - **validate|test|compile|release** - See [phases](#phases).
+- **help** - Print help.
 
 
 Examples:
@@ -65,6 +66,7 @@ Examples:
 yhaxen validate -config src/test/resources/yhaxen.json
 yhaxen compile -config "myconfig.json" -logLevel 2 -mode debug
 yhaxen release -version 1.2.3 -message "My release message"
+yhaxen help
 ```
 
 ## Variables
@@ -134,7 +136,9 @@ System variables:
 3. [compile](#compile) (build)
 4. [release](#release)
 
-Each phase has a related (optional) section in the config file. If a phase related section is not defined in config file, the phase is skipped. When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
+Each phase has a related section (optional) in the config file. If a phase related section is not defined in config file, the phase is skipped. When a specific phase is requested, each preceding phase is invoked as well (e.g. `yhaxen release` would run validate, test and compile phase before the actual release).
+
+A specific build in a test or compile phase can be executed by providing a build name (i.e. `compile:myBuild`). All builds within a phase can be executed by providing `*` as a build name (i.e. `test:*`)
 
 Examples:
 ```
