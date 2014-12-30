@@ -1,24 +1,14 @@
 package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
-import yhaxen.util.System;
 import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.Error;
 
-class CompilePhase extends AbstractPhase
+class CompilePhase extends AbstractBuildPhase<Build>
 {
-	public var part(default, null):String;
-
 	var testPhase:TestPhase;
-
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String, part:String)
-	{
-		super(config, configFile, followPhaseFlow, mode);
-
-		this.part = part;
-	}
 
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
@@ -26,41 +16,15 @@ class CompilePhase extends AbstractPhase
 		return new CompilePhase(config, command.configFile, command.followPhaseFlow, command.mode, command.part);
 	}
 
-	override function execute():Void
+	override function getBuilds():Array<Build>
 	{
-		super.execute();
-
-		if(part != null)
-			executePart(part);
-		else
-			executeAll();
+		return config.builds;
 	}
 
-	function executeAll():Void
+	override function getBuildByPart(part:String):Build
 	{
-		if(config.builds == null || config.builds.length == 0)
-			return logPhase("compile", "No builds found.");
-
-		logPhase("compile", "Found " + config.builds.length + " builds.");
-
-		for(build in config.builds)
-			compileBuild(build);
+		return config.getBuild(part);
 	}
-
-	function executePart(part:String):Void
-	{
-		var build = config.getBuild(part);
-
-		if(build == null)
-			throw new Error(
-				"Build " + part + " not found!",
-				"Build named " + part + " is not defined in " + configFile + ".",
-				"Provide build in " + configFile + " or execute different build.");
-
-		logPhase("compile", "Found 1 build.");
-		compileBuild(build);
-	}
-
 
 	override function executePreviousPhase():Void
 	{
@@ -69,24 +33,30 @@ class CompilePhase extends AbstractPhase
 		testPhase.execute();
 	}
 
-	function compileBuild(build:Build):Void
+	override function logPhasesFound(count:Int)
 	{
-		var arguments = null;
+		var message = switch(count)
+		{
+			case 0: "No builds found.";
+			case 1: "Found 1 build.";
+			default: "Found " + count + " builds";
+		}
+		logPhase("compile", message);
+	}
 
-		if(build.arguments != null && build.arguments.length > 0)
-			arguments = resolveVariablesInArray(build.arguments, build);
+	override function throwMissingBuildByPartError(part:String)
+	{
+		throw new Error(
+			"Build " + part + " not found!",
+			"Build named " + part + " is not defined in " + configFile + ".",
+			"Provide build in " + configFile + " or execute different build.");
+	}
 
-		var cwd = Sys.getCwd();
-
-		if(build.dir != null)
-			Sys.setCwd(resolveVariable(build.dir, build));
-
-		if(System.command(build.command, arguments) != 0)
-			throw new Error(
-				"Build " + build.name + " failed!",
-				"System command failed to execute.",
-				"Make sure system command can be executed.");
-
-		Sys.setCwd(cwd);
+	override function throwExecuteBuildError(build:Build)
+	{
+		throw new Error(
+			"Build " + build.name + " failed!",
+			"System command failed to execute.",
+			"Make sure system command can be executed.");
 	}
 }

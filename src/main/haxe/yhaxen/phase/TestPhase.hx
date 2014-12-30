@@ -1,24 +1,14 @@
 package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
-import yhaxen.util.System;
 import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Test;
 import yhaxen.valueObject.Error;
 
-class TestPhase extends AbstractPhase
+class TestPhase extends AbstractBuildPhase<Test>
 {
-	public var part(default, null):String;
-
 	var validatePhase:ValidatePhase;
-
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String, part:String)
-	{
-		super(config, configFile, followPhaseFlow, mode);
-
-		this.part = part;
-	}
 
 	public static function fromCommand(command:TestCommand):TestPhase
 	{
@@ -26,39 +16,14 @@ class TestPhase extends AbstractPhase
 		return new TestPhase(config, command.configFile, command.followPhaseFlow, command.mode, command.part);
 	}
 
-	override function execute():Void
+	override function getBuilds():Array<Test>
 	{
-		super.execute();
-
-		if(part != null)
-			executePart(part);
-		else
-			executeAll();
+		return config.tests;
 	}
 
-	function executeAll():Void
+	override function getBuildByPart(part:String):Test
 	{
-		if(config.tests == null || config.tests.length == 0)
-			return logPhase("tests", "No tests found.");
-
-		logPhase("test", "Found " + config.tests.length + " tests.");
-
-		for(test in config.tests)
-			resolveTest(test);
-	}
-
-	function executePart(part:String):Void
-	{
-		var test = config.getTest(part);
-
-		if(test == null)
-			throw new Error(
-				"Test " + part + " not found!",
-				"Test named " + part + " is not defined in " + configFile + ".",
-				"Provide test in " + configFile + " or execute different test.");
-
-		logPhase("test", "Found 1 test.");
-		resolveTest(test);
+		return config.getTest(part);
 	}
 
 	override function executePreviousPhase():Void
@@ -68,24 +33,30 @@ class TestPhase extends AbstractPhase
 		validatePhase.execute();
 	}
 
-	function resolveTest(test:Test):Void
+	override function logPhasesFound(count:Int)
 	{
-		var arguments = null;
+		var message = switch(count)
+		{
+			case 0: "No tests found.";
+			case 1: "Found 1 test.";
+			default: "Found " + count + " tests";
+		}
+		logPhase("test", message);
+	}
 
-		if(test.arguments != null && test.arguments.length > 0)
-			arguments = resolveVariablesInArray(test.arguments, test);
+	override function throwMissingBuildByPartError(part:String)
+	{
+		throw new Error(
+			"Test " + part + " not found!",
+			"Test named " + part + " is not defined in " + configFile + ".",
+			"Provide test in " + configFile + " or execute different test.");
+	}
 
-		var cwd = Sys.getCwd();
-
-		if(test.dir != null)
-			Sys.setCwd(resolveVariable(test.dir, test));
-
-		if(System.command(test.command, arguments) != 0)
-			throw new Error(
-				"Test " + test.name + " failed!",
-				"System command failed to execute or tests failed.",
-				"Make sure system command can be executed and fix tests.");
-
-		Sys.setCwd(cwd);
+	override function throwExecuteBuildError(test:Test)
+	{
+		throw new Error(
+			"Test " + test.name + " failed!",
+			"System command failed to execute or tests failed.",
+			"Make sure system command can be executed and fix tests.");
 	}
 }
