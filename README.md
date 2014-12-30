@@ -36,7 +36,7 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 
 # Usage
 
-Default config filename is **yhaxen.json**. A config filename can be customized by `-config $name` argument.
+basic config structure:
 
 ```json
 {
@@ -49,6 +49,23 @@ Default config filename is **yhaxen.json**. A config filename can be customized 
 ```
 
 A config file can be executed using `haxelib run yhaxen compile`. See further documentation for more details.
+
+## Command line arguments
+
+- **-config** - Config file name. Default value is **yhaxen.json**.
+- **-logLevel** - Filter std out messages by priority. Default value is 4. Avialable values are 2...7. Lower value means more debug logs.
+- **-mode** - Executes build in a specific mode. You can define mode to use differnt variable values etc.
+- **-version** - Required by release phase. Recommended format is [SemVer](http://semver.org/)
+- **-message** - Optional for release phase.
+- **validate|test|compile|release** - See [phases](#phases).
+
+
+Examples:
+```
+yhaxen validate -config src/test/resources/yhaxen.json
+yhaxen compile -config "myconfig.json" -logLevel 2 -mode debug
+yhaxen release -version 1.2.3 -message "My release message"
+```
 
 ## Variables
 
@@ -122,15 +139,12 @@ Each phase has a related (optional) section in the config file. If a phase relat
 Examples:
 ```
 yhaxen validate
-yhaxen validate -config src/test/resources/yhaxen.json
 yhaxen test
 yhaxen test:*
 yhaxen test:testName
 yhaxen compile
 yhaxen compile:*
 yhaxen compile:buildName
-yhaxen compile -config src/test/resources/yhaxen.json
-yhaxen compile -mode debug
 yhaxen release -version 0.0.1
 yhaxen release -version 0.0.1 -message "Initial release."
 yhaxen release -version 0.0.1 -message "Releasing version ${arg:-version}."
@@ -175,9 +189,9 @@ Example dependency configuration:
 Test the compiled source code using a unit testing framework.
 
 - **name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
-- **command** (String, required) - Command to be executed.
-- **arguments** (String, optional) - Additional arguments.
-- **dir** (String, optional) - Working directory.
+- **command** (String, required) - Command to be executed. May contain variables.
+- **arguments** (String, optional) - Additional arguments. May contain variables.
+- **dir** (String, optional) - Working directory. May contain variables.
 
 Example:
 ```json
@@ -196,9 +210,9 @@ Example:
 Compile the source code of the project.
 
 - **name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
-- **command** (String, required) - Command to be executed.
-- **arguments** (String, optional) - Additional arguments.
-- **dir** (String, optional) - Working directory.
+- **command** (String, required) - Command to be executed. May contain variables.
+- **arguments** (String, optional) - Additional arguments. May contain variables.
+- **dir** (String, optional) - Working directory. May contain variables.
 
 Example:
 ```json
@@ -223,17 +237,13 @@ Example:
 Release versioned project. With git release, all modified files are commited and a tag is created in remote repository.
 
 - **type** (String, required) - Release type (available options are **haxelib** or **git**).
-- **haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information.
-- **archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released.
+- **haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information. May contain variables.
+- **archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released. May contain variables.
 
 Example:
 ```json
 "releases":
 [
-	{
-		"type": "git",
-		"haxelib": "src/haxelib.json"
-	},
 	{
 		"type": "haxelib",
 		"haxelib": "src/haxelib.json",
@@ -243,6 +253,10 @@ Example:
 			{"source": "doc", "target": "doc"},
 			{"source": "bin/run.n", "target": "run.n"}
 		]
+	},
+	{
+		"type": "git",
+		"haxelib": "src/haxelib.json"
 	}
 ]
 ```
