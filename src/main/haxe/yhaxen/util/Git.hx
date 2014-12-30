@@ -6,12 +6,14 @@ import sys.io.Process;
 
 class Git
 {
-	static function execute(arguments:Array<String>, directory:String):{exitCode:Int, result:String}
+	static function execute(arguments:Array<String>, directory:String, log:Bool):{exitCode:Int, result:String}
 	{
 		var cwd = Sys.getCwd();
 		if(directory != null)
 			Sys.setCwd(directory);
 
+		if(log)
+			System.print("$ git " + System.formatCommandLineArguments(arguments));
 		var process:Process = System.process("git", arguments);
 		var exitCode = process.exitCode();
 		var result = StringTools.trim(process.stdout.readAll().toString());
@@ -21,36 +23,36 @@ class Git
 		return {exitCode:exitCode, result:result};
 	}
 
-	public static function clone(source:String, directory:String):Void
+	public static function clone(source:String, directory:String, log:Bool=false):Void
 	{
-		if(execute(["clone", "--quiet", source, directory], null).exitCode != 0)
+		if(execute(["clone", "--quiet", source, directory], null, log).exitCode != 0)
 			throw new Error(
 				"Git clone failed.",
 				"Git command is not configured or repository does not exist.",
 				"Make sure git is configured and repository exists.");
 	}
 
-	public static function checkout(branch:String, directory:String=null):Void
+	public static function checkout(branch:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["checkout", "--quiet", branch], directory).exitCode != 0)
+		if(execute(["checkout", "--quiet", branch], directory, log).exitCode != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkout branch, tag or commit " + branch + ".",
 				"Make sure " + branch + " exists in git repository.");
 	}
 
-	public static function createBranch(branch:String, directory:String=null):Void
+	public static function createBranch(branch:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["checkout", "--quiet", "-b", branch], directory).exitCode != 0)
+		if(execute(["checkout", "--quiet", "-b", branch], directory, log).exitCode != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to create branch " + branch + ".",
 				"Make sure " + branch + " is a valid branch name.");
 	}
 
-	public static function deleteBranch(branch:String, directory:String=null):Void
+	public static function deleteBranch(branch:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["branch", "--quiet", "-D", branch], directory).exitCode != 0)
+		if(execute(["branch", "--quiet", "-D", branch], directory, log).exitCode != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to delete branch " + branch + ".",
@@ -58,27 +60,27 @@ class Git
 	}
 
 
-	public static function pull(directory:String=null):Void
+	public static function pull(directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["pull", "--quiet"], directory).exitCode != 0)
+		if(execute(["pull", "--quiet"], directory, log).exitCode != 0)
 			throw new Error(
 				"Git pull failed.",
 				"Git was not able to pull.",
 				"Make sure directory " + directory + " is valid git repository.");
 	}
 
-	public static function fetchAll(directory:String=null):Void
+	public static function fetchAll(directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["fetch", "--quiet", "--all"], directory).exitCode != 0)
+		if(execute(["fetch", "--quiet", "--all"], directory, log).exitCode != 0)
 			throw new Error(
 				"Git fetch failed.",
 				"Git was not able to fetch.",
 				"Make sure directory " + directory + " is valid git repository.");
 	}
 
-	public static function getCurrentCommit(directory:String=null):String
+	public static function getCurrentCommit(directory:String=null, log:Bool=false):String
 	{
-		var execution = execute(["rev-parse", "HEAD"], directory);
+		var execution = execute(["rev-parse", "HEAD"], directory, log);
 		if(execution.exitCode != 0)
 			throw new Error(
 				"Git rev-parse failed.",
@@ -87,9 +89,9 @@ class Git
 		return execution.result;
 	}
 
-	public static function getCurrentBranch(directory:String=null):String
+	public static function getCurrentBranch(directory:String=null, log:Bool=false):String
 	{
-		var execution = execute(["rev-parse", "--abbrev-ref", "HEAD"], directory);
+		var execution = execute(["rev-parse", "--abbrev-ref", "HEAD"], directory, log);
 		if(execution.exitCode != 0)
 			throw new Error(
 			"Git rev-parse failed.",
@@ -98,18 +100,18 @@ class Git
 		return execution.result;
 	}
 
-	public static function add(file:String, directory:String=null):Void
+	public static function add(file:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["add", file], directory).exitCode != 0)
+		if(execute(["add", file], directory, log).exitCode != 0)
 			throw new Error(
 				"Git add failed.",
 				"Git was not able to add file " + file + ".",
 				"Make sure project is under git control and file " + file + " exists.");
 	}
 
-	public static function commit(message:String, directory:String=null):Void
+	public static function commit(message:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["commit", "-m", message], directory).exitCode != 0)
+		if(execute(["commit", "-m", message], directory, log).exitCode != 0)
 			throw new Error(
 				"Git commit failed.",
 				"Git was not able to commit.",
@@ -117,36 +119,36 @@ class Git
 	}
 
 
-	public static function tag(version:String, message:String, directory:String=null):Void
+	public static function tag(version:String, message:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["tag", "-a", version, "-m", message], directory).exitCode != 0)
+		if(execute(["tag", "-a", version, "-m", message], directory, log).exitCode != 0)
 			throw new Error(
 				"Git tag failed.",
 				"Git was not able to tag.",
 				"Make sure project is under git control.");
 	}
 
-	public static function checkoutFile(commit:String, file:String, directory:String=null):Void
+	public static function checkoutFile(commit:String, file:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["checkout", commit, "--", file], directory).exitCode != 0)
+		if(execute(["checkout", commit, "--", file], directory, log).exitCode != 0)
 			throw new Error(
 				"Git checkout failed.",
 				"Git was not able to checkot " + file + " from " + commit + ".",
 				"Make sure project is under git control.");
 	}
 
-	public static function rmCachedFile(file:String, directory:String=null):Void
+	public static function rmCachedFile(file:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["rm", "--cached", file], directory).exitCode != 0)
+		if(execute(["rm", "--cached", file], directory, log).exitCode != 0)
 			throw new Error(
 				"Git rm failed.",
 				"Git was not able to remove " + file + ".",
 				"Make sure project is under git control.");
 	}
 
-	public static function pushTag(tag:String, directory:String=null):Void
+	public static function pushTag(tag:String, directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["push", "origin", tag], directory).exitCode != 0)
+		if(execute(["push", "origin", tag], directory, log).exitCode != 0)
 			throw new Error(
 				"Git push failed.",
 				"Git was not able to push tag to origin.",
@@ -155,9 +157,9 @@ class Git
 
 
 
-	public static function getRemoteOriginUrl(directory:String=null):String
+	public static function getRemoteOriginUrl(directory:String=null, log:Bool=false):String
 	{
-		var execution = execute(["config", "--get", "remote.origin.url"], directory);
+		var execution = execute(["config", "--get", "remote.origin.url"], directory, log);
 		if(execution.exitCode != 0)
 			throw new Error(
 				"Git config failed.",

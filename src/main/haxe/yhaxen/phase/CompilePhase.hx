@@ -2,18 +2,17 @@ package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
 import yhaxen.valueObject.command.CompileCommand;
+import yhaxen.valueObject.command.TestCommand;
 import yhaxen.valueObject.config.Build;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.Error;
 
-class CompilePhase extends AbstractBuildPhase<Build>
+class CompilePhase extends AbstractBuildPhase<Build,CompileCommand>
 {
-	var testPhase:TestPhase;
-
 	public static function fromCommand(command:CompileCommand):CompilePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new CompilePhase(config, command.configFile, command.followPhaseFlow, command.mode, command.part);
+		return new CompilePhase(config, command);
 	}
 
 	override function getBuilds():Array<Build>
@@ -28,18 +27,16 @@ class CompilePhase extends AbstractBuildPhase<Build>
 
 	override function executePreviousPhase():Void
 	{
-		testPhase = new TestPhase(config, configFile, followPhaseFlow, mode, null);
-		testPhase.haxelib = haxelib;
-		testPhase.execute();
+		new TestPhase(config, TestCommand.fromCompileCommand(command)).execute();
 	}
 
 	override function logPhasesFound(count:Int)
 	{
 		var message = switch(count)
 		{
-			case 0: "No builds found.";
-			case 1: "Found 1 build.";
-			default: "Found " + count + " builds";
+			case 0: "no builds found";
+			case 1: "1 build found";
+			default: count + " builds found";
 		}
 		logPhase("compile", message);
 	}
@@ -48,8 +45,8 @@ class CompilePhase extends AbstractBuildPhase<Build>
 	{
 		throw new Error(
 			"Build " + part + " not found!",
-			"Build named " + part + " is not defined in " + configFile + ".",
-			"Provide build in " + configFile + " or execute different build.");
+			"Build named " + part + " is not defined in " + command.configFile + ".",
+			"Provide build in " + command.configFile + " or execute different build.");
 	}
 
 	override function throwExecuteBuildError(build:Build)

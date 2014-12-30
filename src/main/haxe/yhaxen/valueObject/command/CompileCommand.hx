@@ -1,13 +1,9 @@
 package yhaxen.valueObject.command;
 
-class CompileCommand extends AbstractLifecycleCommand
+class CompileCommand extends AbstractBuildCommand
 {
-	public var part(default, null):String;
-
-	public function new(configFile:String, followPhaseFlow:Bool, mode:String, part:String)
+	public static function fromReleaseCommand(command:ReleaseCommand):CompileCommand
 	{
-		super(configFile, followPhaseFlow, mode);
-
-		this.part = part;
+		return new CompileCommand(command.logLevel, command.configFile, command.followPhaseFlow, command.mode, null);
 	}
 }

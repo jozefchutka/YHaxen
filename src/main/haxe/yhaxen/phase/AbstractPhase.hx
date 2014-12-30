@@ -1,28 +1,27 @@
 package yhaxen.phase;
 
 import yhaxen.enums.DependencyVersionType;
+import yhaxen.enums.LogLevel;
 import yhaxen.util.Haxelib;
 import yhaxen.util.System;
+import yhaxen.valueObject.command.AbstractLifecycleCommand;
 import yhaxen.valueObject.config.AbstractBuild;
 import yhaxen.valueObject.config.AbstractStep;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.Error;
 
-class AbstractPhase
+class AbstractPhase<TCommand:AbstractLifecycleCommand>
 {
 	public var config(default, null):Config;
-	public var configFile(default, null):String;
-	public var followPhaseFlow(default, null):Bool;
-	public var mode(default, null):String;
-	@:isVar public var haxelib(get, set):Haxelib;
+	public var command(default, null):TCommand;
+	public var haxelib(get, never):Haxelib;
+	public var logGit(get, never):Bool;
 
-	private function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String)
+	private function new(config:Config, command:TCommand)
 	{
 		this.config = config;
-		this.configFile = configFile;
-		this.followPhaseFlow = followPhaseFlow;
-		this.mode = mode;
+		this.command = command;
 	}
 
 	function get_haxelib():Haxelib
@@ -30,15 +29,26 @@ class AbstractPhase
 		return Haxelib.instance;
 	}
 
-	function set_haxelib(value:Haxelib):Haxelib
+	function get_logGit():Bool
 	{
-		return haxelib = value;
+		return shouldLog(LogLevel.DEBUG);
 	}
 
 	public function execute():Void
 	{
-		if(followPhaseFlow)
+		if(command.followPhaseFlow)
 			executePreviousPhase();
+	}
+
+	function shouldLog(level:Int):Bool
+	{
+		return command.logLevel <= level;
+	}
+
+	function systemCommand(logLevel:Int, cmd:String, args:Array<String>):Int
+	{
+		log(logLevel, "$ " + cmd + " " + System.formatCommandLineArguments(args));
+		return System.command(cmd, args);
 	}
 
 	function executePreviousPhase():Void
@@ -47,21 +57,19 @@ class AbstractPhase
 
 	function logPhase(name:String, details:String):Void
 	{
-		log("");
-		System.printRow("-");
-		log("PHASE: " + name);
-		log(details);
-		System.printRow("-");
+		log(LogLevel.INFO, "");
+		log(LogLevel.INFO, "# phase " + name + " - " + details);
 	}
 
-	function log(message:String):Void
+	function log(level:Int, message:String):Void
 	{
-		System.print(message);
+		if(shouldLog(level))
+			System.print(message);
 	}
 
-	function logKeyVal(key:String, pad:Int, value:String):Void
+	function logKeyVal(level:Int, key:String, pad:Int, value:String):Void
 	{
-		System.printKeyVal(key, pad, value);
+		log(level, StringTools.rpad(key, " ", pad) + value);
 	}
 
 	function getDependencyByName(name:String):Dependency
@@ -114,7 +122,7 @@ class AbstractPhase
 		if(input.indexOf("$" + "{") == -1)
 			return [input];
 
-		log("Resolving variable in \"" + input + "\"");
+		log(LogLevel.DEBUG, "resolving variable in \"" + input + "\"");
 
 		var variableEReg:EReg = ~/\$\{([^}]+?)\}/;
 		variableEReg.match(input);
@@ -130,7 +138,7 @@ class AbstractPhase
 		var resolvedResults = _resolveVariable(matched, step);
 		if(resolvedResults == null)
 		{
-			log("  -> emtpy value");
+			log(LogLevel.DEBUG, "  -> emtpy value");
 		}
 		else
 		{
@@ -140,10 +148,10 @@ class AbstractPhase
 			{
 				var fixedResult = prefix + resolvedResult + postfix;
 				result.push(fixedResult);
-				log("  -> " + fixedResult);
+				log(LogLevel.DEBUG, "  -> " + fixedResult);
 			}
 		}
-		log("");
+		log(LogLevel.DEBUG, "");
 		return result;
 	}
 
@@ -210,7 +218,7 @@ class AbstractPhase
 			if(dependency == null)
 				throw new Error(
 					"Invalid dependency " + name + "!",
-					"Dependency " + name + " is not defined in " + configFile + ".",
+					"Dependency " + name + " is not defined in " + command.configFile + ".",
 					"Provide existing dependency name.");
 
 			if(data != "")
@@ -280,12 +288,12 @@ class AbstractPhase
 
 		if(config.variables != null)
 			for(variable in config.variables)
-				if(variable.name == name && variable.matchesMode(mode))
+				if(variable.name == name && variable.matchesMode(command.mode))
 					return [variable.value];
 
 		throw new Error(
 			"Invalid variable $" + "{variable:" + input + "}!",
-			"Variable " + name + " is not defined in " + configFile + ".",
+			"Variable " + name + " is not defined in " + command.configFile + ".",
 			"Define variable " + name + ".");
 	}
 }

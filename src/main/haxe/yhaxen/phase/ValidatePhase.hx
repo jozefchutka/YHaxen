@@ -1,6 +1,7 @@
 package yhaxen.phase;
 
 import yhaxen.enums.DependencyVersionType;
+import yhaxen.enums.LogLevel;
 import yhaxen.enums.SourceType;
 import yhaxen.parser.ConfigParser;
 import yhaxen.util.ArrayUtil;
@@ -17,7 +18,7 @@ import yhaxen.valueObject.Error;
 import sys.io.File;
 import sys.FileSystem;
 
-class ValidatePhase extends AbstractPhase
+class ValidatePhase extends AbstractPhase<ValidateCommand>
 {
 	inline static var WORD_OK:String = "OK";
 	inline static var WORD_MISSING:String = "MISSING";
@@ -25,16 +26,12 @@ class ValidatePhase extends AbstractPhase
 	inline static var WORD_INVALID:String = "INVALID";
 	inline static var WORD_UNDEFINED:String = "UNDEFINED";
 	inline static var WORD_UPDATE:String = "UPDATE";
-
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String)
-	{
-		super(config, configFile, followPhaseFlow, mode);
-	}
+	inline static var WORD_INSTALL:String = "INSTALL";
 
 	public static function fromCommand(command:ValidateCommand):ValidatePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new ValidatePhase(config, command.configFile, command.followPhaseFlow, command.mode);
+		return new ValidatePhase(config, command);
 	}
 
 	override function execute():Void
@@ -44,9 +41,11 @@ class ValidatePhase extends AbstractPhase
 		if(config.dependencies == null || config.dependencies.length == 0)
 			return logPhase("validate", "No dependencies found.");
 
-		logPhase("validate", "Found " + config.dependencies.length + " dependencies.");
+		logPhase("validate", config.dependencies.length + " dependencies found");
 		validateConfig();
 
+		log(LogLevel.INFO, "");
+		log(LogLevel.INFO, "resolving:");
 		for(dependency in config.dependencies)
 			resolveDependency(dependency);
 
@@ -54,16 +53,16 @@ class ValidatePhase extends AbstractPhase
 		var tree = getTree();
 		var flatten = flattenTree(tree);
 
-		log("");
-		log("Tree:");
+		log(LogLevel.DEBUG, "");
+		log(LogLevel.DEBUG, "dependency tree:");
 		validateTree(tree);
 
-		log("");
-		log("Flatten:");
+		log(LogLevel.DEBUG, "");
+		log(LogLevel.DEBUG, "flattened dependencies:");
 		validateFlatten(flatten);
 
-		log("");
-		log("Preparing:");
+		log(LogLevel.DEBUG, "");
+		log(LogLevel.DEBUG, "preparing current dependencies:");
 		for(dependency in config.dependencies)
 			prepareDependency(dependency);
 	}
@@ -85,18 +84,18 @@ class ValidatePhase extends AbstractPhase
 
 		if(exists && !dependency.update)
 		{
-			logKeyVal("Resolving " + dependency.toString(), 40, WORD_OK);
+			logKeyVal(LogLevel.INFO, dependency.toString(), 40, WORD_OK);
 			return;
 		}
 
 		if(exists && dependency.update)
 		{
-			logKeyVal("Resolving " + dependency.toString(), 40, WORD_UPDATE);
+			logKeyVal(LogLevel.INFO, dependency.toString(), 40, WORD_UPDATE);
 			haxelib.removeDependencyVersion(dependency.name, dependency.version);
 		}
 		else
 		{
-			log("Resolving " + dependency.toString());
+			logKeyVal(LogLevel.INFO, dependency.toString(), 40, WORD_INSTALL);
 		}
 
 		switch(dependency.type)
@@ -107,7 +106,7 @@ class ValidatePhase extends AbstractPhase
 				installDependencyHaxelib(dependency);
 		}
 
-		log("");
+		log(LogLevel.DEBUG, "");
 	}
 
 	function prepareDependency(dependency:yhaxen.valueObject.config.Dependency)
@@ -115,7 +114,7 @@ class ValidatePhase extends AbstractPhase
 		if(dependency.makeCurrent)
 		{
 			haxelib.makeCurrent(dependency.name, dependency.version);
-			logKeyVal("  " + dependency.toString(), 40, WORD_OK);
+			logKeyVal(LogLevel.DEBUG, dependency.toString(), 40, WORD_OK);
 		}
 	}
 
@@ -128,7 +127,7 @@ class ValidatePhase extends AbstractPhase
 				throw new Error(
 					"Misconfigured dependency " + dependency.name + "!",
 					"Dependency " + dependency.name + " is defined multiple times.",
-					"Provide only one definition for " + dependency.name + " in " + configFile + ".");
+					"Provide only one definition for " + dependency.name + " in " + command.configFile + ".");
 
 			names.push(dependency.name);
 		}
@@ -142,27 +141,27 @@ class ValidatePhase extends AbstractPhase
 			if(item.versionResolved != null)
 				result = (item.versionResolvedExists ? WORD_OK : WORD_MISSING) + " (" + item.versionResolved + ")";
 
-			var pad:String = StringTools.lpad("", " ", level * 2 + 2);
-			logKeyVal(pad + item.toString(), 40, result);
+			var pad:String = StringTools.lpad("", " ", level * 2);
+			logKeyVal(LogLevel.DEBUG, pad + item.toString(), 40, result);
 
 			var detail = yhaxen.valueObject.config.Dependency.getFromList(config.dependencies, item.name);
 			if(detail == null)
 				throw new Error(
 					"Undefined dependency " + item.name + "!",
-					"Dependency " + item.name + " is not defined in " + configFile + ".",
-					"Provide dependency details in " + configFile + ".");
+					"Dependency " + item.name + " is not defined in " + command.configFile + ".",
+					"Provide dependency details in " + command.configFile + ".");
 
 			if(item.versionResolved == null)
 				throw new Error(
 					"Invalid dependency " + item.name + "!",
 					"Dependency " + item.name + " has mismatched version used and can not be resolved.",
-					"Provide forceVersion in " + configFile + " for this dependency.");
+					"Provide forceVersion in " + command.configFile + " for this dependency.");
 
 			if(!item.versionResolvedExists)
 				throw new Error(
 					"Missing dependency " + item.name + "!",
 					"Dependency " + item.name + " with resolved version " + item.versionResolved + " is missing.",
-					"Check dependency details in " + configFile + ".");
+					"Check dependency details in " + command.configFile + ".");
 
 			if(item.dependencies != null)
 				validateTree(item.dependencies, level + 1);
@@ -186,18 +185,18 @@ class ValidatePhase extends AbstractPhase
 
 			if(versions.length == 1)
 			{
-				logKeyVal("  " + name, 40, WORD_OK + " (" + versions[0] + ")");
+				logKeyVal(LogLevel.DEBUG, name, 40, WORD_OK + " (" + versions[0] + ")");
 				continue;
 			}
 
-			logKeyVal("  " + name, 40, WORD_WARNING);
+			logKeyVal(LogLevel.DEBUG, name, 40, WORD_WARNING);
 			for(version in dataName.keys())
 			{
 				if(version == WORD_UNDEFINED)
 					continue;
 				var sources = dataName.get(version);
 				for(source in sources)
-					logKeyVal("    in " + (source == null ? configFile : source.toString()), 40, " ! (" + version + ")");
+					logKeyVal(LogLevel.DEBUG, "  in " + (source == null ? command.configFile : source.toString()), 40, " ! (" + version + ")");
 			}
 
 			var detail = yhaxen.valueObject.config.Dependency.getFromList(config.dependencies, name);
@@ -205,7 +204,7 @@ class ValidatePhase extends AbstractPhase
 				throw new Error(
 					"Invalid dependency version for " + name + "!",
 					"Dependency " + name + " has multiple versions used.",
-					"Provide forceVersion in " + configFile + ".");
+					"Provide forceVersion in " + command.configFile + ".");
 		}
 	}
 
@@ -256,12 +255,12 @@ class ValidatePhase extends AbstractPhase
 
 		try
 		{
-			Git.fetchAll(directory);
-			Git.checkout(dependency.version, directory);
+			Git.fetchAll(directory, logGit);
+			Git.checkout(dependency.version, directory, logGit);
 			try
 			{
 				// in case we were in branch already pull is required after fetch
-				Git.pull(directory);
+				Git.pull(directory, logGit);
 			}
 			catch(error:Dynamic){}
 		}
@@ -295,21 +294,21 @@ class ValidatePhase extends AbstractPhase
 	{
 		if(!FileSystem.exists(directory))
 		{
-			Git.clone(dependency.source, directory);
+			Git.clone(dependency.source, directory, logGit);
 			return;
 		}
 
 		if(!FileSystem.isDirectory(directory))
 		{
 			System.deleteDirectory(directory);
-			Git.clone(dependency.source, directory);
+			Git.clone(dependency.source, directory, logGit);
 			return;
 		}
 
 		var remoteOriginUrl:String;
 		try
 		{
-			remoteOriginUrl = Git.getRemoteOriginUrl(directory);
+			remoteOriginUrl = Git.getRemoteOriginUrl(directory, logGit);
 		}
 		catch(error:Dynamic)
 		{
@@ -320,17 +319,17 @@ class ValidatePhase extends AbstractPhase
 		if(remoteOriginUrl != dependency.source)
 		{
 			System.deleteDirectory(directory);
-			Git.clone(dependency.source, directory);
+			Git.clone(dependency.source, directory, logGit);
 		}
 	}
 
 	function installDependencyHaxelib(dependency:Dependency):Void
 	{
-		if(System.command("haxelib", ["install", dependency.name, dependency.version]) != 0)
+		if(systemCommand(LogLevel.DEBUG, "haxelib", ["install", dependency.name, dependency.version]) != 0)
 			throw new Error(
 				"Invalid haxelib dependency " + dependency.name + " version " + dependency.version + "!",
 				"Haxelib could not install " + dependency.name + " with version " + dependency.version + ".",
-				"Make sure dependency name and version is correctly defined in " + configFile + ".");
+				"Make sure dependency name and version is correctly defined in " + command.configFile + ".");
 	}
 
 	function getDependencyTree(dependency:Dependency):Array<DependencyTreeItem>

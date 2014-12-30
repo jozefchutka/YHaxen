@@ -2,8 +2,13 @@ package yhaxen.valueObject.command;
 
 class ValidateCommand extends AbstractLifecycleCommand
 {
-	public function new(configFile:String, mode:String)
+	public function new(logLevel:Int, configFile:String, mode:String)
 	{
-		super(configFile, true, mode);
+		super(logLevel, configFile, true, mode);
+	}
+
+	public static function fromTestCommand(command:TestCommand):ValidateCommand
+	{
+		return new ValidateCommand(command.logLevel, command.configFile, command.mode);
 	}
 }

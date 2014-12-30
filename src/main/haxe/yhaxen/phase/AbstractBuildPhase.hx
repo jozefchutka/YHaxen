@@ -1,20 +1,11 @@
 package yhaxen.phase;
 
-import yhaxen.util.System;
+import yhaxen.enums.LogLevel;
+import yhaxen.valueObject.command.AbstractBuildCommand;
 import yhaxen.valueObject.config.AbstractBuild;
-import yhaxen.valueObject.config.Config;
 
-class AbstractBuildPhase<TBuild:AbstractBuild> extends AbstractPhase
+class AbstractBuildPhase<TBuild:AbstractBuild,TCommand:AbstractBuildCommand> extends AbstractPhase<TCommand>
 {
-	public var part(default, null):String;
-
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String, part:String)
-	{
-		super(config, configFile, followPhaseFlow, mode);
-
-		this.part = part;
-	}
-
 	function getBuilds():Array<TBuild>
 	{
 		return null;
@@ -29,8 +20,8 @@ class AbstractBuildPhase<TBuild:AbstractBuild> extends AbstractPhase
 	{
 		super.execute();
 
-		if(part != null)
-			executePart(part);
+		if(command.part != null)
+			executePart(command.part);
 		else
 			executeAll();
 	}
@@ -60,6 +51,9 @@ class AbstractBuildPhase<TBuild:AbstractBuild> extends AbstractPhase
 
 	function executeBuild(build:TBuild)
 	{
+		log(LogLevel.INFO, "");
+		log(LogLevel.INFO, "# executing " + build.name);
+
 		var command = resolveVariable(build.command, build);
 		var arguments = null;
 
@@ -71,7 +65,7 @@ class AbstractBuildPhase<TBuild:AbstractBuild> extends AbstractPhase
 		if(build.dir != null)
 			Sys.setCwd(resolveVariable(build.dir, build));
 
-		if(System.command(command, arguments) != 0)
+		if(systemCommand(LogLevel.DEBUG, command, arguments) != 0)
 			throwExecuteBuildError(build);
 
 		Sys.setCwd(cwd);

@@ -2,43 +2,29 @@ package yhaxen.phase;
 
 import tools.haxelib.SemVer;
 
+import yhaxen.enums.LogLevel;
 import yhaxen.enums.ReleaseType;
 import yhaxen.parser.ConfigParser;
 import yhaxen.phase.CompilePhase;
 import yhaxen.util.Git;
 import yhaxen.util.Haxelib;
 import yhaxen.util.ScopeUtil;
-import yhaxen.util.System;
 import yhaxen.util.Zip;
+import yhaxen.valueObject.command.CompileCommand;
 import yhaxen.valueObject.command.ReleaseCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Dependency;
 import yhaxen.valueObject.config.Release;
 import yhaxen.valueObject.Error;
 
-class ReleasePhase extends AbstractPhase
+class ReleasePhase extends AbstractPhase<ReleaseCommand>
 {
 	inline static var DEFAULT_MESSAGE:String = "Release ${arg:-version}.";
-
-	public var version(default, null):String;
-	public var message(default, null):String;
-
-	var compilePhase:CompilePhase;
-
-	public function new(config:Config, configFile:String, followPhaseFlow:Bool, mode:String, version:String,
-		message:String)
-	{
-		super(config, configFile, followPhaseFlow, mode);
-
-		this.version = version;
-		this.message = message;
-	}
 
 	public static function fromCommand(command:ReleaseCommand):ReleasePhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new ReleasePhase(config, command.configFile, command.followPhaseFlow, command.mode, command.version,
-			command.message);
+		return new ReleasePhase(config, command);
 	}
 
 	override function execute():Void
@@ -56,9 +42,7 @@ class ReleasePhase extends AbstractPhase
 
 	override function executePreviousPhase():Void
 	{
-		compilePhase = new CompilePhase(config, configFile, followPhaseFlow, mode, null);
-		compilePhase.haxelib = haxelib;
-		compilePhase.execute();
+		new CompilePhase(config, CompileCommand.fromReleaseCommand(command)).execute();
 	}
 
 	function resolveRelease(release:Release):Void
@@ -77,17 +61,17 @@ class ReleasePhase extends AbstractPhase
 		if(release.haxelib != null)
 			updateHaxelibJson(release, resolveVariable(release.haxelib, release), false);
 
-		var currentBranch = Git.getCurrentBranch();
-		var releaseBranch = "release_" + version;
+		var currentBranch = Git.getCurrentBranch(null, logGit);
+		var releaseBranch = "release_" + command.version;
 		var message:String = getReleaseMessage(release);
 
-		Git.createBranch(releaseBranch);
-		Git.add(".");
-		Git.commit(message);
-		Git.tag(version, message);
-		Git.pushTag(version);
-		Git.checkout(currentBranch);
-		Git.deleteBranch(releaseBranch);
+		Git.createBranch(releaseBranch, null, logGit);
+		Git.add(".", null, logGit);
+		Git.commit(message, null, logGit);
+		Git.tag(command.version, message, null, logGit);
+		Git.pushTag(command.version, null, logGit);
+		Git.checkout(currentBranch, null, logGit);
+		Git.deleteBranch(releaseBranch, null, logGit);
 	}
 
 	function releaseHaxelib(release:Release):Void
@@ -106,18 +90,18 @@ class ReleasePhase extends AbstractPhase
 
 		var file = "release.zip";
 		zip.save(file);
-		System.command("haxelib", ["submit", file]);
+		systemCommand(LogLevel.DEBUG, "haxelib", ["submit", file]);
 	}
 
 	function updateHaxelibJson(release:Release, file:String, forHaxelib:Bool):Void
 	{
 		var message:String = getReleaseMessage(release);
 		var dependencies:Dynamic = getHaxelibJsonDependencies(forHaxelib);
-		if(!haxelib.updateHaxelibFile(file, version, dependencies, message))
+		if(!haxelib.updateHaxelibFile(file, command.version, dependencies, message))
 			throw new Error(
 				"Invalid " + Haxelib.FILE_HAXELIB + " file!",
 				"Release related file " + file + " does not exist or is invalid.",
-				"Provide correct path to " + Haxelib.FILE_HAXELIB + " file in " + configFile + ".");
+				"Provide correct path to " + Haxelib.FILE_HAXELIB + " file in " + command.configFile + ".");
 	}
 
 	/**
@@ -150,7 +134,7 @@ class ReleasePhase extends AbstractPhase
 
 	function getReleaseMessage(release:Release):String
 	{
-		var result = message == null || message == "" ? DEFAULT_MESSAGE : message;
+		var result = command.message == null || command.message == "" ? DEFAULT_MESSAGE : command.message;
 		return resolveVariable(result, release);
 	}
 

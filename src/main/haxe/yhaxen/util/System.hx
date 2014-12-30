@@ -1,7 +1,7 @@
 package yhaxen.util;
 
-import haxe.macro.Context;
 import haxe.io.Path;
+import haxe.macro.Context;
 
 import sys.io.File;
 import sys.io.Process;
@@ -9,30 +9,18 @@ import sys.FileSystem;
 
 class System
 {
-	public static function printRow(fill:String, message:String=null):Void
-	{
-		print(StringTools.rpad(message == null ? "" : message, fill, 79));
-	}
-
 	public static function print(message:String):Void
 	{
 		Sys.println(message);
 	}
 
-	public static function printKeyVal(key:String, pad:Int, value:String):Void
-	{
-		Sys.println(StringTools.rpad(key, " ", pad) + value);
-	}
-
 	public static function command(cmd:String, args:Array<String>):Int
 	{
-		print("  $ " + cmd + " " + formatCommandLineArguments(args));
 		return Sys.command(cmd, args);
 	}
 
 	public static function process(cmd:String, args:Array<String>):Process
 	{
-		print("  $ " + cmd + " " + formatCommandLineArguments(args));
 		return new Process(cmd, args);
 	}
 
@@ -134,7 +122,7 @@ class System
 		return getCompilerVariable("version");
 	}
 
-	static function formatCommandLineArguments(source:Array<String>):String
+	public static function formatCommandLineArguments(source:Array<String>):String
 	{
 		if(source == null)
 			return "";

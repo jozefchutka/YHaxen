@@ -2,18 +2,17 @@ package yhaxen.phase;
 
 import yhaxen.parser.ConfigParser;
 import yhaxen.valueObject.command.TestCommand;
+import yhaxen.valueObject.command.ValidateCommand;
 import yhaxen.valueObject.config.Config;
 import yhaxen.valueObject.config.Test;
 import yhaxen.valueObject.Error;
 
-class TestPhase extends AbstractBuildPhase<Test>
+class TestPhase extends AbstractBuildPhase<Test,TestCommand>
 {
-	var validatePhase:ValidatePhase;
-
 	public static function fromCommand(command:TestCommand):TestPhase
 	{
 		var config = ConfigParser.fromFile(command.configFile);
-		return new TestPhase(config, command.configFile, command.followPhaseFlow, command.mode, command.part);
+		return new TestPhase(config, command);
 	}
 
 	override function getBuilds():Array<Test>
@@ -28,18 +27,16 @@ class TestPhase extends AbstractBuildPhase<Test>
 
 	override function executePreviousPhase():Void
 	{
-		validatePhase = new ValidatePhase(config, configFile, followPhaseFlow, mode);
-		validatePhase.haxelib = haxelib;
-		validatePhase.execute();
+		new ValidatePhase(config, ValidateCommand.fromTestCommand(command)).execute();
 	}
 
 	override function logPhasesFound(count:Int)
 	{
 		var message = switch(count)
 		{
-			case 0: "No tests found.";
-			case 1: "Found 1 test.";
-			default: "Found " + count + " tests";
+			case 0: "no tests found";
+			case 1: "1 test found";
+			default: count + " tests found";
 		}
 		logPhase("test", message);
 	}
@@ -48,8 +45,8 @@ class TestPhase extends AbstractBuildPhase<Test>
 	{
 		throw new Error(
 			"Test " + part + " not found!",
-			"Test named " + part + " is not defined in " + configFile + ".",
-			"Provide test in " + configFile + " or execute different test.");
+			"Test named " + part + " is not defined in " + command.configFile + ".",
+			"Provide test in " + command.configFile + " or execute different test.");
 	}
 
 	override function throwExecuteBuildError(test:Test)
