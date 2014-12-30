@@ -4,6 +4,12 @@ class ModeUtil
 {
 	public static function matches(modes:Array<String>, mode:String):Bool
 	{
-		return (mode == null || modes == null) ? true : Lambda.has(modes, mode);
+		if(mode == null && modes == null)
+			return true;
+		if(mode != null && modes == null)
+			return false;
+		if(mode == null && modes != null)
+			return false;
+		return Lambda.has(modes, mode);
 	}
 }
