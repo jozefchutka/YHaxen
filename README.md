@@ -36,7 +36,7 @@ haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=12
 
 # Usage
 
-basic config structure:
+The main build configuration is defined in a configuration file (default name is yhaxen.json). Each node in configuration file is optional and does not need to be defined unless is meant to be used.
 
 ```json
 {
