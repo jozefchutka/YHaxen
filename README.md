@@ -266,6 +266,7 @@ Example:
 ```
 
 # Roadmap
+- fix broken neko argument escaping by optional build config variable `build.mergeArguments` and so instead of using Sys.command attributes, whole data would be merged into single command string
 - support importing configurations from dependencies
 
 # Known Issues
