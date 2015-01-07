@@ -122,22 +122,23 @@ class System
 		return getCompilerVariable("version");
 	}
 
-	public static function formatCommandLineArguments(source:Array<String>):String
+	public static function escapeArguments(source:Array<String>):String
 	{
 		if(source == null)
 			return "";
 
 		var result:Array<String> = [];
 		for(item in source)
-			result.push(formatCommandLineArgument(item));
+			result.push(escapeArgument(item));
 		return result.join(" ");
 	}
 
-	static function formatCommandLineArgument(source:String):String
+	public static function escapeArgument(source:String):String
 	{
-		if(source.indexOf(" ") != -1)
-			source = "\"" + source + "\"";
-		return source;
+		var expression = ~/^[-a-z0-9\.\/]+$/i;
+		if(expression.match(source))
+			return source;
+		return '"' + StringTools.replace(source, '"', '\\"') + '"';
 	}
 
 	macro public static function getCompilerVariable(key:String)

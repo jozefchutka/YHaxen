@@ -22,6 +22,11 @@ class AbstractBuild extends AbstractStep
 	 **/
 	public var dir:String;
 
+	/**
+	 * Optional
+	 **/
+	public var mergeArguments:Bool;
+
 	public function new(name:String, command:String)
 	{
 		this.name = name;

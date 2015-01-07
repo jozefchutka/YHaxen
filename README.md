@@ -195,6 +195,7 @@ Test the compiled source code using a unit testing framework.
 - **name** (String, required) - Name of a test. Is used to resolve scoped dependencies. Must be unique across tests and builds.
 - **command** (String, required) - Command to be executed. May contain variables.
 - **arguments** (String, optional) - Additional arguments. May contain variables.
+- **mergeArguments** (Bool, optional) - Merges and escapes arguments with command into a single command used for `Sys.command`. See related [neko issue](https://groups.google.com/forum/?hl=en#!searchin/haxelang/neko$20escape/haxelang/LsKynTHCPXg/uTGDiHtina8J).
 - **dir** (String, optional) - Working directory. May contain variables.
 
 Example:
@@ -216,6 +217,7 @@ Compile the source code of the project.
 - **name** (String, required) - Name of a build. Is used to resolve scoped dependencies. Must be unique across tests and builds.
 - **command** (String, required) - Command to be executed. May contain variables.
 - **arguments** (String, optional) - Additional arguments. May contain variables.
+- **mergeArguments** (Bool, optional) - Merges and escapes arguments with command into a single command used for `Sys.command`. See related [neko issue](https://groups.google.com/forum/?hl=en#!searchin/haxelang/neko$20escape/haxelang/LsKynTHCPXg/uTGDiHtina8J).
 - **dir** (String, optional) - Working directory. May contain variables.
 
 Example:

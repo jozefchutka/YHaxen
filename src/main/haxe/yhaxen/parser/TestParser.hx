@@ -26,10 +26,12 @@ class TestParser extends GenericParser<Test>
 
 		var command:String = Reflect.field(source, "command");
 		var dir:String = Reflect.field(source, "dir");
+		var mergeArguments:Bool = Reflect.hasField(source, "mergeArguments") && Reflect.field(source, "mergeArguments");
 
 		var result:Test = new Test(name, command);
 		result.arguments = Reflect.field(source, "arguments");
 		result.dir = dir;
+		result.mergeArguments = mergeArguments;
 		return result;
 	}
 

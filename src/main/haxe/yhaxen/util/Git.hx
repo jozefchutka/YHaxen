@@ -13,7 +13,7 @@ class Git
 			Sys.setCwd(directory);
 
 		if(log)
-			System.print("$ git " + System.formatCommandLineArguments(arguments));
+			System.print("$ git " + System.escapeArguments(arguments));
 		var process:Process = System.process("git", arguments);
 		var exitCode = process.exitCode();
 		var result = StringTools.trim(process.stdout.readAll().toString());

@@ -1,6 +1,7 @@
 package yhaxen.phase;
 
 import yhaxen.enums.LogLevel;
+import yhaxen.util.System;
 import yhaxen.valueObject.command.AbstractBuildCommand;
 import yhaxen.valueObject.config.AbstractBuild;
 
@@ -60,6 +61,12 @@ class AbstractBuildPhase<TBuild:AbstractBuild,TCommand:AbstractBuildCommand> ext
 		if(build.arguments != null && build.arguments.length > 0)
 			arguments = resolveVariablesInArray(build.arguments, build);
 
+		if(build.mergeArguments && arguments != null)
+		{
+			command += " " + System.escapeArguments(arguments);
+			arguments = null;
+		}
+		
 		var cwd = Sys.getCwd();
 
 		if(build.dir != null)

@@ -47,7 +47,11 @@ class AbstractPhase<TCommand:AbstractLifecycleCommand>
 
 	function systemCommand(logLevel:Int, cmd:String, args:Array<String>):Int
 	{
-		log(logLevel, "$ " + cmd + " " + System.formatCommandLineArguments(args));
+		var message = "$ " + cmd;
+		if(args != null && args.length > 0)
+			message += " " + System.escapeArguments(args);
+		log(logLevel, message);
+
 		return System.command(cmd, args);
 	}
 
