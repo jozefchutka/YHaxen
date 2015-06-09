@@ -82,6 +82,15 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 				"Provide valid dependency version that can be resolved into a directory.");
 		}
 
+		if(haxelib.dependencyExists(dependency.name)
+			&& dependency.type == SourceType.GIT
+			&& (!FileSystem.exists(haxelib.getGitDependencyDirectory(dependency.name))
+			|| Git.getCurrentRemoteOriginUrl(haxelib.getGitDependencyDirectory(dependency.name)) != dependency.source))
+		{
+			haxelib.removeDependencyDirectory(dependency.name);
+			exists = false;
+		}
+
 		if(exists && !dependency.update)
 		{
 			logKeyVal(LogLevel.INFO, dependency.toString(), 40, WORD_OK);
