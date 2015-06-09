@@ -79,6 +79,12 @@ class Haxelib extends tools.haxelib.Main
 		return FileSystem.exists(dir) && FileSystem.isDirectory(dir) && FileSystem.exists(dir + "/.current");
 	}
 
+	public function removeDependencyDirectory(name:String):Void
+	{
+		var directory = getDependencyDirectory(name);
+		System.deleteDirectory(directory);
+	}
+
 	public function dependencyVersionExists(name:String, version:String):Bool
 	{
 		var dir = getDependencyVersionDirectory(name, version, null);
