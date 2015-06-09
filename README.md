@@ -266,15 +266,3 @@ Example:
 	}
 ]
 ```
-
-# Roadmap
-- support importing configurations from dependencies
-
-# Known Issues
-- exeption with git release when no files to commit
-- running yhaxen without privileges to haxelib/lib folder
-- when repository does not contain "subdirectory" specified in dependency config use more proper error than "Error: std@sys_read_dir"
-- on windows if neko/yhaxen is executed without admin rights and haxelib is setuped in "Prgorem Files" etd, FileSystem.hx create/write proxies directories into something like `c:\Users\<USER>\AppData\Local\VirtualStore\Program Files (x86)\HaxeToolkit\haxe-3.0.1\lib\`
-- if a haxelib lib contains .dev file, haxe compiler is not able to use specific lib version with -lib $lib:$version
-- if a lib A contains dependency B defined in haxelib.json with version C a haxe compiler cannot override it using `haxe -lib A -lib B:D`
-- neko 2.0.0 does not pass [command line arguments properly escaped into Sys.command](https://groups.google.com/forum/?hl=en#!topic/haxelang/LsKynTHCPXg), so passing -Da=b=c as an argument into ant cmd would fail. Current solution is to not use `build.mergeArguments`.
