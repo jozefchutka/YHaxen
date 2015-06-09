@@ -94,9 +94,20 @@ class Git
 		var execution = execute(["rev-parse", "--abbrev-ref", "HEAD"], directory, log);
 		if(execution.exitCode != 0)
 			throw new Error(
-			"Git rev-parse failed.",
-			"Git was not able to get current branch.",
-			"Make sure project is under git control and current user has suffucient rights.");
+				"Git rev-parse failed.",
+				"Git was not able to get current branch.",
+				"Make sure project is under git control and current user has suffucient rights.");
+		return execution.result;
+	}
+
+	public static function getCurrentRemoteOriginUrl(directory:String=null, log:Bool=false):String
+	{
+		var execution = execute(["config", "--get", "remote.origin.url"], directory, log);
+		if(execution.exitCode != 0)
+			throw new Error(
+				"Git config failed.",
+				"Git was not able to get current remote origin.",
+				"Make sure project is under git control and current user has suffucient rights.");
 		return execution.result;
 	}
 
