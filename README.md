@@ -31,7 +31,7 @@ haxelib run yhaxen compile -version 123
 
 Optionally can be built from sources using haxe command:
 ```
-haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -D version=123
+haxe -main yhaxen.Main -neko src/main/haxe/run.n -cp src/main/haxe -lib haxelib_client -D version=123
 ```
 
 # Usage
@@ -107,6 +107,8 @@ Example:
 Config variable in use:
 - `${variable:sourceDirectory}` outputs src/main/haxe
 
+### Dependency Variables
+
 Single dependendcy:
 - `${dependency:munit:dir}` c:/haxe/lib/munit/123
 - `${dependency:munit:dir:-cp}` -cp c:/haxe/lib/munit/123
@@ -123,11 +125,21 @@ Other dependency examples:
 - `${dependency:*:name}` munit mcover ...
 - `${dependency:*:nameVersion:-lib}` -lib munit:123 -lib mcover:123 ...
 
+### Argument Variables
+
 Command line arguments `haxelib run yhaxen compile version 123`:
 - `${arg:version}` 123
 
+### System Variables
+
 System variables:
 - `${system:cwd}` i.e. c:/Documents/Project
+
+### Variables Fallback
+
+A default value can be provided if variable is not available:
+
+- `${arg:version|variable:version}` if version is not specified via argument, variable will be used
 
 ## Phases
 
