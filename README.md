@@ -194,7 +194,7 @@ Example dependency configuration:
 		"version":"2.1.1",
 		"source": "git@github.com:massiveinteractive/MassiveUnit.git",
 		"type": "git",
-		"classPath": "src",
+		"subdirectory": "src",
 		"scopes": ["test"]
 	}
 ]
