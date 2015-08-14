@@ -255,7 +255,7 @@ Example:
 Release versioned project. With git release, all modified files are commited and a tag is created in remote repository.
 
 - **type** (String, required) - Release type (available options are **haxelib** or **git**).
-- **haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies and version information. May contain variables.
+- **haxelib** (String, optional) - Path to a haxelib.json file that would be updated with dependencies, version and release message. Any dependency scoped to any compile phase would be added, test scoped dependencies only would not be added. May contain variables.
 - **archiveInstructions** (Array, required for haxelib release) - An array of instructions about paths to be archived and released. May contain variables.
 
 Example:
