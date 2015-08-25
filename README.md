@@ -10,6 +10,8 @@ Works with:
 | OSX        | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
 | Ubuntu 14  | 3.0.1 -> 3.1.3 | 2.0.0 | 3.1.0-rc.4 |
  
+Build with Haxe 3.2.0 is not stable.
+ 
 # Install
 
 Recommended installation from from haxelib:
