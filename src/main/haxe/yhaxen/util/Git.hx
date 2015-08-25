@@ -71,7 +71,7 @@ class Git
 
 	public static function fetchAll(directory:String=null, log:Bool=false):Void
 	{
-		if(execute(["fetch", "--quiet", "--all"], directory, log).exitCode != 0)
+		if(execute(["fetch", "--quiet", "--all", "--tags"], directory, log).exitCode != 0)
 			throw new Error(
 				"Git fetch failed.",
 				"Git was not able to fetch.",
