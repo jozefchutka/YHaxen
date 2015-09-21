@@ -341,8 +341,11 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 				"Make sure dependency name and version is correctly defined in " + command.configFile + ".");
 	}
 
-	function getDependencyTree(dependency:Dependency):Array<DependencyTreeItem>
+	function getDependencyTree(dependency:Dependency, parents:Array<String>=null):Array<DependencyTreeItem>
 	{
+		if(parents == null)
+			parents = [];
+
 		var directory:String = haxelib.getDependencyVersionDirectory(dependency.name, dependency.versionResolved,
 			dependency.versionType);
 
@@ -356,9 +359,14 @@ class ValidatePhase extends AbstractPhase<ValidateCommand>
 		var result:Array<DependencyTreeItem> = [];
 		for(info in list.dependencies)
 		{
+			// It may happen that dependency refers to itself through other dependency
+			// lets just skip that case and ignore the subdependency
+			if(parents.indexOf(info.project) != -1)
+				continue;
+
 			var item = new DependencyTreeItem(info.project, info.version);
 			updateMetadata(item);
-			item.dependencies = item.exists ? getDependencyTree(item) : null;
+			item.dependencies = item.exists ? getDependencyTree(item, parents.concat([dependency.name])) : null;
 			result.push(item);
 		}
 		result.sort(DependencyTreeItem.sort);
