@@ -157,16 +157,23 @@ class Git
 				"Make sure project is under git control.");
 	}
 
+	public static function push(branch:String, directory:String=null, log:Bool=false):Void
+	{
+		if(execute(["push", "origin", branch], directory, log).exitCode != 0)
+			throw new Error(
+				"Git push failed.",
+				"Git was not able to push branch " + branch + " to origin.",
+				"Make sure project is under git control and " + branch + " is a valid branch name.");
+	}
+
 	public static function pushTag(tag:String, directory:String=null, log:Bool=false):Void
 	{
 		if(execute(["push", "origin", tag], directory, log).exitCode != 0)
 			throw new Error(
 				"Git push failed.",
-				"Git was not able to push tag to origin.",
+				"Git was not able to push tag " + tag + " to origin.",
 				"Make sure project is under git control and " + tag + " is a valid tag name.");
 	}
-
-
 
 	public static function getRemoteOriginUrl(directory:String=null, log:Bool=false):String
 	{

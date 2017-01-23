@@ -62,16 +62,13 @@ class ReleasePhase extends AbstractPhase<ReleaseCommand>
 			updateHaxelibJson(release, resolveVariable(release.haxelib, release), false);
 
 		var currentBranch = Git.getCurrentBranch(null, logGit);
-		var releaseBranch = "release_" + command.version;
 		var message:String = getReleaseMessage(release);
 
-		Git.createBranch(releaseBranch, null, logGit);
 		Git.add(".", null, logGit);
 		Git.commit(message, null, logGit);
 		Git.tag(command.version, message, null, logGit);
+		Git.push(currentBranch, null, logGit);
 		Git.pushTag(command.version, null, logGit);
-		Git.checkout(currentBranch, null, logGit);
-		Git.deleteBranch(releaseBranch, null, logGit);
 	}
 
 	function releaseHaxelib(release:Release):Void
